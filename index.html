@@ -588,11 +588,11 @@ float hexish=smoothstep(.92,1.,abs(sin(vAng*48.+vR*12.)))*smoothstep(.85,1.,abs(
 float f=pow(1.-abs(dot(normalize(vN),normalize(vV))),2.2);
 float pulse=smoothstep(.18,0.,abs(vR-.5-mod(uT*1.8,2.)))*uB;
 vec3 c=vec3(.012,.016,.028);
-c+=uC*rings*(.18+uM*2.2);
+c+=uC*rings*(.12+uM*.9);
 c+=uA*spokes*(.08+uH*1.8);
 c+=mix(uC,uA,.5)*hexish*(.05+uH*1.2);
-c+=mix(uC,uA,clamp((vR-.5)/1.65,0.,1.))*f*.7;
-c+=uA*pulse*2.4;
+c+=mix(uC,uA,clamp((vR-.5)/1.65,0.,1.))*f*.45;
+c+=uA*pulse*.9;
 gl_FragColor=vec4(c,1.);}`})));
 
 // ---------- KEBBEK logo at the centre
@@ -674,7 +674,7 @@ const lv=[0,1,2,3].map(()=>[new THREE.WebGLRenderTarget(1,1,rtOpt),new THREE.Web
 const qScene=new THREE.Scene(),qCam=new THREE.OrthographicCamera(-1,1,1,-1,0,1);
 const quad=new THREE.Mesh(new THREE.PlaneGeometry(2,2));qScene.add(quad);
 const VS=`varying vec2 vUv;void main(){vUv=uv;gl_Position=vec4(position.xy,0.,1.);}`;
-const thMat=new THREE.ShaderMaterial({uniforms:{t:{value:null},th:{value:.55}},vertexShader:VS,depthTest:false,depthWrite:false,
+const thMat=new THREE.ShaderMaterial({uniforms:{t:{value:null},th:{value:.72}},vertexShader:VS,depthTest:false,depthWrite:false,
 fragmentShader:`uniform sampler2D t;uniform float th;varying vec2 vUv;void main(){vec3 c=texture2D(t,vUv).rgb;float l=max(c.r,max(c.g,c.b));gl_FragColor=vec4(c*smoothstep(th,th+.35,l),1.);}`});
 const blMat=new THREE.ShaderMaterial({uniforms:{t:{value:null},d:{value:new THREE.Vector2()}},vertexShader:VS,depthTest:false,depthWrite:false,
 fragmentShader:`uniform sampler2D t;uniform vec2 d;varying vec2 vUv;void main(){
@@ -682,15 +682,15 @@ vec3 c=texture2D(t,vUv).rgb*.227;
 c+=(texture2D(t,vUv+d*1.385).rgb+texture2D(t,vUv-d*1.385).rgb)*.316;
 c+=(texture2D(t,vUv+d*3.231).rgb+texture2D(t,vUv-d*3.231).rgb)*.07;
 gl_FragColor=vec4(c,1.);}`});
-const coMat=new THREE.ShaderMaterial({uniforms:{t:{value:rtMain.texture},b0:{value:null},b1:{value:null},b2:{value:null},b3:{value:null},str:{value:1},ab:{value:.002},gl:{value:0},T:{value:0},scan:{value:.015},grain:{value:.012},res:{value:new THREE.Vector2()}},vertexShader:VS,depthTest:false,depthWrite:false,
-fragmentShader:`uniform sampler2D t,b0,b1,b2,b3;uniform float str,ab,gl,T,scan,grain;uniform vec2 res;varying vec2 vUv;
+const coMat=new THREE.ShaderMaterial({uniforms:{t:{value:rtMain.texture},b0:{value:null},b1:{value:null},b2:{value:null},b3:{value:null},str:{value:1},ab:{value:.002},gl:{value:0},T:{value:0},scan:{value:.015},grain:{value:.012},ex:{value:.9},res:{value:new THREE.Vector2()}},vertexShader:VS,depthTest:false,depthWrite:false,
+fragmentShader:`uniform sampler2D t,b0,b1,b2,b3;uniform float str,ab,gl,T,scan,grain,ex;uniform vec2 res;varying vec2 vUv;
 float h(float n){return fract(sin(n)*43758.5453);}
 void main(){vec2 uv=vUv;
 float line=floor(uv.y*42.+floor(T*24.));float g=step(.93,h(line))*gl;uv.x+=(h(line+3.)-.5)*.06*g;
 vec2 d=uv-.5;float r2=dot(d,d);vec2 o=d*(ab+g*.012)*(.6+r2*3.);
 vec3 c=vec3(texture2D(t,uv+o).r,texture2D(t,uv).g,texture2D(t,uv-o).b);
 vec3 bl=texture2D(b0,uv).rgb*.5+texture2D(b1,uv).rgb*.7+texture2D(b2,uv).rgb*.9+texture2D(b3,uv).rgb*1.1;
-c+=bl*str;
+c+=bl*str;c*=ex;c=c/(1.+max(c.r,max(c.g,c.b))*.18);
 c=(c*(2.51*c+.03))/(c*(2.43*c+.59)+.14);
 c*=1.-scan+scan*sin(vUv.y*res.y*1.4);
 c*=1.-r2*1.05;
@@ -871,9 +871,9 @@ addEventListener('drop',e=>{e.preventDefault();dragN=0;dropEl.hidden=true;addFil
 document.getElementById('seek').addEventListener('click',e=>{if(!audioEl||!audioEl.duration)return;const r=e.currentTarget.getBoundingClientRect();audioEl.currentTime=(e.clientX-r.left)/r.width*audioEl.duration});
 
 // ---------- settings (saved on this device)
-const DEF={name:'KEBBEK',c1:'#2fe0ff',c2:'#5a7bff',logo:'default',logoSize:1,bloom:.8,sens:1,removeBg:true,crisp:true,logoStraight:true,logoPos:'both',logoHidden:false,clean:true,tele:true,logoGlow:.35,logoBack:.55,cycle:false,lyStyle:'karaoke',lyZ:1,lyPos:'side',lyClean:true,autoSync:true,lyV:2,snd:{preset:'Natyral',eq:[0,0,0,0,0,0,0,0,0,0],bass:0,clar:0,warm:0,rev:0,width:1,loud:false,lim:true,vol:1,rate:1,fade:2,one:false,off:false},fx:{lasers:true,stars:true,grid:true,glitch:true,shell:true,hud:true,dust:true,shake:true}};
+const DEF={name:'KEBBEK',c1:'#2fe0ff',c2:'#5a7bff',logo:'default',logoSize:1,bloom:.6,bloomV:2,sens:1,removeBg:true,crisp:true,logoStraight:true,logoPos:'both',logoHidden:false,clean:true,tele:true,logoGlow:.35,logoBack:.55,cycle:false,lyStyle:'karaoke',lyZ:1,lyPos:'side',lyClean:true,autoSync:true,lyV:2,snd:{preset:'Natyral',eq:[0,0,0,0,0,0,0,0,0,0],bass:0,clar:0,warm:0,rev:0,width:1,loud:false,lim:true,vol:1,rate:1,fade:2,one:false,off:false},fx:{lasers:true,stars:true,grid:true,glitch:true,shell:true,hud:true,dust:true,shake:true}};
 let S=JSON.parse(JSON.stringify(DEF));
-try{const raw=localStorage.getItem('kebbek-zeri-cfg');if(raw){const o=JSON.parse(raw);S=Object.assign(S,o);S.fx=Object.assign({},DEF.fx,o.fx||{});S.snd=Object.assign({},DEF.snd,o.snd||{});if((o.lyV||0)<2){S.lyPos='side';S.lyV=2}if(!Array.isArray(S.snd.eq)||S.snd.eq.length!==10)S.snd.eq=DEF.snd.eq.slice()}}catch(e){}
+try{const raw=localStorage.getItem('kebbek-zeri-cfg');if(raw){const o=JSON.parse(raw);S=Object.assign(S,o);S.fx=Object.assign({},DEF.fx,o.fx||{});S.snd=Object.assign({},DEF.snd,o.snd||{});if((o.bloomV||0)<2){S.bloom=Math.min(S.bloom,.6);S.bloomV=2}if((o.lyV||0)<2){S.lyPos='side';S.lyV=2}if(!Array.isArray(S.snd.eq)||S.snd.eq.length!==10)S.snd.eq=DEF.snd.eq.slice()}}catch(e){}
 const saveS=()=>{try{localStorage.setItem('kebbek-zeri-cfg',JSON.stringify(S))}catch(e){}};
 const hexN=h=>parseInt(h.slice(1),16),hx=n=>'#'+n.toString(16).padStart(6,'0');
 const PRESETS=[['Reaktor','#2fe0ff','#5a7bff'],['Neon Tokio','#ff2e88','#2ee6ff'],['Plazma','#ff3df2','#7a3dff'],['Supernova','#ffd23d','#ff3d6e'],['Matrica','#3dff7a','#00a86b'],
@@ -1346,7 +1346,7 @@ const tCur=$('tCur'),tDur=$('tDur');const spec=$('spec'),sctx=spec.getContext('2
 let sb=0,sm=0,sh=0,avgB=.2,cool=0,kickEnv=0,glitch=0,last=performance.now(),t0=last,bpm=0;const kicks=[];
 const ca=new THREE.Color(),cb=new THREE.Color(),cc=new THREE.Color();
 function band(a,b){let s=0;for(let i=a;i<b;i++)s+=data[i];return s/((b-a)*255)}
-function onKick(strength){spawnWave(1+strength);if(S.fx.lasers){spawnLaser();spawnLaser()}kickEnv=1;glitch=reduce||!S.fx.glitch?0:Math.min(1,strength*2.5);
+function onKick(strength){spawnWave(1+strength);if(S.fx.lasers&&strength>.35)spawnLaser();kickEnv=1;glitch=reduce||!S.fx.glitch?0:Math.min(1,strength*2.5);
 }
 // tempo: onset envelope + autocorrelation (independent of frame rate)
 const envT=[],envV=[];let tempoAt=0;
@@ -1360,7 +1360,7 @@ function tempoTick(now,v,live){if(!live){envT.length=envV.length=0;return}envT.p
   for(let L=lo;L<=hi;L++){const sc=rr[L]+.5*(2*L<N?r(2*L):0)*(L<=hi/2+1?1:.6);if(sc>best){best=sc;bl=L}}
   if(best/e0<.08)return;const y0=rr[bl-1]||0,y1=rr[bl],y2=rr[bl+1]||0,den=y0-2*y1+y2,off=den?.5*(y0-y2)/den:0;
   let nb=60*R/(bl+Math.max(-.5,Math.min(.5,off)));while(nb<75)nb*=2;while(nb>185)nb/=2;bpm=bpm&&Math.abs(nb-bpm)<5?bpm+(nb-bpm)*.35:nb}
-let hudTick=0;const brandLogoEl=document.getElementById('brandLogo');const prevLow=new Float32Array(14);let fluxM=0,fluxV=0;
+let hudTick=0,expo=.9;const brandLogoEl=document.getElementById('brandLogo');const prevLow=new Float32Array(14);let fluxM=0,fluxV=0;
 
 function frame(now){
   const dt=Math.min(.05,(now-last)/1000);last=now;const t=(now-t0)/1000;
@@ -1382,12 +1382,12 @@ function frame(now){
   logoBack.visible=logo.visible&&S.logoBack>0.01;logoBack.material.opacity=S.logoBack*.9;logoBack.position.z=logo.position.z-.03;logoBack.scale.setScalar(ls*Math.max(logoAsp[0],logoAsp[1]));
   dotGlow.position.set(DOT.x*ls,DOT.y*ls,logo.position.z+.05);
   const dg=.25+sb*1.1+kickEnv*.8;dotGlow.scale.set(dg,dg,1);dotGlow.material.opacity=(.55+sb*.45)*(.2+.8*S.logoGlow);
-  rimA.intensity=2+sh*6;rimB.intensity=2+sm*6;
+  rimA.intensity=1.6+sh*2.4;rimB.intensity=1.6+sm*2.4;
 
   // leds
   ca.copy(colA);cb.copy(colB);
   for(let i=0;i<NL;i++){const idx=Math.floor(2+(Math.abs(i/NL*2-1))*180);let v=live?data[idx]/255:(.2+.2*Math.sin(t*3-i*.35));v=v*v;
-    cc.copy(cb).lerp(ca,v).multiplyScalar(.06+v*2.4);ledCol[i*3]=cc.r;ledCol[i*3+1]=cc.g;ledCol[i*3+2]=cc.b}
+    cc.copy(cb).lerp(ca,v).multiplyScalar(.05+v*1.15);ledCol[i*3]=cc.r;ledCol[i*3+1]=cc.g;ledCol[i*3+2]=cc.b}
   leds.instanceColor.needsUpdate=true;
 
   // oscilloscope
@@ -1402,13 +1402,13 @@ function frame(now){
     peakH[i]=Math.max(hh,peakH[i]-dt*.9);
     dummy.position.set(Math.cos(a)*3.45,Math.sin(a)*3.45,0);dummy.rotation.set(0,0,a-Math.PI/2);dummy.scale.set(1,hh,1);dummy.updateMatrix();bars.setMatrixAt(i,dummy.matrix);
     dummy.position.set(Math.cos(a)*(3.5+peakH[i]),Math.sin(a)*(3.5+peakH[i]),0);dummy.scale.set(1,1,1);dummy.updateMatrix();caps.setMatrixAt(i,dummy.matrix);
-    cc.copy(cb).lerp(ca,Math.min(1,barH[i]*1.4)).multiplyScalar(.5+barH[i]*1.8);barCol[i*3]=cc.r;barCol[i*3+1]=cc.g;barCol[i*3+2]=cc.b}
+    cc.copy(cb).lerp(ca,Math.min(1,barH[i]*1.4)).multiplyScalar(.32+barH[i]*.85);barCol[i*3]=cc.r;barCol[i*3+1]=cc.g;barCol[i*3+2]=cc.b}
   bars.instanceMatrix.needsUpdate=true;bars.instanceColor.needsUpdate=true;caps.instanceMatrix.needsUpdate=true;
-  caps.material.color.copy(colA).multiplyScalar(1.6);
+  caps.material.color.copy(colA).multiplyScalar(1.05);
 
   // hud
   const spd=dt*K;arc1.rotation.z+=spd*(.15+sm*1.5);arc2.rotation.z-=spd*(.08+sh*.8);arc3.rotation.z+=spd*(.05+sb*2.2);arc4.rotation.z-=spd*.02;ticks.rotation.z-=spd*.03;
-  hudMats.forEach((mm,i)=>mm.opacity=[.5,.4,.3,.15][i]+kickEnv*.35);
+  hudMats.forEach((mm,i)=>mm.opacity=[.42,.32,.24,.12][i]+kickEnv*.1);
   shell.rotation.y+=spd*.04;shell.rotation.x+=spd*.02;shell.scale.setScalar(1+sb*.06*K);shellM.opacity=.04+sh*.18;
 
   // dust
@@ -1418,12 +1418,12 @@ function frame(now){
   // warp
   const ws=(6+sb*90+kickEnv*40)*dt*K;
   for(let i=0;i<NS;i++){sp[i*3+2]+=ws;if(sp[i*3+2]>baseZ+2){sp[i*3+2]=-80}}
-  sg.attributes.position.needsUpdate=true;sMat.size=.1+sb*.15;
+  sg.attributes.position.needsUpdate=true;sMat.size=.09+sb*.05;
   grid.position.z=((t*(2+sb*14)*K)%2);
 
   // waves + lasers
-  waves.forEach(w=>{const u=w.userData;if(u.t<1){u.t+=dt*1.4;const s=2.3+u.t*7*(u.s||1);w.scale.set(s,s,1);w.material.opacity=(1-u.t)*.7}else w.material.opacity=0});
-  lasers.forEach(l=>{const u=l.userData;if(u.t<1){u.t+=dt*2.6;l.material.opacity=(1-u.t)**2*.9}else l.material.opacity=0});
+  waves.forEach(w=>{const u=w.userData;if(u.t<1){u.t+=dt*1.4;const s=2.3+u.t*7*(u.s||1);w.scale.set(s,s,1);w.material.opacity=(1-u.t)*(1-u.t)*.32}else w.material.opacity=0});
+  lasers.forEach(l=>{const u=l.userData;if(u.t<1){u.t+=dt*2.6;l.material.opacity=(1-u.t)**2*.3}else l.material.opacity=0});
 
   // camera
   yaw+=(ty+(reduce?0:Math.sin(t*.15)*.28)-yaw)*.06;pitch+=(tp+(reduce?0:Math.sin(t*.11)*.14)-pitch)*.06;
@@ -1439,7 +1439,7 @@ function frame(now){
     blMat.uniforms.t.value=A.texture;blMat.uniforms.d.value.set(1/A.width,0);pass(blMat,B);
     blMat.uniforms.t.value=B.texture;blMat.uniforms.d.value.set(0,1/A.height);pass(blMat,A)}
   const cu=coMat.uniforms;cu.b0.value=lv[0][0].texture;cu.b1.value=lv[1][0].texture;cu.b2.value=lv[2][0].texture;cu.b3.value=lv[3][0].texture;
-  cu.str.value=(.75+sb*1.3+kickEnv*.5)*S.bloom;cu.ab.value=.0015+sb*.006*K+kickEnv*.004*K;cu.gl.value=glitch;cu.T.value=t;cu.scan.value=S.clean?0:.04;cu.grain.value=S.clean?0:.03;if(S.clean){cu.gl.value=0;cu.ab.value=.0008+sb*.0015*K}
+  expo+=((.92-sb*.22-kickEnv*.06)-expo)*.08;cu.ex.value=expo;cu.str.value=(.5+sb*.38+kickEnv*.12)*S.bloom;cu.ab.value=.0015+sb*.006*K+kickEnv*.004*K;cu.gl.value=glitch;cu.T.value=t;cu.scan.value=S.clean?0:.04;cu.grain.value=S.clean?0:.03;if(S.clean){cu.gl.value=0;cu.ab.value=.0008+sb*.0015*K}
   pass(coMat,null);
   if(S.crisp&&logo.visible){const bg=scene.background,fg=scene.fog;scene.background=null;scene.fog=null;renderer.autoClear=false;cam.layers.set(1);
     renderer.setRenderTarget(null);renderer.clearDepth();renderer.render(scene,cam);cam.layers.set(0);renderer.autoClear=true;scene.background=bg;scene.fog=fg}
