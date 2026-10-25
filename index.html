@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<meta name="description" content="KEBBEK Zëri: player muzike me reaktor zëri 3D, titra karaoke dhe ekualizues.">
 <meta name="theme-color" content="#05060a">
+<meta name="description" content="KEBBEK Zëri: player muzike me reaktor zëri 3D, titra karaoke dhe ekualizues.">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -268,6 +268,8 @@ h1{font-family:var(--display);font-weight:700;font-size:clamp(18px,3.2vw,26px);l
       <label class="chk"><input type="checkbox" id="sBg" checked> Hiq sfondin automatikisht kur ngarkoj</label>
       <label class="rng"><span>Madhësia</span><input type="range" id="sLogo" min="0.5" max="1.4" step="0.05"><b id="vLogo"></b></label>
       <label class="chk"><input type="checkbox" id="sCrisp"> Logo e qartë, mbi shkëlqimin e skenës</label>
+      <label class="chk"><input type="checkbox" id="sStraight"> Logo gjithmonë drejt, në qendër</label>
+      <p class="note">Ndërroje shpejt: prek dy herë logon në ekran dhe zgjidh një foto tjetër.</p>
       <label class="rng"><span>Shkëlqimi i logos</span><input type="range" id="sLogoGlow" min="0" max="1" step="0.05"><b id="vLogoGlow"></b></label>
       <label class="rng"><span>Sfondi pas logos</span><input type="range" id="sLogoBack" min="0" max="1" step="0.05"><b id="vLogoBack"></b></label>
     </div>
@@ -727,7 +729,7 @@ addEventListener('drop',e=>{e.preventDefault();dragN=0;dropEl.hidden=true;addFil
 document.getElementById('seek').addEventListener('click',e=>{if(!audioEl||!audioEl.duration)return;const r=e.currentTarget.getBoundingClientRect();audioEl.currentTime=(e.clientX-r.left)/r.width*audioEl.duration});
 
 // ---------- settings (saved on this device)
-const DEF={name:'KEBBEK',c1:'#2fe0ff',c2:'#5a7bff',logo:'default',logoSize:1,bloom:.8,sens:1,removeBg:true,crisp:true,logoGlow:.35,logoBack:.55,cycle:false,lyStyle:'karaoke',lyZ:1,snd:{preset:'Natyral',eq:[0,0,0,0,0,0,0,0,0,0],bass:0,clar:0,warm:0,rev:0,width:1,loud:false,lim:true,vol:1,rate:1,fade:2,one:false,off:false},fx:{lasers:true,stars:true,grid:true,glitch:true,shell:true,hud:true,dust:true,shake:true}};
+const DEF={name:'KEBBEK',c1:'#2fe0ff',c2:'#5a7bff',logo:'default',logoSize:1,bloom:.8,sens:1,removeBg:true,crisp:true,logoStraight:true,logoGlow:.35,logoBack:.55,cycle:false,lyStyle:'karaoke',lyZ:1,snd:{preset:'Natyral',eq:[0,0,0,0,0,0,0,0,0,0],bass:0,clar:0,warm:0,rev:0,width:1,loud:false,lim:true,vol:1,rate:1,fade:2,one:false,off:false},fx:{lasers:true,stars:true,grid:true,glitch:true,shell:true,hud:true,dust:true,shake:true}};
 let S=JSON.parse(JSON.stringify(DEF));
 try{const raw=localStorage.getItem('kebbek-zeri-cfg');if(raw){const o=JSON.parse(raw);S=Object.assign(S,o);S.fx=Object.assign({},DEF.fx,o.fx||{});S.snd=Object.assign({},DEF.snd,o.snd||{});if(!Array.isArray(S.snd.eq)||S.snd.eq.length!==10)S.snd.eq=DEF.snd.eq.slice()}}catch(e){}
 const saveS=()=>{try{localStorage.setItem('kebbek-zeri-cfg',JSON.stringify(S))}catch(e){}};
@@ -790,7 +792,8 @@ fxBtns.forEach(b=>b.addEventListener('click',()=>{S.fx[b.dataset.fx]=!S.fx[b.dat
 function slider(id,key,fmt){const el=document.getElementById(id),v=document.getElementById('v'+id.slice(1));const show=()=>{el.value=S[key];v.textContent=fmt(S[key])};
   el.addEventListener('input',()=>{S[key]=+el.value;show();saveS()});return show}
 const sCrisp=document.getElementById('sCrisp');sCrisp.addEventListener('change',()=>{S.crisp=sCrisp.checked;saveS()});
-const showers=[()=>{sCrisp.checked=!!S.crisp;markBloom()},slider('sLogoGlow','logoGlow',x=>Math.round(x*100)+'%'),slider('sLogoBack','logoBack',x=>Math.round(x*100)+'%'),slider('sBloom','bloom',x=>{markBloom();return Math.round(x*100)+'%'}),slider('sSens','sens',x=>x.toFixed(2)+'×'),slider('sLogo','logoSize',x=>Math.round(x*100)+'%')];
+const sStraight=document.getElementById('sStraight');sStraight.addEventListener('change',()=>{S.logoStraight=sStraight.checked;saveS()});
+const showers=[()=>{sCrisp.checked=!!S.crisp;sStraight.checked=!!S.logoStraight;markBloom()},slider('sLogoGlow','logoGlow',x=>Math.round(x*100)+'%'),slider('sLogoBack','logoBack',x=>Math.round(x*100)+'%'),slider('sBloom','bloom',x=>{markBloom();return Math.round(x*100)+'%'}),slider('sSens','sens',x=>x.toFixed(2)+'×'),slider('sLogo','logoSize',x=>Math.round(x*100)+'%')];
 // logo
 const DEF_TEX=logoU.uMap.value;let customTex=null,logoAsp=[1,1];
 const logoDef=document.getElementById('logoDef'),logoNone=document.getElementById('logoNone'),logoLbl=document.getElementById('logoLbl'),sBg=document.getElementById('sBg');
@@ -1106,11 +1109,15 @@ renderLy();
 let yaw=0,pitch=0,ty=0,tp=0,drag=null;
 canvas.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,ty,tp};canvas.setPointerCapture(e.pointerId)});
 canvas.addEventListener('pointermove',e=>{if(!drag)return;ty=drag.ty+(e.clientX-drag.x)*.005;tp=Math.max(-.8,Math.min(.8,drag.tp+(e.clientY-drag.y)*.004))});
-canvas.addEventListener('pointerup',()=>drag=null);canvas.addEventListener('pointercancel',()=>drag=null);
+let tapT=0,tapX=0,tapY=0;
+canvas.addEventListener('pointerup',e=>{const moved=drag&&Math.hypot(e.clientX-drag.x,e.clientY-drag.y)>8;drag=null;if(moved)return;
+  const r=canvas.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,near=Math.hypot(e.clientX-cx,e.clientY-cy)<Math.min(r.width,r.height)*.22;
+  const n=Date.now();if(near&&n-tapT<450&&Math.hypot(e.clientX-tapX,e.clientY-tapY)<40){tapT=0;document.getElementById('logoFile').click()}else{tapT=n;tapX=e.clientX;tapY=e.clientY}});
+canvas.addEventListener('pointercancel',()=>drag=null);
 
 let baseZ=12,baseY=0;
 function resize(){const w=innerWidth,h=innerHeight;renderer.setSize(w,h,false);cam.aspect=w/h;
-  baseZ=Math.max(12.5,4.7/(Math.tan(21*Math.PI/180)*cam.aspect));scene.fog.density=.36/baseZ;baseY=cam.aspect<1?1.5:.45;cam.updateProjectionMatrix();
+  baseZ=Math.max(12.5,4.7/(Math.tan(21*Math.PI/180)*cam.aspect));scene.fog.density=.36/baseZ;baseY=0;cam.updateProjectionMatrix();
   const W=Math.floor(w*PR),H=Math.floor(h*PR);rtMain.setSize(W,H);
   lv.forEach((p,i)=>{const s=2**(i+1);p[0].setSize(Math.max(1,W/s|0),Math.max(1,H/s|0));p[1].setSize(Math.max(1,W/s|0),Math.max(1,H/s|0))});
   coMat.uniforms.res.value.set(W,H);}
@@ -1193,7 +1200,7 @@ function frame(now){
 
   // camera
   yaw+=(ty+(reduce?0:Math.sin(t*.15)*.28)-yaw)*.06;pitch+=(tp+(reduce?0:Math.sin(t*.11)*.14)-pitch)*.06;
-  rig.rotation.set(pitch,yaw,0);
+  rig.rotation.set(pitch,yaw,0);if(S.logoStraight){rig.updateMatrixWorld();logo.quaternion.copy(rig.quaternion).invert();logoBack.quaternion.copy(logo.quaternion)}else{logo.quaternion.identity();logoBack.quaternion.identity()}
   const shake=reduce||!S.fx.shake?0:sb*sb*.05;rig.position.set((Math.random()-.5)*shake,baseY+(Math.random()-.5)*shake,0);
   cam.position.set(0,0,baseZ-kickEnv*.9*K*(S.fx.shake?1:0));cam.lookAt(0,0,0);
 
