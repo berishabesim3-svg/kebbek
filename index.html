@@ -96,7 +96,7 @@ h1{font-family:var(--display);font-weight:700;font-size:clamp(18px,3.2vw,26px);l
 .fld>span,.rng>span{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
 .fld input[type=text]{font:inherit;font-size:15px;color:var(--ink);background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:8px;padding:10px 12px;outline:none}
 .fld input[type=text]:focus{border-color:var(--accent)}
-#logoFile{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+#logoFile{position:fixed;left:0;top:0;width:1px;height:1px;opacity:0;pointer-events:none}
 .chip.on{color:#03141a;background:var(--accent);border-color:var(--accent)}
 .chk{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted)}
 .chk input{accent-color:var(--accent);width:16px;height:16px}
@@ -268,6 +268,10 @@ body.notele .tele{display:none}
 @media (prefers-reduced-motion:reduce){.lyc-scroll{scroll-behavior:auto}.lyc-scroll p{transition:none}}
 .thm{display:flex;gap:6px;flex-wrap:wrap}
 #thmFile{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.lmenu{position:fixed;z-index:30;display:flex;flex-direction:column;min-width:190px;padding:6px;border:.5px solid var(--hair,rgba(170,215,240,.18));border-radius:12px;background:rgba(5,8,14,.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 20px 50px rgba(0,0,0,.6)}
+.lmenu button{font:inherit;font-size:13.5px;text-align:left;color:var(--ink);background:none;border:0;border-radius:8px;padding:10px 12px;cursor:pointer}
+.lmenu button:hover,.lmenu button:focus-visible{background:color-mix(in srgb,var(--accent) 14%,transparent);outline:none}
+.lmenu .dang{color:#ff9a9a}
 .empty{margin:0;font-size:12.5px;color:var(--muted);line-height:1.55}
 
 .sw{width:20px;height:20px;border-radius:50%;border:2px solid transparent;cursor:pointer;padding:0}
@@ -357,7 +361,6 @@ body.notele .tele{display:none}
     <label class="fld"><span>Emri në ekran</span><input id="sName" type="text" maxlength="24" autocomplete="off"></label>
     <div class="fld"><span>Logoja në qendër</span>
       <div class="lopts">
-        <input type="file" id="logoFile" accept="image/png,image/jpeg,image/webp,image/*">
         <label for="logoFile" class="chip on" tabindex="0" id="logoLbl">Ngarko logon tënde</label>
         <button class="chip" id="logoDef" type="button" aria-pressed="true">Logo KEBBEK</button>
         <button class="chip" id="logoNone" type="button" aria-pressed="false">Pa logo</button>
@@ -369,7 +372,7 @@ body.notele .tele{display:none}
       <label class="chk"><input type="checkbox" id="sStraight"> Logo gjithmonë drejt, në qendër</label>
       <label class="chk"><input type="checkbox" id="sClean"> Pamje e pastër (pa kokërr filmi, vija dhe kënde)</label>
       <label class="chk"><input type="checkbox" id="sTele"> Shfaq panelin e analizës (BPM, nivelet)</label>
-      <p class="note">Ndërroje shpejt: prek dy herë logon në ekran dhe zgjidh një foto tjetër.</p>
+      <p class="note">Prek dy herë logon në ekran: e zëvendëson me një tjetër, kthen logon KEBBEK ose e heq. Butoni i logos te shiriti e fsheh ose e shfaq me një klik.</p>
       <label class="rng"><span>Shkëlqimi i logos</span><input type="range" id="sLogoGlow" min="0" max="1" step="0.05"><b id="vLogoGlow"></b></label>
       <label class="rng"><span>Sfondi pas logos</span><input type="range" id="sLogoBack" min="0" max="1" step="0.05"><b id="vLogoBack"></b></label>
     </div>
@@ -445,6 +448,7 @@ body.notele .tele{display:none}
   <div class="lhead"><span class="ltitle">Titrat</span><button class="chip" id="lyShow" type="button" aria-pressed="true">Shfaq në ekran</button></div>
   <div class="cfgBody">
     <div class="fld"><span>Stili i titrave</span>
+      <label class="chk"><input type="checkbox" id="sLyClean" checked> Vetëm fjalët e këngës (pa [Refreni], (intro), na-na-na, oh-oh, bla-bla)</label>
       <div class="lopts" id="lyPos"><button class="chip" type="button" data-lp="side">Anash (kolonë)</button><button class="chip" type="button" data-lp="center">Në qendër</button><button class="chip" type="button" data-lp="both">Të dyja</button></div>
       <div class="lopts" id="lyStyles"><button class="chip" type="button" data-ls="karaoke">Karaoke</button><button class="chip" type="button" data-ls="neon">Neon</button><button class="chip" type="button" data-ls="kin">Kinetike</button><button class="chip" type="button" data-ls="wave">Valë</button></div>
       <label class="rng"><span>Madhësia</span><input type="range" id="sLyZ" min="0.6" max="1.8" step="0.05"><b id="vLyZ"></b></label>
@@ -502,7 +506,13 @@ body.notele .tele{display:none}
     </div>
   </div>
 </div>
+<input type="file" id="logoFile" accept="image/png,image/jpeg,image/webp,image/*" tabindex="-1" aria-hidden="true">
 <div class="toast" id="toast" hidden></div>
+<div class="lmenu" id="lmenu" hidden role="menu" aria-label="Logoja">
+  <button type="button" role="menuitem" id="lmReplace">Zëvendëso logon</button>
+  <button type="button" role="menuitem" id="lmDefault">Logo KEBBEK</button>
+  <button type="button" role="menuitem" id="lmRemove" class="dang">Hiqe logon</button>
+</div>
 
 <div class="tapBox" id="tapBox" hidden>
   <p class="tapHint">Prek butonin kur fillon ky varg</p>
@@ -859,7 +869,7 @@ addEventListener('drop',e=>{e.preventDefault();dragN=0;dropEl.hidden=true;addFil
 document.getElementById('seek').addEventListener('click',e=>{if(!audioEl||!audioEl.duration)return;const r=e.currentTarget.getBoundingClientRect();audioEl.currentTime=(e.clientX-r.left)/r.width*audioEl.duration});
 
 // ---------- settings (saved on this device)
-const DEF={name:'KEBBEK',c1:'#2fe0ff',c2:'#5a7bff',logo:'default',logoSize:1,bloom:.8,sens:1,removeBg:true,crisp:true,logoStraight:true,logoPos:'both',logoHidden:false,clean:true,tele:true,logoGlow:.35,logoBack:.55,cycle:false,lyStyle:'karaoke',lyZ:1,lyPos:'both',snd:{preset:'Natyral',eq:[0,0,0,0,0,0,0,0,0,0],bass:0,clar:0,warm:0,rev:0,width:1,loud:false,lim:true,vol:1,rate:1,fade:2,one:false,off:false},fx:{lasers:true,stars:true,grid:true,glitch:true,shell:true,hud:true,dust:true,shake:true}};
+const DEF={name:'KEBBEK',c1:'#2fe0ff',c2:'#5a7bff',logo:'default',logoSize:1,bloom:.8,sens:1,removeBg:true,crisp:true,logoStraight:true,logoPos:'both',logoHidden:false,clean:true,tele:true,logoGlow:.35,logoBack:.55,cycle:false,lyStyle:'karaoke',lyZ:1,lyPos:'both',lyClean:true,snd:{preset:'Natyral',eq:[0,0,0,0,0,0,0,0,0,0],bass:0,clar:0,warm:0,rev:0,width:1,loud:false,lim:true,vol:1,rate:1,fade:2,one:false,off:false},fx:{lasers:true,stars:true,grid:true,glitch:true,shell:true,hud:true,dust:true,shake:true}};
 let S=JSON.parse(JSON.stringify(DEF));
 try{const raw=localStorage.getItem('kebbek-zeri-cfg');if(raw){const o=JSON.parse(raw);S=Object.assign(S,o);S.fx=Object.assign({},DEF.fx,o.fx||{});S.snd=Object.assign({},DEF.snd,o.snd||{});if(!Array.isArray(S.snd.eq)||S.snd.eq.length!==10)S.snd.eq=DEF.snd.eq.slice()}}catch(e){}
 const saveS=()=>{try{localStorage.setItem('kebbek-zeri-cfg',JSON.stringify(S))}catch(e){}};
@@ -1110,7 +1120,29 @@ const curTrack=()=>cur>=0?lib[cur]:null;
 const lines=()=>{const t=curTrack();return t&&Array.isArray(t.lyrics)?t.lyrics:[]};
 const synced=L=>L.length&&L.every(l=>l.t>=0);
 function fmtT(x){if(!(x>=0))return'--:--';const m=Math.floor(x/60),s=x-m*60;return m+':'+(s<10?'0':'')+s.toFixed(1)}
-function normalize(L){L=L.filter(l=>l.text&&l.text.trim());if(!synced(L))return L;L.sort((a,b)=>a.t-b.t);
+// keep only the sung words: drop section tags, stage directions, vocalisations and filler
+const LY_DESC=/\b(intro|outro|interlude|instrumental|solo|beat|music|muzik[eë]?|chorus|pre-?chorus|post-?chorus|verse|strof[aë]|refren(i)?|bridge|hook|drop|break(down)?|build(-?up)?|fade( out| in)?|applause|laugh(s|ing)?|whistl\w*|humm\w*|guitar|piano|drums?|bass|synth|vocal(s|izing)?|spoken|ad-?libs?|repeat|x\d+|\d+x|end|fund(i)?|melodi\w*|ritëm|ritmi)\b/i;
+const LY_SPAM=/(thank(s| you) for (watching|listening)|subscribe|subtitles? by|titrat nga|amara\.org|translated by|www\.|https?:)/i;
+const LY_STRONG=/^(o{2,}h*|a{2,}h*|u{2,}h*|m{2,}h*m*|h+m{2,}|mh+m+|hm+|uh-?huh|bla(bla)*|w+h*o{2,}a*)$/i;
+const LY_WEAK=/^(na|la|da|ba|ra|ta|du|doo|dum|oh+|ah+|uh+|eh+|hey+|yeah+|yeh|ye+|whoa+|woah|wo+|ay+e*|yo+|sh+|huh)$/i;
+const LY_CHAIN=/^(na|la|da|ba|ra|ta|du|doo|bla|lo|le|di|do|ooh|oh|ah)(-?\1)+$/i;
+const vtok=w=>w.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z-]/g,'');
+function vocKind(w){const n=vtok(w);if(!n)return 2;if(LY_STRONG.test(n)||LY_CHAIN.test(n))return 2;const parts=n.split('-').filter(Boolean);
+  if(parts.length>1&&parts.every(p=>LY_STRONG.test(p)||LY_WEAK.test(p)||LY_CHAIN.test(p)))return 2;return LY_WEAK.test(n)?1:0}
+function isVocTok(w){return vocKind(w)>0}
+function cleanLyricText(x){let t=String(x||'').replace(/[♪♫♬♩🎵🎶*_~#]/g,' ');
+  t=t.replace(/\[[^\]]*\]/g,' ').replace(/\{[^}]*\}/g,' ');
+  t=t.replace(/\(([^)]*)\)/g,(m,inner)=>{const w=inner.trim().split(/\s+/).filter(Boolean);return !w.length||LY_DESC.test(inner)||w.every(isVocTok)?' ':' '+inner+' '});
+  t=t.replace(/^\s*(verse|chorus|pre-?chorus|bridge|hook|intro|outro|refren(i)?|strofa)\s*\d*\s*[:.\-–]\s*/i,'');
+  if(LY_SPAM.test(t))return'';
+  const w=t.split(/\s+/).filter(Boolean);if(!w.length||w.every(isVocTok))return'';
+  const out=[];for(let i=0;i<w.length;){const k=vocKind(w[i]);if(!k){out.push(w[i++]);continue}let j=i;while(j<w.length&&vocKind(w[j]))j++;const run=w.slice(i,j);
+    if(run.length>=2||run.some(x=>vocKind(x)===2)){if(run.length===1&&i===0&&/^(oh|ah|hey|yeah)$/i.test(vtok(run[0])))out.push(run[0])}else out.push(...run);i=j}
+  t=out.join(' ').replace(/\s+([,.!?;:])/g,'$1').replace(/^[\s,.;:–-]+|[\s,;:–-]+$/g,'').trim();
+  if(!t||(t.split(/\s+/).length<=2&&LY_DESC.test(t)&&!/[a-zë]{4,}\s+[a-zë]{4,}/i.test(t.replace(LY_DESC,''))))return'';
+  return t}
+function cleanLines(L){if(S.lyClean===false)return L;const o=[];L.forEach(l=>{const t=cleanLyricText(l.text);if(t)o.push(Object.assign({},l,{text:t}))});return o}
+function normalize(L){L=cleanLines(L.filter(l=>l.text&&l.text.trim()));if(!synced(L))return L;L.sort((a,b)=>a.t-b.t);
   for(let i=0;i<L.length;i++){const nx=L[i+1];if(!(L[i].e>L[i].t))L[i].e=nx?nx.t:L[i].t+4;if(nx&&L[i].e>nx.t)L[i].e=nx.t;if(L[i].e-L[i].t>9&&(!nx||nx.t-L[i].t>9))L[i].e=L[i].t+Math.max(4,Math.min(9,L[i].text.length*.18))}return L}
 let saveTimer=0;
 function setLines(L,immediate){const t=curTrack();if(!t)return;t.lyrics=normalize(L.map(l=>({t:l.t,e:l.e,text:String(l.text).trim()})));lyIdx=-2;
@@ -1231,11 +1263,12 @@ lyAutoBtn.addEventListener('click',async()=>{const t=curTrack();if(!t||lyBusy)re
   }finally{clearInterval(tick);lyBusy=false;lyBar.hidden=true;lyBar.classList.remove('busy');renderLy()}});
 // styles
 const lyStylesEl=$l('lyStyles');
-function syncLyUI(){document.querySelectorAll('#lyPos .chip').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.lp===S.lyPos)));lycKey='';lyStylesEl.querySelectorAll('.chip').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.ls===S.lyStyle)));$l('sLyZ').value=S.lyZ;$l('vLyZ').textContent=Math.round(S.lyZ*100)+'%';
+function syncLyUI(){$l('sLyClean').checked=S.lyClean!==false;document.querySelectorAll('#lyPos .chip').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.lp===S.lyPos)));lycKey='';lyStylesEl.querySelectorAll('.chip').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.ls===S.lyStyle)));$l('sLyZ').value=S.lyZ;$l('vLyZ').textContent=Math.round(S.lyZ*100)+'%';
   lyEl.dataset.s=S.lyStyle;lyEl.style.setProperty('--lyz',S.lyZ);lyIdx=-2}
 lyStylesEl.querySelectorAll('.chip').forEach(b=>b.addEventListener('click',()=>{S.lyStyle=b.dataset.ls;syncLyUI();saveS()}));
 $l('sLyZ').addEventListener('input',e=>{S.lyZ=+e.target.value;syncLyUI();saveS()});
 document.querySelectorAll('#lyPos .chip').forEach(b=>b.addEventListener('click',()=>{S.lyPos=b.dataset.lp;syncLyUI();saveS()}));
+$l('sLyClean').addEventListener('change',e=>{S.lyClean=e.target.checked;saveS();if(S.lyClean){let n=0;lib.forEach(t=>{if(Array.isArray(t.lyrics)&&t.lyrics.length){const b=t.lyrics.length;t.lyrics=normalize(t.lyrics);n+=b-t.lyrics.length;dbDo(st=>st.put(t))}});lyIdx=-2;lycKey='';renderLy();toast(n?`U hoqën ${n} rreshta që nuk ishin fjalë kënge`:'Titrat janë tashmë të pastra')}});
 // word layout of the active line
 let wEls=[],wT=[];
 function buildLine(c){lyCur.textContent='';wEls=[];wT=[];if(!c)return;const words=c.text.split(/\s+/).filter(Boolean);const tot=words.reduce((a,w)=>a+w.length+1,0)||1;
@@ -1273,9 +1306,20 @@ let yaw=0,pitch=0,ty=0,tp=0,drag=null;
 canvas.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,ty,tp};canvas.setPointerCapture(e.pointerId)});
 canvas.addEventListener('pointermove',e=>{if(!drag)return;ty=drag.ty+(e.clientX-drag.x)*.005;tp=Math.max(-.8,Math.min(.8,drag.tp+(e.clientY-drag.y)*.004))});
 let tapT=0,tapX=0,tapY=0;
+const lmenu=document.getElementById('lmenu');
+document.getElementById('brandLogo').addEventListener('dblclick',e=>openLogoMenu(e.clientX,e.clientY));
+function openLogoMenu(x,y){if(S.logoHidden){S.logoHidden=false;applyLogo();saveS();toast('Logoja u shfaq');return}if(logo&&!logo.visible&&!S.logoHidden){document.getElementById('logoFile').click();return}
+  lmenu.hidden=false;const w=lmenu.offsetWidth,h=lmenu.offsetHeight;lmenu.style.left=Math.min(Math.max(8,x-w/2),innerWidth-w-8)+'px';lmenu.style.top=Math.min(Math.max(8,y+12),innerHeight-h-8)+'px';
+  document.getElementById('lmDefault').hidden=S.logo==='default';document.getElementById('lmReplace').focus()}
+const closeLM=()=>{lmenu.hidden=true};
+document.getElementById('lmReplace').addEventListener('click',()=>{closeLM();document.getElementById('logoFile').click()});
+document.getElementById('lmDefault').addEventListener('click',()=>{closeLM();S.logo='default';S.logoHidden=false;applyLogo();saveS();toast('U rikthye logoja KEBBEK')});
+document.getElementById('lmRemove').addEventListener('click',()=>{closeLM();S.logoHidden=true;applyLogo();saveS();toast('Logoja u hoq · butoni i logos te shiriti e kthen')});
+addEventListener('pointerdown',e=>{if(!lmenu.hidden&&!e.target.closest('#lmenu'))closeLM()},true);
+addEventListener('keydown',e=>{if(e.key==='Escape')closeLM()});
 canvas.addEventListener('pointerup',e=>{const moved=drag&&Math.hypot(e.clientX-drag.x,e.clientY-drag.y)>8;drag=null;if(moved)return;
   const r=canvas.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,near=Math.hypot(e.clientX-cx,e.clientY-cy)<Math.min(r.width,r.height)*.22;
-  const n=Date.now();if(near&&n-tapT<450&&Math.hypot(e.clientX-tapX,e.clientY-tapY)<40){tapT=0;document.getElementById('logoFile').click()}else{tapT=n;tapX=e.clientX;tapY=e.clientY}});
+  const n=Date.now();if(near&&n-tapT<450&&Math.hypot(e.clientX-tapX,e.clientY-tapY)<40){tapT=0;openLogoMenu(e.clientX,e.clientY)}else{tapT=n;tapX=e.clientX;tapY=e.clientY}});
 canvas.addEventListener('pointercancel',()=>drag=null);
 
 let baseZ=12,baseY=0;
