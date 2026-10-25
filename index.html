@@ -88,7 +88,8 @@ h1{font-family:var(--display);font-weight:700;font-size:clamp(18px,3.2vw,26px);l
 #tracks .pick span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #tracks .del{background:none;border:0;color:var(--muted);font-size:18px;width:36px;height:36px;cursor:pointer;border-radius:8px}
 #tracks .del:hover{color:#ff8a8a}
-.ic.sm{width:38px;height:38px}.ic.sm svg{width:17px;height:17px}
+.ic.sm{width:38px;height:38px}
+#logoBtn[aria-pressed="false"]{color:var(--muted);opacity:.6}.ic.sm svg{width:17px;height:17px}
 .cfg{gap:12px}
 .cfgBody{overflow-y:auto;min-height:0;display:flex;flex-direction:column;gap:16px;-webkit-overflow-scrolling:touch;padding-right:2px}
 .fld{display:flex;flex-direction:column;gap:8px}
@@ -245,12 +246,34 @@ h1{font-family:var(--display);font-weight:700;font-size:clamp(18px,3.2vw,26px);l
 body.clean .hud{display:none}
 body.notele .tele{display:none}
 @media (max-width:520px){.tl-meters,#spec{display:none}.tl-bpm{border-right:0;padding-right:0}.tele{padding:8px 10px}.tl-bpm b{font-size:20px}}
+.brandrow{display:flex;align-items:center;gap:12px;margin-top:8px}
+.brandrow h1{margin:0}
+#brandLogo{width:44px;height:44px;object-fit:contain;transform-style:preserve-3d;will-change:transform,filter;filter:drop-shadow(0 0 6px color-mix(in srgb,var(--accent) 40%,transparent))}
+#brandLogo[hidden]{display:none}
+/* side lyrics column */
+.lycol{position:fixed;left:max(28px,env(safe-area-inset-left,0px));top:calc(118px + env(safe-area-inset-top,0px));bottom:calc(28px + env(safe-area-inset-bottom,0px));width:min(380px,30vw);display:flex;flex-direction:column;gap:10px;pointer-events:auto;
+  -webkit-mask-image:linear-gradient(180deg,transparent,#000 12%,#000 82%,transparent);mask-image:linear-gradient(180deg,transparent,#000 12%,#000 82%,transparent)}
+.lyc-head{display:flex;flex-direction:column;gap:3px;padding:0 0 8px 12px;border-left:1px solid var(--hair,rgba(170,215,240,.14))}
+.lyc-head span{font-family:var(--mono);font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:var(--muted)}
+.lyc-head b{font-weight:500;font-size:13px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lyc-scroll{flex:1;min-height:0;overflow-y:auto;scrollbar-width:none;padding:30vh 0 34vh 12px;border-left:1px solid var(--hair,rgba(170,215,240,.14));scroll-behavior:smooth}
+.lyc-scroll::-webkit-scrollbar{display:none}
+.lyc-scroll p{margin:0 0 14px;font-size:calc(17px*var(--lyz,1));line-height:1.32;font-weight:600;color:rgba(230,242,247,.28);cursor:pointer;transition:color .35s,transform .35s,filter .35s;transform-origin:left center;filter:blur(.4px)}
+.lyc-scroll p.past{color:rgba(230,242,247,.45);filter:none}
+.lyc-scroll p.on{color:var(--ink);transform:scale(1.06);filter:none;text-shadow:0 0 16px color-mix(in srgb,var(--accent) 55%,transparent)}
+.lyc-scroll p.on::before{content:"";display:inline-block;width:6px;height:6px;margin-right:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent);vertical-align:middle}
+.lyc-scroll p:hover{color:rgba(230,242,247,.7)}
+.lyc-scroll.plain p{color:rgba(230,242,247,.7);cursor:default;filter:none}
+@media (max-width:899px){.lycol{display:none!important}}
+@media (prefers-reduced-motion:reduce){.lyc-scroll{scroll-behavior:auto}.lyc-scroll p{transition:none}}
+.thm{display:flex;gap:6px;flex-wrap:wrap}
+#thmFile{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
 .empty{margin:0;font-size:12.5px;color:var(--muted);line-height:1.55}
 
 .sw{width:20px;height:20px;border-radius:50%;border:2px solid transparent;cursor:pointer;padding:0}
 .sw[aria-pressed="true"]{border-color:var(--ink)}
 .drop{position:fixed;inset:0;display:grid;place-items:center;font-family:var(--display);letter-spacing:.2em;font-size:14px;background:rgba(5,6,10,.72);border:2px dashed var(--accent);pointer-events:none}
-@media (max-width:520px){.ctrls .cc{gap:12px}.volrow b{display:none}.rail .row{gap:6px}.rail .btn{padding:9px 11px}.rail .track{order:9;flex-basis:100%;text-align:center}.ic.sm{width:36px;height:36px}}
+@media (max-width:520px){.ctrls .cc{gap:12px}.volrow b{display:none}.rail .row{gap:5px}.rail .btn{padding:8px 9px;font-size:12px}.rail .ic.sm{width:34px;height:34px}.rail .track{order:9;flex-basis:100%;text-align:center}.ic.sm{width:36px;height:36px}}
 /* hairline system: thin, deep lines everywhere */
 .rail,.list,.tapBox{border:.5px solid var(--hair,rgba(170,215,240,.14));background:linear-gradient(180deg,rgba(7,10,18,.82),rgba(2,4,9,.76));box-shadow:0 30px 70px rgba(0,0,0,.6),inset 0 .5px 0 rgba(255,255,255,.07)}
 .btn,.chip,.ic,.pltab,.pre,.fld select,.fld input[type=text],.plhead input,.pasteBox textarea,#lyLines .tm{border-width:.5px}
@@ -282,7 +305,7 @@ body.notele .tele{display:none}
 <div class="top">
   <div id="status" class="brandblk">
     <div class="eyebrow"><span class="dot"></span><span id="stTxt">Gati</span></div>
-    <h1 id="brand">KEBBEK</h1>
+    <div class="brandrow"><img id="brandLogo" alt="" width="44" height="44"><h1 id="brand">KEBBEK</h1></div>
   </div>
   <div class="tele" id="tele" aria-label="Analiza e zërit">
     <div class="tl-bpm"><b id="bpm">—</b><span>BPM</span></div>
@@ -329,6 +352,7 @@ body.notele .tele{display:none}
 
 <div class="list cfg" id="cfg" hidden>
   <div class="lhead"><span class="ltitle">Personalizo</span><button class="chip" id="cfgReset" type="button">Rikthe origjinalin</button></div>
+  <div class="thm"><button class="chip" id="thmExport" type="button">Ruaj temën si skedar</button><input type="file" id="thmFile" accept=".json,application/json"><label for="thmFile" class="chip" tabindex="0">Hap një temë</label></div>
   <div class="cfgBody">
     <label class="fld"><span>Emri në ekran</span><input id="sName" type="text" maxlength="24" autocomplete="off"></label>
     <div class="fld"><span>Logoja në qendër</span>
@@ -339,6 +363,7 @@ body.notele .tele{display:none}
         <button class="chip" id="logoNone" type="button" aria-pressed="false">Pa logo</button>
       </div>
       <label class="chk"><input type="checkbox" id="sBg" checked> Hiq sfondin automatikisht kur ngarkoj</label>
+      <div class="fld"><span>Pozicioni i logos</span><div class="lopts" id="logoPos"><button class="chip" type="button" data-p="center">Në qendër</button><button class="chip" type="button" data-p="corner">Lart majtas</button><button class="chip" type="button" data-p="both">Të dyja</button></div></div>
       <label class="rng"><span>Madhësia</span><input type="range" id="sLogo" min="0.5" max="1.4" step="0.05"><b id="vLogo"></b></label>
       <label class="chk"><input type="checkbox" id="sCrisp"> Logo e qartë, mbi shkëlqimin e skenës</label>
       <label class="chk"><input type="checkbox" id="sStraight"> Logo gjithmonë drejt, në qendër</label>
@@ -387,6 +412,7 @@ body.notele .tele{display:none}
     <label for="file" class="btn primary" tabindex="0" id="fileLbl">+ Shto këngë</label>
     <span class="track" id="track">Pa këngë · shtyp ▶ për demo</span>
     <button class="btn ghost" id="listBtn" type="button" aria-expanded="false">Lista <span id="count">0</span></button>
+    <button class="ic sm" id="logoBtn" type="button" aria-pressed="true" aria-label="Shfaq ose fshih logon" title="Fshih logon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M9 7.5v9M9 12l4.5-4.5M9 12l4.5 4.5M13 7.5h1.8a2.2 2.2 0 0 1 0 4.4H13h2.2a2.3 2.3 0 0 1 0 4.6H13" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     <button class="ic sm" id="sndBtn" type="button" aria-expanded="false" aria-label="Zëri dhe ekualizuesi"><svg viewBox="0 0 24 24"><path d="M5 3h2v6.2a3 3 0 0 1 0 5.6V21H5v-6.2a3 3 0 0 1 0-5.6zm6 0h2v2.2a3 3 0 0 1 0 5.6V21h-2V10.8a3 3 0 0 1 0-5.6zm6 0h2v10.2a3 3 0 0 1 0 5.6V21h-2v-2.2a3 3 0 0 1 0-5.6z"/></svg></button>
     <button class="ic sm" id="lyBtn" type="button" aria-expanded="false" aria-label="Titrat"><svg viewBox="0 0 24 24"><path d="M3 5h18v14H3zm2 2v10h14V7zm2 3h4v1.6H7zm0 3h7v1.6H7zm9 0h2v1.6h-2zm-3-3h5v1.6h-5z"/></svg></button>
     <button class="ic sm" id="cfgBtn" type="button" aria-expanded="false" aria-label="Personalizo"><svg viewBox="0 0 24 24"><path d="M19.4 13a7.5 7.5 0 0 0 0-2l2.1-1.6-2-3.5-2.5 1a7.6 7.6 0 0 0-1.7-1L15 3h-4l-.4 2.6a7.6 7.6 0 0 0-1.7 1l-2.5-1-2 3.5L6.6 11a7.5 7.5 0 0 0 0 2l-2.1 1.6 2 3.5 2.5-1c.5.4 1.1.7 1.7 1L11 21h4l.4-2.6c.6-.3 1.2-.6 1.7-1l2.5 1 2-3.5zM13 15.5A3.5 3.5 0 1 1 13 8.5a3.5 3.5 0 0 1 0 7z"/></svg></button>
@@ -405,6 +431,10 @@ body.notele .tele{display:none}
       </div>
   </div>
 </div>
+<aside class="lycol" id="lyCol" hidden aria-label="Titrat e këngës">
+  <div class="lyc-head"><span>Titrat</span><b id="lycTitle"></b></div>
+  <div class="lyc-scroll" id="lycList"></div>
+</aside>
 <div class="lyr" id="lyr" hidden aria-live="off">
   <p class="lp" id="lyPrev"></p>
   <p class="lc" id="lyCur"><span class="lb" id="lyCurB"></span><span class="lf" id="lyCurF" aria-hidden="true"></span></p>
@@ -415,6 +445,7 @@ body.notele .tele{display:none}
   <div class="lhead"><span class="ltitle">Titrat</span><button class="chip" id="lyShow" type="button" aria-pressed="true">Shfaq në ekran</button></div>
   <div class="cfgBody">
     <div class="fld"><span>Stili i titrave</span>
+      <div class="lopts" id="lyPos"><button class="chip" type="button" data-lp="side">Anash (kolonë)</button><button class="chip" type="button" data-lp="center">Në qendër</button><button class="chip" type="button" data-lp="both">Të dyja</button></div>
       <div class="lopts" id="lyStyles"><button class="chip" type="button" data-ls="karaoke">Karaoke</button><button class="chip" type="button" data-ls="neon">Neon</button><button class="chip" type="button" data-ls="kin">Kinetike</button><button class="chip" type="button" data-ls="wave">Valë</button></div>
       <label class="rng"><span>Madhësia</span><input type="range" id="sLyZ" min="0.6" max="1.8" step="0.05"><b id="vLyZ"></b></label>
     </div>
@@ -828,7 +859,7 @@ addEventListener('drop',e=>{e.preventDefault();dragN=0;dropEl.hidden=true;addFil
 document.getElementById('seek').addEventListener('click',e=>{if(!audioEl||!audioEl.duration)return;const r=e.currentTarget.getBoundingClientRect();audioEl.currentTime=(e.clientX-r.left)/r.width*audioEl.duration});
 
 // ---------- settings (saved on this device)
-const DEF={name:'KEBBEK',c1:'#2fe0ff',c2:'#5a7bff',logo:'default',logoSize:1,bloom:.8,sens:1,removeBg:true,crisp:true,logoStraight:true,clean:true,tele:true,logoGlow:.35,logoBack:.55,cycle:false,lyStyle:'karaoke',lyZ:1,snd:{preset:'Natyral',eq:[0,0,0,0,0,0,0,0,0,0],bass:0,clar:0,warm:0,rev:0,width:1,loud:false,lim:true,vol:1,rate:1,fade:2,one:false,off:false},fx:{lasers:true,stars:true,grid:true,glitch:true,shell:true,hud:true,dust:true,shake:true}};
+const DEF={name:'KEBBEK',c1:'#2fe0ff',c2:'#5a7bff',logo:'default',logoSize:1,bloom:.8,sens:1,removeBg:true,crisp:true,logoStraight:true,logoPos:'both',logoHidden:false,clean:true,tele:true,logoGlow:.35,logoBack:.55,cycle:false,lyStyle:'karaoke',lyZ:1,lyPos:'both',snd:{preset:'Natyral',eq:[0,0,0,0,0,0,0,0,0,0],bass:0,clar:0,warm:0,rev:0,width:1,loud:false,lim:true,vol:1,rate:1,fade:2,one:false,off:false},fx:{lasers:true,stars:true,grid:true,glitch:true,shell:true,hud:true,dust:true,shake:true}};
 let S=JSON.parse(JSON.stringify(DEF));
 try{const raw=localStorage.getItem('kebbek-zeri-cfg');if(raw){const o=JSON.parse(raw);S=Object.assign(S,o);S.fx=Object.assign({},DEF.fx,o.fx||{});S.snd=Object.assign({},DEF.snd,o.snd||{});if(!Array.isArray(S.snd.eq)||S.snd.eq.length!==10)S.snd.eq=DEF.snd.eq.slice()}}catch(e){}
 const saveS=()=>{try{localStorage.setItem('kebbek-zeri-cfg',JSON.stringify(S))}catch(e){}};
@@ -899,8 +930,10 @@ const showers=[()=>{sCrisp.checked=!!S.crisp;sStraight.checked=!!S.logoStraight;
 // logo
 const DEF_TEX=logoU.uMap.value;let customTex=null,logoAsp=[1,1];
 const logoDef=document.getElementById('logoDef'),logoNone=document.getElementById('logoNone'),logoLbl=document.getElementById('logoLbl'),sBg=document.getElementById('sBg');
-function applyLogo(){const mode=S.logo==='custom'&&!customTex?'default':S.logo;
-  logo.visible=mode!=='none';dotGlow.visible=mode==='default';logoU.uMap.value=mode==='custom'?customTex:DEF_TEX;if(mode!=='custom')logoAsp=[1,1];
+function applyLogo(){const mode=S.logo==='custom'&&!customTex?'default':S.logo;const hid=!!S.logoHidden;
+  const bl=document.getElementById('brandLogo');bl.hidden=mode==='none'||hid||S.logoPos==='center';if(mode==='custom'&&customTex&&customTex.image&&customTex.image.toDataURL){try{bl.src=customTex.image.toDataURL('image/png')}catch(e){}}else if(mode==='default')bl.src=LOGO;
+  const inC=mode!=='none'&&!hid&&S.logoPos!=='corner';logo.visible=inC;dotGlow.visible=inC&&mode==='default';
+  document.querySelectorAll('#logoPos .chip').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.p===S.logoPos)));const lb=document.getElementById('logoBtn');if(lb){lb.setAttribute('aria-pressed',String(!hid));lb.title=hid?'Shfaq logon':'Fshih logon'}logoU.uMap.value=mode==='custom'?customTex:DEF_TEX;if(mode!=='custom')logoAsp=[1,1];
   logoDef.setAttribute('aria-pressed',String(mode==='default'));logoNone.setAttribute('aria-pressed',String(mode==='none'));logoLbl.classList.toggle('on',mode==='custom');
   logoLbl.textContent=customTex?'Logoja ime':'Ngarko logon tënde';sBg.checked=S.removeBg}
 function texFromCanvas(c){const t=new THREE.CanvasTexture(c);t.anisotropy=4;const w=c.width,h=c.height;logoAsp=w>h?[1,h/w]:[w/h,1];return t}
@@ -915,7 +948,9 @@ document.getElementById('logoFile').addEventListener('change',async e=>{const f=
   try{const c=await imgToCanvas(f,S.removeBg);customTex=texFromCanvas(c);S.logo='custom';applyLogo();saveS();
     c.toBlob(bl=>{if(bl)dbSet('logo',bl)},'image/png')}catch(err){logoLbl.textContent='Kjo foto nuk u hap. Provo PNG ose JPG.'}});
 document.getElementById('logoLbl').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();document.getElementById('logoFile').click()}});
-logoDef.addEventListener('click',()=>{S.logo='default';applyLogo();saveS()});
+logoDef.addEventListener('click',()=>{S.logo='default';S.logoHidden=false;applyLogo();saveS()});
+document.querySelectorAll('#logoPos .chip').forEach(b=>b.addEventListener('click',()=>{S.logoPos=b.dataset.p;S.logoHidden=false;applyLogo();saveS()}));
+document.getElementById('logoBtn').addEventListener('click',()=>{S.logoHidden=!S.logoHidden;applyLogo();saveS();toast(S.logoHidden?'Logoja u fsheh · prek sërish për ta shfaqur':'Logoja u shfaq')});
 logoNone.addEventListener('click',()=>{S.logo='none';applyLogo();saveS()});
 sBg.addEventListener('change',()=>{S.removeBg=sBg.checked;saveS()});
 function dbSet(k,v){if(!db)return;try{db.transaction('settings','readwrite').objectStore('settings').put(v,k)}catch(e){}}
@@ -924,6 +959,16 @@ function loadCustomLogo(){if(!db)return;try{const q=db.transaction('settings').o
 const cfgReset=document.getElementById('cfgReset');let resetArm=0;
 cfgReset.addEventListener('click',()=>{if(Date.now()-resetArm>3000){resetArm=Date.now();cfgReset.textContent='Shtyp sërish';setTimeout(()=>cfgReset.textContent='Rikthe origjinalin',3000);return}
   resetArm=0;cfgReset.textContent='Rikthe origjinalin';S=JSON.parse(JSON.stringify(DEF));customTex=null;try{db&&db.transaction('settings','readwrite').objectStore('settings').delete('logo')}catch(e){}saveS();applyAll();if(typeof syncSnd==='function'){syncSnd();applySnd()}if(typeof syncLyUI==='function')syncLyUI()});
+// themes: export all looks, sound and playlists names as one JSON file, import it on any device
+document.getElementById('thmExport').addEventListener('click',async()=>{const data={app:'KEBBEK Zëri',version:1,settings:S,playlists:PL.map(p=>({name:p.name})),saved:new Date().toISOString()};
+  try{if(db){const lg=await new Promise(r=>{try{const q=db.transaction('settings').objectStore('settings').get('logo');q.onsuccess=()=>r(q.result||null);q.onerror=()=>r(null)}catch(e){r(null)}});
+    if(lg&&S.logo==='custom')data.logo=await new Promise(r=>{const fr=new FileReader();fr.onload=()=>r(fr.result);fr.readAsDataURL(lg)})}}catch(e){}
+  const blob=new Blob([JSON.stringify(data,null,1)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=(S.name||'kebbek').replace(/[^\w-]+/g,'_')+'-tema.json';document.body.append(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500);toast('Tema u ruajt si skedar')});
+document.getElementById('thmFile').addEventListener('change',async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;
+  try{const d=JSON.parse(await f.text());if(!d||!d.settings)throw 0;const o=d.settings;S=Object.assign(JSON.parse(JSON.stringify(DEF)),o);S.fx=Object.assign({},DEF.fx,o.fx||{});S.snd=Object.assign({},DEF.snd,o.snd||{});
+    if(d.logo){const bl=await (await fetch(d.logo)).blob();customTex=texFromCanvas(await imgToCanvas(bl,false));dbSet('logo',bl);S.logo='custom'}
+    (d.playlists||[]).forEach(p=>{if(p.name&&!PL.some(x=>x.name===p.name))PL.push({id:'pl'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),name:p.name,ids:[]})});savePL();
+    saveS();applyAll();if(typeof syncSnd==='function'){syncSnd();applySnd()}if(typeof syncLyUI==='function')syncLyUI();renderList();toast('Tema u hap: '+(S.name||'KEBBEK'))}catch(err){toast('Ky skedar nuk është temë KEBBEK')}});
 // panel toggles
 const cfgEl=document.getElementById('cfg'),cfgBtn=document.getElementById('cfgBtn');
 function showPanel(which){const P={list:[listEl,listBtn],cfg:[cfgEl,cfgBtn],ly:[document.getElementById('lyp'),document.getElementById('lyBtn')],snd:[document.getElementById('snd'),document.getElementById('sndBtn')]};
@@ -1186,10 +1231,11 @@ lyAutoBtn.addEventListener('click',async()=>{const t=curTrack();if(!t||lyBusy)re
   }finally{clearInterval(tick);lyBusy=false;lyBar.hidden=true;lyBar.classList.remove('busy');renderLy()}});
 // styles
 const lyStylesEl=$l('lyStyles');
-function syncLyUI(){lyStylesEl.querySelectorAll('.chip').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.ls===S.lyStyle)));$l('sLyZ').value=S.lyZ;$l('vLyZ').textContent=Math.round(S.lyZ*100)+'%';
+function syncLyUI(){document.querySelectorAll('#lyPos .chip').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.lp===S.lyPos)));lycKey='';lyStylesEl.querySelectorAll('.chip').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.ls===S.lyStyle)));$l('sLyZ').value=S.lyZ;$l('vLyZ').textContent=Math.round(S.lyZ*100)+'%';
   lyEl.dataset.s=S.lyStyle;lyEl.style.setProperty('--lyz',S.lyZ);lyIdx=-2}
 lyStylesEl.querySelectorAll('.chip').forEach(b=>b.addEventListener('click',()=>{S.lyStyle=b.dataset.ls;syncLyUI();saveS()}));
 $l('sLyZ').addEventListener('input',e=>{S.lyZ=+e.target.value;syncLyUI();saveS()});
+document.querySelectorAll('#lyPos .chip').forEach(b=>b.addEventListener('click',()=>{S.lyPos=b.dataset.lp;syncLyUI();saveS()}));
 // word layout of the active line
 let wEls=[],wT=[];
 function buildLine(c){lyCur.textContent='';wEls=[];wT=[];if(!c)return;const words=c.text.split(/\s+/).filter(Boolean);const tot=words.reduce((a,w)=>a+w.length+1,0)||1;
@@ -1198,8 +1244,18 @@ function buildLine(c){lyCur.textContent='';wEls=[];wT=[];if(!c)return;const word
     if(S.lyStyle==='wave'){[...w].forEach(ch=>{const x=document.createElement('span');x.className='ch';x.style.setProperty('--i',ci++);x.textContent=ch;el.append(x)})}else el.textContent=w;
     lyCur.append(el);if(k<words.length-1)lyCur.append(document.createTextNode(' '));wEls.push(el);wT.push(c.t+span*acc/tot);acc+=w.length+1});wT.push(c.t+span)}
 // live display, called every frame
+const lyCol=$l('lyCol'),lycList=$l('lycList'),lycTitle=$l('lycTitle');let lycKey='',lycOn=-2,lycEls=[];
+function sideFrame(L,tt){const t=curTrack();const wide=innerWidth>=900;const want=lyShowOn&&S.lyPos!=='center'&&wide&&t&&L.length&&!tapOn;
+  lyCol.hidden=!want;if(!want)return;const key=t.id+'|'+L.length+'|'+(L[0]&&L[0].text)+'|'+synced(L);
+  if(key!==lycKey){lycKey=key;lycOn=-2;lycTitle.textContent=t.name;lycList.textContent='';lycList.classList.toggle('plain',!synced(L));
+    lycEls=L.map((l,k)=>{const p=document.createElement('p');p.textContent=l.text;if(l.t>=0)p.addEventListener('click',()=>{audioEl.currentTime=l.t;if(audioEl.paused)audioEl.play()});lycList.append(p);return p});lycList.scrollTop=0}
+  if(!synced(L))return;let i=-1;for(let k=0;k<L.length;k++){if(L[k].t<=tt)i=k;else break}
+  if(i!==lycOn){lycOn=i;lycEls.forEach((p,k)=>{p.classList.toggle('on',k===i);p.classList.toggle('past',k<i)});
+    const el=lycEls[Math.max(0,i)];if(el)lycList.scrollTo({top:el.offsetTop-lycList.clientHeight*.38,behavior:reduce?'auto':'smooth'})}}
 function lyFrame(sbv){const L=lines(),pOpen=!listEl.hidden||!cfgEl.hidden||!$l('lyp').hidden||!$l('snd').hidden||tapOn;
-  const show=lyShowOn&&!pOpen&&audioEl&&cur>=0&&synced(L);lyEl.hidden=!show;if(!show)return;
+  if(audioEl&&cur>=0)sideFrame(L,audioEl.currentTime);else lyCol.hidden=true;
+  const sideOnly=S.lyPos==='side'&&innerWidth>=900;
+  const show=lyShowOn&&!pOpen&&!sideOnly&&audioEl&&cur>=0&&synced(L);lyEl.hidden=!show;if(!show)return;
   const tt=audioEl.currentTime;let i=-1;for(let k=0;k<L.length;k++){if(L[k].t<=tt)i=k;else break}
   const active=i>=0&&tt<L[i].e+.6?i:-1;
   if(active!==lyIdx){lyIdx=active;const c=L[active];buildLine(c);
@@ -1251,7 +1307,7 @@ function tempoTick(now,v,live){if(!live){envT.length=envV.length=0;return}envT.p
   for(let L=lo;L<=hi;L++){const sc=rr[L]+.5*(2*L<N?r(2*L):0)*(L<=hi/2+1?1:.6);if(sc>best){best=sc;bl=L}}
   if(best/e0<.08)return;const y0=rr[bl-1]||0,y1=rr[bl],y2=rr[bl+1]||0,den=y0-2*y1+y2,off=den?.5*(y0-y2)/den:0;
   let nb=60*R/(bl+Math.max(-.5,Math.min(.5,off)));while(nb<75)nb*=2;while(nb>185)nb/=2;bpm=bpm&&Math.abs(nb-bpm)<5?bpm+(nb-bpm)*.35:nb}
-let hudTick=0;const prevLow=new Float32Array(14);let fluxM=0,fluxV=0;
+let hudTick=0;const brandLogoEl=document.getElementById('brandLogo');const prevLow=new Float32Array(14);let fluxM=0,fluxV=0;
 
 function frame(now){
   const dt=Math.min(.05,(now-last)/1000);last=now;const t=(now-t0)/1000;
@@ -1337,6 +1393,7 @@ function frame(now){
   cycleTick(dt,kickEnv,hudTick);sndTick();
 
   lyFrame(sb);
+  if((hudTick&1)===0){const bl=brandLogoEl;if(!bl.hidden){const sc=1+sb*.14*K+kickEnv*.1*K;bl.style.transform=`perspective(300px) rotateY(${(yaw*.9).toFixed(3)}rad) rotateX(${(-pitch*.9).toFixed(3)}rad) scale(${sc.toFixed(3)})`;bl.style.filter=`drop-shadow(0 0 ${(4+sb*16+kickEnv*10).toFixed(1)}px color-mix(in srgb, var(--accent) ${Math.round(35+sb*45)}%, transparent))`}}
   // DOM hud (throttled)
   if((hudTick++&3)===0){
     gB.style.width=Math.min(100,sb*130)+'%';gM.style.width=Math.min(100,sm*160)+'%';gH.style.width=Math.min(100,sh*220)+'%';
