@@ -63,8 +63,16 @@ h1{font-family:var(--display);font-weight:700;font-size:clamp(18px,3.2vw,26px);l
 .palettes{display:flex;gap:6px}
 .time{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:10.5px;color:var(--muted);font-variant-numeric:tabular-nums}
 .time .bar{flex:1;height:4px}
+.volrow{display:flex;align-items:center;gap:6px;min-width:0}
+.vbtn{flex:none;width:30px;height:30px;display:grid;place-items:center;border:0;background:none;color:var(--ink);cursor:pointer;border-radius:8px;padding:0}
+.vbtn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.vbtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.volrow input{flex:1;min-width:0;height:22px;accent-color:var(--accent);margin:0;cursor:pointer}
+.volrow b{flex:none;width:42px;text-align:right;font-family:var(--mono);font-size:10.5px;font-weight:400;color:var(--muted);font-variant-numeric:tabular-nums}
 .btn.ghost span{font-family:var(--mono);color:var(--accent);margin-left:4px}
-.ctrls{display:flex;justify-content:center;align-items:center;gap:22px}
+.ctrls{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px}
+.ctrls .cc{display:flex;align-items:center;gap:22px}
+.ctrls .volrow{justify-self:end;width:100%;max-width:170px}
 .ic{width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:transparent;color:var(--ink);display:grid;place-items:center;cursor:pointer;padding:0}
 .ic svg{width:18px;height:18px;fill:currentColor}
 .ic.big{width:56px;height:56px;background:var(--accent);border-color:var(--accent);color:#03141a;box-shadow:0 0 24px color-mix(in srgb,var(--accent) 45%,transparent)}
@@ -209,7 +217,7 @@ h1{font-family:var(--display);font-weight:700;font-size:clamp(18px,3.2vw,26px);l
 .sw{width:20px;height:20px;border-radius:50%;border:2px solid transparent;cursor:pointer;padding:0}
 .sw[aria-pressed="true"]{border-color:var(--ink)}
 .drop{position:fixed;inset:0;display:grid;place-items:center;font-family:var(--display);letter-spacing:.2em;font-size:14px;background:rgba(5,6,10,.72);border:2px dashed var(--accent);pointer-events:none}
-@media (max-width:520px){.rail .row{gap:6px}.rail .btn{padding:9px 11px}.rail .track{order:9;flex-basis:100%;text-align:center}.ic.sm{width:36px;height:36px}}
+@media (max-width:520px){.ctrls .cc{gap:12px}.volrow b{display:none}.rail .row{gap:6px}.rail .btn{padding:9px 11px}.rail .track{order:9;flex-basis:100%;text-align:center}.ic.sm{width:36px;height:36px}}
 @media (max-width:520px){.tele .row3,#spec{display:none}.tele{grid-template-columns:auto}.tele .big{flex-direction:column;gap:2px;align-items:flex-end}.sub{display:none}}
 </style>
 
@@ -317,9 +325,17 @@ h1{font-family:var(--display);font-weight:700;font-size:clamp(18px,3.2vw,26px);l
     <button class="ic sm" id="cfgBtn" type="button" aria-expanded="false" aria-label="Personalizo"><svg viewBox="0 0 24 24"><path d="M19.4 13a7.5 7.5 0 0 0 0-2l2.1-1.6-2-3.5-2.5 1a7.6 7.6 0 0 0-1.7-1L15 3h-4l-.4 2.6a7.6 7.6 0 0 0-1.7 1l-2.5-1-2 3.5L6.6 11a7.5 7.5 0 0 0 0 2l-2.1 1.6 2 3.5 2.5-1c.5.4 1.1.7 1.7 1L11 21h4l.4-2.6c.6-.3 1.2-.6 1.7-1l2.5 1 2-3.5zM13 15.5A3.5 3.5 0 1 1 13 8.5a3.5 3.5 0 0 1 0 7z"/></svg></button>
   </div>
   <div class="ctrls">
-    <button class="ic" id="prev" type="button" aria-label="Kënga e mëparshme"><svg viewBox="0 0 24 24"><path d="M6 5h2v14H6zM20 5v14L9 12z"/></svg></button>
-    <button class="ic big" id="play" type="button" aria-label="Luaj"><svg viewBox="0 0 24 24" id="playIco"><path d="M7 4v16l13-8z"/></svg></button>
-    <button class="ic" id="next" type="button" aria-label="Kënga tjetër"><svg viewBox="0 0 24 24"><path d="M16 5h2v14h-2zM4 5v14l11-7z"/></svg></button>
+    <span class="cl" aria-hidden="true"></span>
+    <div class="cc">
+      <button class="ic" id="prev" type="button" aria-label="Kënga e mëparshme"><svg viewBox="0 0 24 24"><path d="M6 5h2v14H6zM20 5v14L9 12z"/></svg></button>
+      <button class="ic big" id="play" type="button" aria-label="Luaj"><svg viewBox="0 0 24 24" id="playIco"><path d="M7 4v16l13-8z"/></svg></button>
+      <button class="ic" id="next" type="button" aria-label="Kënga tjetër"><svg viewBox="0 0 24 24"><path d="M16 5h2v14h-2zM4 5v14l11-7z"/></svg></button>
+    </div>
+    <div class="volrow">
+      <button class="vbtn" id="vMute" type="button" aria-label="Hesht zërin"><svg viewBox="0 0 24 24"><path id="vIco" d="M4 9h4l5-4v14l-5-4H4zM16 8.5a4.5 4.5 0 0 1 0 7M18.5 6a8 8 0 0 1 0 12"/></svg></button>
+      <input type="range" id="rVol" min="0" max="1.5" step="0.01" aria-label="Volumi">
+      <b id="rVolV">100%</b>
+      </div>
   </div>
 </div>
 <div class="lyr" id="lyr" hidden aria-live="off">
@@ -860,7 +876,7 @@ function applySnd(){const q=S.snd;if(audioEl){audioEl.playbackRate=q.rate;audioE
   set(FX.warmEq.gain,q.warm*3);set(FX.satIn.gain,.6+q.warm*1.6);set(FX.satWet.gain,q.warm*.35);set(FX.satDry.gain,1-q.warm*.25);
   const c=FX.comp;if(q.loud){c.threshold.value=-26;c.ratio.value=4;c.knee.value=18;c.attack.value=.004;c.release.value=.22;set(FX.makeup.gain,1.7)}else{c.threshold.value=0;c.ratio.value=1;c.knee.value=0;set(FX.makeup.gain,1)}
   set(FX.wet.gain,q.rev*.55);set(FX.dry.gain,1-q.rev*.25);const w=q.width,A=(1+w)/2,B=(1-w)/2;set(FX.LL.gain,A);set(FX.RR.gain,A);set(FX.LR.gain,B);set(FX.RL.gain,B);
-  const head=Math.max(0,q.bass*.5+Math.max(...q.eq,0)*.5+q.clar*.3);set(FX.master.gain,q.vol*(on?Math.pow(10,-head/20):1));
+  const head=Math.max(0,q.bass*.5+Math.max(...q.eq,0)*.5+q.clar*.3);set(FX.master.gain,(q.mute?0:q.vol)*(on?Math.pow(10,-head/20):1));
   const l=FX.lim;if(q.lim){l.threshold.value=-1;l.ratio.value=12;l.knee.value=4;l.attack.value=.002;l.release.value=.25}else{l.threshold.value=0;l.ratio.value=1}}
 function onTrackStart(){fadingOut=false;applySnd();if(!trackGain)return;const g=trackGain.gain,T=ctx.currentTime;g.cancelScheduledValues(T);
   if(S.snd.fade>0){g.setValueAtTime(.0001,T);g.exponentialRampToValueAtTime(1,T+Math.min(3,S.snd.fade))}else g.setValueAtTime(1,T)}
@@ -879,7 +895,7 @@ const qs={qBass:['bass',v=>'+'+v.toFixed(1)+' dB'],qClar:['clar',v=>'+'+v.toFixe
 Object.entries(qs).forEach(([id,[k]])=>$s(id).addEventListener('input',e=>{S.snd[k]=+e.target.value;saveSnd()}));
 $s('qAB').addEventListener('click',()=>{S.snd.off=!S.snd.off;saveSnd();toast(S.snd.off?'Efektet e zërit u fikën · tingulli origjinal':'Efektet e zërit u ndezën')});
 [['qLoud','loud'],['qLim','lim'],['qOne','one']].forEach(([id,k])=>$s(id).addEventListener('click',()=>{S.snd[k]=!S.snd[k];saveSnd()}));
-function syncSnd(){const q=S.snd;eqPre.querySelectorAll('.chip').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.p===q.preset)));
+function syncSnd(){const q=S.snd;syncVolRow();eqPre.querySelectorAll('.chip').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.p===q.preset)));
   eqIn.forEach((l,i)=>{l.querySelector('input').value=q.eq[i];l.querySelector('b').textContent=(q.eq[i]>0?'+':'')+q.eq[i]});
   Object.entries(qs).forEach(([id,[k,f]])=>{$s(id).value=q[k];$s('v'+id).textContent=f(+q[k])});
   const ab=$s('qAB');ab.setAttribute('aria-pressed',String(!q.off));ab.classList.toggle('on',!q.off);ab.textContent=q.off?'Efektet: Fikur':'Efektet: Ndezur';
@@ -891,6 +907,11 @@ function setSleep(m){clearTimeout(sleepTimer);sleepAt=0;sleepEnd=false;
   if(m==='end'){sleepEnd=true;sleepNote.textContent='Muzika ndalet kur mbaron kjo këngë.'}else if(+m>0){sleepAt=Date.now()+m*60000;sleepNote.textContent='Ndalet pas '+m+' min, me zbehje të butë.'}else sleepNote.textContent='';
   document.querySelectorAll('#sleep .chip').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.m===String(m))))}
 document.querySelectorAll('#sleep .chip').forEach(b=>b.addEventListener('click',()=>setSleep(b.dataset.m)));
+function syncVolRow(){const v=S.snd.vol,m=!!S.snd.mute;const r=$s('rVol');r.value=v;$s('rVolV').textContent=m?'Hesht':Math.round(v*100)+'%';
+  $s('vIco').setAttribute('d',m||v===0?'M4 9h4l5-4v14l-5-4H4zM17 9l5 6M22 9l-5 6':v<.5?'M4 9h4l5-4v14l-5-4H4zM16 8.5a4.5 4.5 0 0 1 0 7':'M4 9h4l5-4v14l-5-4H4zM16 8.5a4.5 4.5 0 0 1 0 7M18.5 6a8 8 0 0 1 0 12');
+  $s('vMute').setAttribute('aria-label',m?'Ndiz zërin':'Hesht zërin')}
+$s('rVol').addEventListener('input',e=>{S.snd.vol=+e.target.value;S.snd.mute=false;saveSnd()});
+$s('vMute').addEventListener('click',()=>{S.snd.mute=!S.snd.mute;saveSnd()});
 syncSnd();setSleep('0');
 
 // ---------- movable, resizable control bar (mouse, touch, pinch)
