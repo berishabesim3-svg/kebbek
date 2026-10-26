@@ -272,7 +272,7 @@ body.notele .tele{display:none}
 .lyc-ctl b{min-width:46px;text-align:center;font-family:var(--mono);font-size:10.5px;font-weight:400;color:var(--ink);font-variant-numeric:tabular-nums;cursor:pointer}
 .lyc-now{align-self:flex-start;font-family:var(--body);font-size:11.5px;color:var(--accent);border-color:color-mix(in srgb,var(--accent) 50%,transparent)}
 @media (hover:none){.lyc-sync{opacity:1}}
-@media (max-width:899px){.lycol{display:none!important}}
+@media (max-width:759px){.lycol{display:none!important}}
 @media (prefers-reduced-motion:reduce){.lyc-scroll{scroll-behavior:auto}.lyc-scroll p{transition:none}}
 .thm{display:flex;gap:6px;flex-wrap:wrap}
 #thmFile{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
@@ -1330,7 +1330,7 @@ $l('lycOff').addEventListener('dblclick',()=>setLyOff(0));
 $l('lycNow').addEventListener('click',()=>{const t=curTrack();if(!t||!audioEl||!lycT.length)return;const h=Math.max(0,audioEl.currentTime-visLag);
   let n=lycT.findIndex(x=>x>h);if(n<0)n=lycT.length-1;const base=lycT[n]-(+t.lyOff||0);setLyOff(h-base);toast('Titrat u zhvendosën '+fmtOff(t.lyOff))});
 addEventListener('keydown',e=>{if(e.target.matches('input,textarea'))return;if(e.key==='['||e.key===']'){const t=curTrack();if(t)setLyOff((+t.lyOff||0)+(e.key===']'?.25:-.25))}});
-function sideFrame(L,tt){const t=curTrack();const wide=innerWidth>=900;const want=lyShowOn&&S.lyPos!=='center'&&wide&&t&&L.length&&!tapOn;
+function sideFrame(L,tt){const t=curTrack();const wide=innerWidth>=760;const want=lyShowOn&&S.lyPos!=='center'&&wide&&t&&L.length&&!tapOn;
   lyCol.hidden=!want;if(!want)return;const sy=synced(L);const key=t.id+'|'+L.length+'|'+(L[0]&&L[0].text)+'|'+sy+'|'+(audioEl.duration|0);
   if(key!==lycKey){if(!sy&&t.vocStart==null)findVocals(t);lycKey=key;lycOn=-2;lycTitle.textContent=t.name;$l('lycOff').textContent=fmtOff(+t.lyOff||0);lycList.textContent='';lycEstT=sy?null:estTimes(L);$l('lycEst').hidden=sy;if(!sy&&!lyBusy)$l('lycEst').textContent='Kohë e përafërt';
     lycEls=L.map((l,k)=>{const p=document.createElement('p');p.textContent=l.text;p.addEventListener('click',()=>{const tm=sy?l.t:lycEstT[k];audioEl.currentTime=tm;if(audioEl.paused)audioEl.play()});lycList.append(p);return p});lycList.style.transform='translateY(0)'}
@@ -1338,10 +1338,12 @@ function sideFrame(L,tt){const t=curTrack();const wide=innerWidth>=900;const wan
   if(i!==lycOn){lycOn=i;lycEls.forEach((p,k)=>{p.classList.toggle('on',k===i);p.classList.toggle('past',k<i);p.classList.toggle('next',k===i+1)});
     const el=lycEls[Math.max(0,i)];const win=lycList.parentElement;if(el)lycAutoY=win.clientHeight*.3-el.offsetTop;}
   if(Date.now()>lycManualUntil)lycManual+=(0-lycManual)*.15;lycList.style.transform=`translateY(${(lycAutoY+lycManual).toFixed(1)}px)`}
-function lyFrame(sbv){const L=lines(),pOpen=!listEl.hidden||!cfgEl.hidden||!$l('lyp').hidden||!$l('snd').hidden||tapOn;
-  const heard=audioEl?Math.max(0,audioEl.currentTime-visLag*(audioEl.paused?0:1)):0;if(audioEl&&cur>=0)sideFrame(L,heard);else lyCol.hidden=true;
-  const sideOnly=S.lyPos==='side'&&innerWidth>=900;
-  const show=lyShowOn&&!pOpen&&!sideOnly&&audioEl&&cur>=0&&synced(L);lyEl.hidden=!show;if(!show)return;
+let estKey='',estL=[];
+function timedLines(L){if(synced(L))return L;const t=curTrack();const k=(t&&t.id)+'|'+L.length+'|'+(audioEl&&audioEl.duration|0)+'|'+(t&&t.vocStart);if(k!==estKey){estKey=k;const T=estTimes(L);estL=L.map((l,i)=>({t:T[i],e:T[i+1]!=null?T[i+1]:T[i]+5,text:l.text}))}return estL}
+function lyFrame(sbv){const L0=lines(),L=timedLines(L0),pOpen=!listEl.hidden||!cfgEl.hidden||!$l('lyp').hidden||!$l('snd').hidden||tapOn;
+  const heard=audioEl?Math.max(0,audioEl.currentTime-visLag*(audioEl.paused?0:1)):0;if(audioEl&&cur>=0)sideFrame(L0,heard);else lyCol.hidden=true;
+  const sideOnly=S.lyPos==='side'&&innerWidth>=760;
+  const show=lyShowOn&&!pOpen&&!sideOnly&&audioEl&&cur>=0&&L.length>0;lyEl.hidden=!show;if(!show)return;
   const tt=heard-(+(curTrack()||{}).lyOff||0);let i=-1;for(let k=0;k<L.length;k++){if(L[k].t<=tt)i=k;else break}
   const active=i>=0&&tt<L[i].e+.6?i:-1;
   if(active!==lyIdx){lyIdx=active;const c=L[active];buildLine(c);
