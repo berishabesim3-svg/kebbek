@@ -308,6 +308,28 @@ body.notele .tele{display:none}
 .ltitle{font-weight:400;letter-spacing:.34em}
 #tracks li{border-bottom:.5px solid rgba(170,215,240,.06)}
 .toast{border-width:.5px}
+
+/* ---- KEBBEK Create ---- */
+#crp .cfgBody{gap:16px}
+#crp textarea{width:100%;box-sizing:border-box;font:inherit;font-size:14px;line-height:1.5;color:var(--ink);background:rgba(255,255,255,.04);border:.5px solid var(--line);border-radius:8px;padding:10px;resize:vertical;-webkit-user-select:text;user-select:text}
+#crp input[type=number],#crp input[type=password],#crp input[type=url]{font:inherit;font-size:13px;color:var(--ink);background:rgba(255,255,255,.04);border:.5px solid var(--line);border-radius:8px;padding:8px 10px;outline:none;min-width:0}
+#crp .crRow{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
+#crp .crRow label{display:flex;flex-direction:column;gap:5px;font-size:11.5px;color:var(--muted)}
+#crp .crRow select,#crp .crRow input{width:100%;box-sizing:border-box}
+#crp .crCnt{font-size:11px;color:var(--muted);text-align:right}
+#crp .crPrompt{font-size:12px;color:var(--muted);line-height:1.5;border-left:.5px solid var(--accent);padding-left:10px;word-break:break-word}
+#crp .crGo{display:flex;gap:8px;align-items:center}
+#crp .crGo .btn{flex:1;justify-content:center}
+#crp .crRes{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+#crp .crRes li{display:flex;align-items:center;gap:8px;font-size:13px;border:.5px solid var(--line);border-radius:8px;padding:8px 10px}
+#crp .crRes li b{flex:1;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#crp .crRes li span{font-size:11px;color:var(--muted)}
+#crp details>summary{cursor:pointer;font-size:12px;font-weight:600;color:var(--muted);letter-spacing:.04em;list-style:none}
+#crp details>summary::before{content:'+ '}
+#crp details[open]>summary::before{content:'− '}
+#crp details[open]>summary{margin-bottom:10px}
+#crp [data-crm]{display:none}
+#crp[data-mode="simple"] [data-crm~="simple"],#crp[data-mode="custom"] [data-crm~="custom"],#crp[data-mode="cover"] [data-crm~="cover"],#crp[data-mode="repaint"] [data-crm~="repaint"]{display:flex}
 </style>
 
 </head>
@@ -428,6 +450,7 @@ body.notele .tele{display:none}
     <button class="ic sm" id="logoBtn" type="button" aria-pressed="true" aria-label="Show or hide the logo" title="Hide logo"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M9 7.5v9M9 12l4.5-4.5M9 12l4.5 4.5M13 7.5h1.8a2.2 2.2 0 0 1 0 4.4H13h2.2a2.3 2.3 0 0 1 0 4.6H13" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     <button class="ic sm" id="sndBtn" type="button" aria-expanded="false" aria-label="Sound and equalizer"><svg viewBox="0 0 24 24"><path d="M5 3h2v6.2a3 3 0 0 1 0 5.6V21H5v-6.2a3 3 0 0 1 0-5.6zm6 0h2v2.2a3 3 0 0 1 0 5.6V21h-2V10.8a3 3 0 0 1 0-5.6zm6 0h2v10.2a3 3 0 0 1 0 5.6V21h-2v-2.2a3 3 0 0 1 0-5.6z"/></svg></button>
     <button class="ic sm" id="lyBtn" type="button" aria-expanded="false" aria-label="Lyrics"><svg viewBox="0 0 24 24"><path d="M3 5h18v14H3zm2 2v10h14V7zm2 3h4v1.6H7zm0 3h7v1.6H7zm9 0h2v1.6h-2zm-3-3h5v1.6h-5z"/></svg></button>
+    <button class="ic sm" id="crBtn" type="button" aria-expanded="false" aria-label="Create music" title="Create music"><svg viewBox="0 0 24 24"><path d="M12 2.5l1.9 5.6 5.6 1.9-5.6 1.9L12 17.5l-1.9-5.6L4.5 10l5.6-1.9zM18.5 15l.9 2.6 2.6.9-2.6.9-.9 2.6-.9-2.6-2.6-.9 2.6-.9z"/></svg></button>
     <button class="ic sm" id="cfgBtn" type="button" aria-expanded="false" aria-label="Customize"><svg viewBox="0 0 24 24"><path d="M19.4 13a7.5 7.5 0 0 0 0-2l2.1-1.6-2-3.5-2.5 1a7.6 7.6 0 0 0-1.7-1L15 3h-4l-.4 2.6a7.6 7.6 0 0 0-1.7 1l-2.5-1-2 3.5L6.6 11a7.5 7.5 0 0 0 0 2l-2.1 1.6 2 3.5 2.5-1c.5.4 1.1.7 1.7 1L11 21h4l.4-2.6c.6-.3 1.2-.6 1.7-1l2.5 1 2-3.5zM13 15.5A3.5 3.5 0 1 1 13 8.5a3.5 3.5 0 0 1 0 7z"/></svg></button>
   </div>
   <div class="ctrls">
@@ -528,6 +551,69 @@ body.notele .tele{display:none}
       <div class="lopts" id="sleep"><button class="chip" type="button" data-m="0">Off</button><button class="chip" type="button" data-m="15">15 min</button><button class="chip" type="button" data-m="30">30 min</button><button class="chip" type="button" data-m="60">1 hour</button><button class="chip" type="button" data-m="end">End of song</button></div>
       <p class="note" id="sleepNote"></p>
     </div>
+  </div>
+</div>
+
+<div class="list cfg" id="crp" hidden data-mode="custom">
+  <div class="lhead"><span class="ltitle">Create</span><div class="lopts" id="crModes"><button class="chip" type="button" data-m="simple">Describe</button><button class="chip" type="button" data-m="custom">Custom</button><button class="chip" type="button" data-m="cover">Cover</button><button class="chip" type="button" data-m="repaint">Repaint</button></div></div>
+  <div class="cfgBody">
+    <div class="fld"><span>Quick start</span><div class="lopts" id="crQuick"><button class="chip" type="button" data-q="road">Country road anthem</button><button class="chip" type="button" data-q="wed">Albanian wedding dance</button><button class="chip" type="button" data-q="lofi">Lo-fi study beat</button><button class="chip" type="button" data-q="epic">Epic film trailer</button><button class="chip" type="button" data-q="club">Club banger</button><button class="chip" type="button" data-q="ballad">Piano ballad</button></div></div>
+    <div class="fld" data-crm="simple"><span>Describe the song</span>
+      <textarea id="crDesc" rows="3" maxlength="500" placeholder="A warm country song about driving home at sunset, male voice, banjo and fiddle"></textarea>
+      <p class="note">KEBBEK writes the lyrics, picks the style and arranges it for you.</p></div>
+    <div class="fld" data-crm="cover repaint"><span id="crSrcLbl">Source song</span><p class="crPrompt" id="crSrc">Play a song from your library first. It becomes the source.</p></div>
+    <div class="fld" data-crm="repaint"><span>Section to redo</span>
+      <div class="crRow"><label>Start (s)<input type="number" id="crRs" min="0" step="0.5" value="0"></label><label>End (s, −1 = end)<input type="number" id="crRe" step="0.5" value="15"></label><label>&nbsp;<button class="chip" type="button" id="crRnow">From the playhead</button></label></div></div>
+    <div class="fld" data-crm="custom cover repaint"><span>Title</span><input type="text" id="crTitle" maxlength="80" placeholder="Untitled"></div>
+    <div class="fld" data-crm="custom cover repaint"><span>Style</span>
+      <div class="lopts" id="crGen"><button class="chip" type="button" data-g="Country">Country</button><button class="chip" type="button" data-g="Pop">Pop</button><button class="chip" type="button" data-g="Rock">Rock</button><button class="chip" type="button" data-g="Hip-hop">Hip-hop</button><button class="chip" type="button" data-g="R&B">R&B</button><button class="chip" type="button" data-g="EDM">EDM</button><button class="chip" type="button" data-g="House">House</button><button class="chip" type="button" data-g="Lo-fi">Lo-fi</button><button class="chip" type="button" data-g="Jazz">Jazz</button><button class="chip" type="button" data-g="Blues">Blues</button><button class="chip" type="button" data-g="Folk">Folk</button><button class="chip" type="button" data-g="Albanian folk">Albanian folk</button><button class="chip" type="button" data-g="Reggaeton">Reggaeton</button><button class="chip" type="button" data-g="Afrobeats">Afrobeats</button><button class="chip" type="button" data-g="Metal">Metal</button><button class="chip" type="button" data-g="Cinematic">Cinematic</button><button class="chip" type="button" data-g="Ambient">Ambient</button><button class="chip" type="button" data-g="Soul">Soul</button><button class="chip" type="button" data-g="Gospel">Gospel</button><button class="chip" type="button" data-g="Trap">Trap</button></div>
+      <div class="lopts" id="crMood"><button class="chip" type="button" data-g="Upbeat">Upbeat</button><button class="chip" type="button" data-g="Emotional">Emotional</button><button class="chip" type="button" data-g="Dark">Dark</button><button class="chip" type="button" data-g="Romantic">Romantic</button><button class="chip" type="button" data-g="Epic">Epic</button><button class="chip" type="button" data-g="Chill">Chill</button><button class="chip" type="button" data-g="Nostalgic">Nostalgic</button><button class="chip" type="button" data-g="Party">Party</button><button class="chip" type="button" data-g="Melancholic">Melancholic</button><button class="chip" type="button" data-g="Uplifting">Uplifting</button></div>
+      <div class="lopts" id="crIns"><button class="chip" type="button" data-g="Acoustic guitar">Acoustic guitar</button><button class="chip" type="button" data-g="Electric guitar">Electric guitar</button><button class="chip" type="button" data-g="Banjo">Banjo</button><button class="chip" type="button" data-g="Fiddle">Fiddle</button><button class="chip" type="button" data-g="Piano">Piano</button><button class="chip" type="button" data-g="Synth">Synth</button><button class="chip" type="button" data-g="808 bass">808 bass</button><button class="chip" type="button" data-g="Strings">Strings</button><button class="chip" type="button" data-g="Brass">Brass</button><button class="chip" type="button" data-g="Clarinet">Clarinet</button><button class="chip" type="button" data-g="Çifteli">Çifteli</button><button class="chip" type="button" data-g="Drums">Drums</button><button class="chip" type="button" data-g="Saxophone">Saxophone</button><button class="chip" type="button" data-g="Pedal steel">Pedal steel</button></div>
+      <div class="lopts" id="crVoc"><button class="chip" type="button" data-v="male">Male vocal</button><button class="chip" type="button" data-v="female">Female vocal</button><button class="chip" type="button" data-v="duet">Duet</button><button class="chip" type="button" data-v="choir">Choir</button><button class="chip" type="button" data-v="none">No vocals</button></div>
+      <input type="text" id="crExtra" maxlength="200" placeholder="More style words · e.g. 90s, raspy voice, live room">
+      <p class="crPrompt" id="crPrompt"></p></div>
+    <div class="fld" data-crm="custom cover repaint"><span>Lyrics</span>
+      <div class="lopts" id="crTags"><button class="chip" type="button" data-t="[Intro]">[Intro]</button><button class="chip" type="button" data-t="[Verse]">[Verse]</button><button class="chip" type="button" data-t="[Pre-Chorus]">[Pre-Chorus]</button><button class="chip" type="button" data-t="[Chorus]">[Chorus]</button><button class="chip" type="button" data-t="[Bridge]">[Bridge]</button><button class="chip" type="button" data-t="[Outro]">[Outro]</button><button class="chip" type="button" id="crUseLy">Use this song’s lyrics</button><button class="chip" type="button" id="crInst" aria-pressed="false">Instrumental</button></div>
+      <textarea id="crLyr" rows="8" maxlength="4000" placeholder="[Verse]&#10;Dust on my boots and the sun going down&#10;[Chorus]&#10;KEBBEK on the highway, singing it loud"></textarea>
+      <div class="crCnt" id="crCnt">0 / 4000</div></div>
+    <div class="fld"><span>Song</span>
+      <div class="crRow">
+        <label>Vocal language<select id="crLang"><option value="unknown">Auto</option><option value="en">English</option><option value="de">German</option><option value="fr">French</option><option value="es">Spanish</option><option value="it">Italian</option><option value="pt">Portuguese</option><option value="tr">Turkish</option><option value="ru">Russian</option><option value="ar">Arabic</option><option value="el">Greek</option><option value="bg">Bulgarian</option><option value="zh">Chinese</option><option value="ja">Japanese</option><option value="ko">Korean</option></select></label>
+        <label>Length<select id="crDur"><option value="-1">Auto</option><option value="30">30 s</option><option value="60">1 min</option><option value="90">1.5 min</option><option value="120">2 min</option><option value="180">3 min</option><option value="240">4 min</option></select></label>
+        <label>Versions<select id="crBatch"><option>1</option><option selected>2</option><option>3</option><option>4</option></select></label>
+      </div>
+      <div class="crRow" data-crm="custom cover repaint" style="display:grid">
+        <label>BPM (0 = auto)<input type="number" id="crBpm" min="0" max="220" step="1" value="0"></label>
+        <label>Key<select id="crKey"><option value="">Auto</option><option value="C major">C major</option><option value="C# major">C# major</option><option value="D major">D major</option><option value="Eb major">Eb major</option><option value="E major">E major</option><option value="F major">F major</option><option value="F# major">F# major</option><option value="G major">G major</option><option value="Ab major">Ab major</option><option value="A major">A major</option><option value="Bb major">Bb major</option><option value="B major">B major</option><option value="C minor">C minor</option><option value="C# minor">C# minor</option><option value="D minor">D minor</option><option value="Eb minor">Eb minor</option><option value="E minor">E minor</option><option value="F minor">F minor</option><option value="F# minor">F# minor</option><option value="G minor">G minor</option><option value="Ab minor">Ab minor</option><option value="A minor">A minor</option><option value="Bb minor">Bb minor</option><option value="B minor">B minor</option></select></label>
+        <label>Time signature<select id="crTs"><option value="">Auto</option><option value="4">4/4</option><option value="3">3/4 (waltz)</option><option value="2">2/4</option></select></label>
+      </div></div>
+    <div class="fld" data-crm="cover"><span>Cover strength</span><label class="rng"><span>Keep original</span><input type="range" id="crStr" min="0" max="1" step="0.05" value="0.6"><b id="vcrStr">60%</b></label></div>
+    <details class="fld" id="crAdv"><summary>Advanced</summary>
+      <div class="crRow">
+        <label>Quality<select id="crModel"><option value="acestep-v15-turbo">Fast</option><option value="acestep-v15-xl-turbo">High (XL)</option></select></label>
+        <label>Steps<input type="number" id="crSteps" min="4" max="32" step="1" value="8"></label>
+        <label>Guidance<input type="number" id="crCfg" min="1" max="15" step="0.5" value="7"></label>
+        <label>Format<select id="crFmt"><option value="mp3">MP3</option><option value="flac">FLAC (lossless)</option></select></label>
+        <label>Seed (−1 = random)<input type="text" id="crSeed" value="-1"></label>
+        <label>Creativity<input type="number" id="crTemp" min="0.1" max="1.5" step="0.05" value="0.85"></label>
+      </div>
+      <label class="chk"><input type="checkbox" id="crThink" checked> Plan the song first (smarter structure, a little slower)</label>
+      <label class="chk"><input type="checkbox" id="crRef"> Use the playing song as a sound reference</label>
+      <label class="chk"><input type="checkbox" id="crAutoPlay" checked> Play the first version when it’s ready</label>
+    </details>
+    <details class="fld" id="crEng"><summary>Engine</summary>
+      <div class="crRow">
+        <label>Engine<select id="crEngine"><option value="space">KEBBEK Cloud · ACE-Step (Hugging Face)</option><option value="custom">My own server (Gradio URL)</option></select></label>
+      </div>
+      <input type="url" id="crUrl" placeholder="https://my-ace-step.example.com or user/space" hidden>
+      <input type="password" id="crTok" placeholder="Hugging Face token (hf_…) · optional, gives more free time" autocomplete="off">
+      <label class="chk"><input type="checkbox" id="crTokKeep"> Remember the token on this device</label>
+      <p class="note">The free cloud gives everyone a few minutes of GPU per day. A free Hugging Face token raises it. Your songs and token go only to the engine you choose.</p>
+    </details>
+    <div class="fld"><div class="crGo"><button class="btn primary" id="crGo" type="button">Create</button><button class="btn ghost" id="crStop" type="button" hidden>Stop</button></div>
+      <div class="pbar" id="crBar" hidden><i id="crBarI"></i></div>
+      <p class="note" id="crStat">Songs you create go straight into your library and a “KEBBEK Create” playlist, with lyrics synced.</p></div>
+    <ul class="crRes" id="crRes"></ul>
   </div>
 </div>
 <input type="file" id="logoFile" accept="image/png,image/jpeg,image/webp,image/*" tabindex="-1" aria-hidden="true">
@@ -1006,8 +1092,8 @@ document.getElementById('thmFile').addEventListener('change',async e=>{const f=e
     saveS();applyAll();if(typeof syncSnd==='function'){syncSnd();applySnd()}if(typeof syncLyUI==='function')syncLyUI();renderList();toast('Theme opened: '+(S.name||'KEBBEK'))}catch(err){toast('This file isn’t a KEBBEK theme')}});
 // panel toggles
 const cfgEl=document.getElementById('cfg'),cfgBtn=document.getElementById('cfgBtn');
-function showPanel(which){const P={list:[listEl,listBtn],cfg:[cfgEl,cfgBtn],ly:[document.getElementById('lyp'),document.getElementById('lyBtn')],snd:[document.getElementById('snd'),document.getElementById('sndBtn')]};
-  const open=which&&P[which][0].hidden;for(const k in P){const on=open&&k===which;P[k][0].hidden=!on;P[k][1].setAttribute('aria-expanded',String(on))}if(open&&which==='ly')renderLy()}
+function showPanel(which){const P={list:[listEl,listBtn],cfg:[cfgEl,cfgBtn],ly:[document.getElementById('lyp'),document.getElementById('lyBtn')],snd:[document.getElementById('snd'),document.getElementById('sndBtn')],cr:[document.getElementById('crp'),document.getElementById('crBtn')]};
+  const open=which&&P[which][0].hidden;for(const k in P){const on=open&&k===which;P[k][0].hidden=!on;P[k][1].setAttribute('aria-expanded',String(on))}if(open&&which==='ly')renderLy();if(open&&which==='cr'&&window.crOpen)crOpen()}
 cfgBtn.addEventListener('click',()=>showPanel('cfg'));
 function applyAll(){applyColors();applyName();applyFx();applyLogo();showers.forEach(f=>f())}
 applyAll();
@@ -1520,6 +1606,135 @@ function frame(now){
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
+// ---- KEBBEK Create · AI music generation (ACE-Step 1.5 via Gradio) ----
+(function(){
+const g=id=>document.getElementById(id),panel=g('crp');if(!panel)return;
+const KEY='kebbek-zeri-create',TKEY='kebbek-zeri-hf';
+const D={mode:'custom',title:'',desc:'',lyr:'',inst:false,tags:[],voc:'',extra:'',lang:'unknown',dur:'-1',batch:'2',bpm:0,key:'',ts:'',str:0.6,model:'acestep-v15-turbo',steps:8,cfg:7,fmt:'mp3',seed:'-1',temp:0.85,think:true,ref:false,autoplay:true,engine:'space',url:''};
+let C=Object.assign({},D);try{Object.assign(C,JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(e){}
+let tok='';try{tok=localStorage.getItem(TKEY)||''}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(C))}catch(e){}};
+const QUICK={
+  road:{mode:'custom',title:'Highway Home',tags:['Country','Upbeat','Acoustic guitar','Banjo','Fiddle'],voc:'male',bpm:112,key:'G major',ts:'4',lang:'en',lyr:'[Verse]\nDust on my boots and the sun going down\nOld radio humming through a quiet town\n[Chorus]\nI’m driving home on a highway of gold\nWith a heart full of thunder and a song to hold\n[Verse]\nMama’s porch light burning in the dark\nEvery mile closer to the start\n[Chorus]\nI’m driving home on a highway of gold\nWith a heart full of thunder and a song to hold'},
+  wed:{mode:'custom',title:'Valle e Dasmës',tags:['Albanian folk','Party','Clarinet','Çifteli','Drums'],voc:'male',bpm:128,key:'D minor',ts:'4',lang:'unknown',lyr:'[Instrumental]'},
+  lofi:{mode:'custom',title:'Late Night Notes',tags:['Lo-fi','Chill','Piano','Drums'],voc:'none',bpm:80,key:'F major',ts:'4',lang:'unknown',lyr:'[Instrumental]'},
+  epic:{mode:'custom',title:'Rise',tags:['Cinematic','Epic','Strings','Brass','Drums'],voc:'choir',bpm:90,key:'C minor',ts:'4',lang:'unknown',lyr:'[Instrumental]'},
+  club:{mode:'custom',title:'Lights Out',tags:['EDM','House','Party','Synth','808 bass'],voc:'female',bpm:126,key:'A minor',ts:'4',lang:'en',lyr:'[Verse]\nCity lights are calling out my name\nTonight we never stay the same\n[Chorus]\nLights out, hands up\nWe don’t stop, we don’t stop'},
+  ballad:{mode:'custom',title:'Still Here',tags:['Pop','Emotional','Piano','Strings'],voc:'female',bpm:72,key:'Eb major',ts:'4',lang:'en',lyr:'[Verse]\nI kept the letters that you never sent\nI kept the promise even when you went\n[Chorus]\nAnd I’m still here, still here\nHolding on to every year'}
+};
+const VOCW={male:'male vocals',female:'female vocals',duet:'male and female duet vocals',choir:'choir vocals',none:'instrumental, no vocals'};
+const isInst=()=>C.inst||C.voc==='none'||/^\s*\[instrumental\]\s*$/i.test(C.lyr);
+function promptText(){const p=C.tags.map(x=>x.toLowerCase());if(C.voc)p.push(VOCW[C.voc]);if(C.extra.trim())p.push(C.extra.trim());if(+C.bpm)p.push(C.bpm+' bpm');if(C.key)p.push(C.key);return p.join(', ')}
+function paint(){
+  panel.dataset.mode=C.mode;
+  panel.querySelectorAll('#crModes .chip').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.m===C.mode)));
+  panel.querySelectorAll('#crGen .chip,#crMood .chip,#crIns .chip').forEach(b=>b.setAttribute('aria-pressed',String(C.tags.includes(b.dataset.g))));
+  panel.querySelectorAll('#crVoc .chip').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===C.voc)));
+  g('crInst').setAttribute('aria-pressed',String(!!C.inst));g('crLyr').disabled=!!C.inst;
+  const map={crTitle:'title',crDesc:'desc',crLyr:'lyr',crExtra:'extra',crLang:'lang',crDur:'dur',crBatch:'batch',crBpm:'bpm',crKey:'key',crTs:'ts',crStr:'str',crModel:'model',crSteps:'steps',crCfg:'cfg',crFmt:'fmt',crSeed:'seed',crTemp:'temp',crEngine:'engine',crUrl:'url'};
+  for(const id in map){const el=g(id);if(document.activeElement!==el)el.value=C[map[id]]}
+  g('crThink').checked=!!C.think;g('crRef').checked=!!C.ref;g('crAutoPlay').checked=!!C.autoplay;
+  g('vcrStr').textContent=Math.round(C.str*100)+'%';
+  g('crUrl').hidden=C.engine!=='custom';g('crTok').value=tok;g('crTokKeep').checked=!!localStorage.getItem(TKEY);
+  g('crCnt').textContent=C.lyr.length+' / 4000';
+  g('crPrompt').textContent=promptText()||'Pick a few style chips, or type your own words.';
+  const t=curTrack();g('crSrc').textContent=t?t.name+(audioEl&&audioEl.duration?' · '+fmt(audioEl.duration):''):'Play a song from your library first. It becomes the source.';
+  g('crSrcLbl').textContent=C.mode==='repaint'?'Song to repaint':'Song to cover';
+}
+window.crOpen=paint;
+const bind=(id,k,num)=>g(id).addEventListener('input',e=>{C[k]=num?+e.target.value:e.target.value;save();paint()});
+[['crTitle','title'],['crDesc','desc'],['crLyr','lyr'],['crExtra','extra'],['crLang','lang'],['crDur','dur'],['crBatch','batch'],['crBpm','bpm',1],['crKey','key'],['crTs','ts'],['crStr','str',1],['crModel','model'],['crSteps','steps',1],['crCfg','cfg',1],['crFmt','fmt'],['crSeed','seed'],['crTemp','temp',1],['crEngine','engine'],['crUrl','url']].forEach(a=>bind(...a));
+['crThink','think','crRef','ref','crAutoPlay','autoplay'].forEach((x,i,a)=>{if(i%2)return;g(x).addEventListener('change',e=>{C[a[i+1]]=e.target.checked;save()})});
+g('crTok').addEventListener('input',e=>{tok=e.target.value.trim();if(g('crTokKeep').checked)try{localStorage.setItem(TKEY,tok)}catch(_){}});
+g('crTokKeep').addEventListener('change',e=>{try{e.target.checked&&tok?localStorage.setItem(TKEY,tok):localStorage.removeItem(TKEY)}catch(_){}});
+g('crModes').addEventListener('click',e=>{const b=e.target.closest('[data-m]');if(!b)return;C.mode=b.dataset.m;save();paint()});
+panel.addEventListener('click',e=>{const b=e.target.closest('[data-g]');if(!b)return;const k=b.dataset.g,i=C.tags.indexOf(k);i<0?C.tags.push(k):C.tags.splice(i,1);save();paint()});
+g('crVoc').addEventListener('click',e=>{const b=e.target.closest('[data-v]');if(!b)return;C.voc=C.voc===b.dataset.v?'':b.dataset.v;save();paint()});
+g('crInst').addEventListener('click',()=>{C.inst=!C.inst;save();paint()});
+g('crTags').addEventListener('click',e=>{const b=e.target.closest('[data-t]');if(!b)return;const ta=g('crLyr'),p=ta.selectionStart??ta.value.length,v=ta.value,pre=v.slice(0,p),ins=(pre&&!pre.endsWith('\n')?'\n':'')+b.dataset.t+'\n';ta.value=pre+ins+v.slice(p);C.lyr=ta.value;save();paint();ta.focus();ta.selectionStart=ta.selectionEnd=p+ins.length});
+g('crUseLy').addEventListener('click',()=>{const t=curTrack();if(!t||!t.lyrics||!t.lyrics.length){toast('This song has no lyrics yet');return}C.lyr=t.lyrics.map(l=>l.text).join('\n');C.inst=false;save();paint()});
+g('crRnow').addEventListener('click',()=>{if(!audioEl)return;const a=Math.max(0,Math.round(audioEl.currentTime*2)/2);C.rs=a;g('crRs').value=a;g('crRe').value=Math.round((a+15)*2)/2});
+g('crStr').addEventListener('input',()=>g('vcrStr').textContent=Math.round(C.str*100)+'%');
+g('crQuick').addEventListener('click',e=>{const b=e.target.closest('[data-q]');if(!b)return;Object.assign(C,{inst:false,extra:''},QUICK[b.dataset.q]);save();paint();toast('Ready · press Create')});
+
+// ---- engine ----
+let GC=null,client=null,clientKey='',job=null,busy=false,t0=0,tick=0;
+const stat=(m)=>g('crStat').textContent=m;
+async function getClient(){
+  if(!GC)GC=await import('https://cdn.jsdelivr.net/npm/@gradio/client@2.6.0/dist/index.min.js');
+  const src=C.engine==='custom'&&C.url.trim()?C.url.trim():'ACE-Step/Ace-Step-v1.5',k=src+'|'+tok;
+  if(client&&clientKey===k)return client;
+  client=await GC.Client.connect(src,Object.assign({events:['data','status']},tok?{hf_token:tok}:{}));clientKey=k;return client;
+}
+async function srcFile(){const t=curTrack();if(!t||!t.blob)throw new Error('Play a song from your library first.');return GC.handle_file(t.blob)}
+async function buildArgs(){
+  const m=C.mode,simple=m==='simple',inst=isInst();
+  const lyr=simple?'':(inst?'[Instrumental]':C.lyr.trim());
+  if(m==='custom'&&!inst&&!lyr)throw new Error('Write some lyrics, or turn on Instrumental.');
+  if(simple&&!C.desc.trim())throw new Error('Describe the song you want.');
+  const task=m==='cover'?'cover':m==='repaint'?'repaint':'text2music';
+  const src=(m==='cover'||m==='repaint')?await srcFile():null;
+  const ref=C.ref&&m!=='cover'&&curTrack()?await srcFile():null;
+  const rs=+g('crRs').value||0,re=+g('crRe').value;
+  return [C.model,m,simple?C.desc.trim()+(C.voc==='none'?' (instrumental)':''):'',C.lang,
+    simple?'':promptText(),lyr,+C.bpm||0,C.key||'',C.ts||'',C.lang,
+    +C.steps||8,+C.cfg||7,String(C.seed).trim()==='-1'||!String(C.seed).trim(),String(C.seed).trim()||'-1',ref,
+    +C.dur,+C.batch||1,src,null,rs,isFinite(re)?re:-1,
+    'Fill the audio semantic mask based on the given conditions:',m==='cover'?+C.str:1.0,task,false,0.0,1.0,3.0,'ode','',
+    C.fmt,+C.temp||0.85,!!C.think,2.0,0,0.9,'NO USER INPUT',true,true,true,false,true,false,true,0.5,8,'vocals',[],false];
+}
+function friendly(e){const m=String(e&&(e.message||e)||e);
+  if(/ZeroGPU quota|exceeded your/i.test(m)){const w=(m.match(/Try again in ([\d:]+)/)||[])[1];return 'The free cloud time for today is used up'+(w?' (resets in '+w+')':'')+'. Add a free Hugging Face token under Engine to keep creating.'}
+  if(/GPU task aborted/i.test(m))return 'The cloud GPU stopped this job. Try a shorter length or press Create again.';
+  if(/fetch|network|Connection/i.test(m))return 'Can’t reach the engine. Check the internet connection and try again.';
+  return m.slice(0,240)}
+function setBusy(on){busy=on;g('crGo').disabled=on;g('crGo').textContent=on?'Creating…':'Create';g('crStop').hidden=!on;g('crBar').hidden=!on;g('crBar').classList.toggle('busy',on);clearInterval(tick);
+  if(on){t0=Date.now();tick=setInterval(()=>{if(busy&&!/Queue/.test(g('crStat').textContent))stat('Creating your song · '+Math.round((Date.now()-t0)/1000)+' s')},1000)}}
+function lrcFrom(v){if(!v)return null;const s=typeof v==='string'?v:(v.value||'');return /\[\d+:\d+/.test(s)?parseLRC(s):null}
+async function addResult(blob,name,lyrText,lrc){
+  const ext=C.fmt==='flac'?'flac':'mp3',f=new File([blob],name+'.'+ext,{type:blob.type||('audio/'+(ext==='mp3'?'mpeg':ext))});
+  const t={id:Date.now()+'-cr-'+Math.random().toString(36).slice(2,7),name,blob:f,added:Date.now(),artist:'KEBBEK Create',made:{mode:C.mode,prompt:promptText(),seed:C.seed}};
+  let L=lrc&&lrc.length?lrc:null;
+  if(!L&&lyrText&&!/^\s*\[instrumental\]\s*$/i.test(lyrText))L=lyrText.split(/\r?\n/).map(x=>x.trim()).filter(Boolean).map(text=>({t:-1,e:0,text}));
+  if(L)t.lyrics=normalize(L);
+  lib.push(t);dbDo(st=>st.put(t));
+  let p=PL.find(x=>x.name==='KEBBEK Create');if(!p){p={id:'pl'+Date.now().toString(36),name:'KEBBEK Create',ids:[]};PL.push(p)}p.ids.push(t.id);savePL();
+  return t;
+}
+async function run(){
+  if(busy)return;let args;
+  try{setBusy(true);stat('Connecting to the engine…');const cl=await getClient();args=await buildArgs();
+    stat('Sending your song idea…');job=cl.submit('/generation_wrapper',args);
+    let out=null;
+    for await(const msg of job){
+      if(msg.type==='status'){if(msg.stage==='error')throw new Error(msg.message||'error');
+        if(msg.queue&&msg.position!=null)stat('Queue · position '+(msg.position+1)+(msg.eta?' · about '+Math.round(msg.eta)+' s':''));
+        if(msg.progress_data&&msg.progress_data[0]){const p=msg.progress_data[0];if(p.length)g('crBarI').style.width=Math.round(p.index/p.length*100)+'%'}}
+      if(msg.type==='data'){out=msg.data;break}
+    }
+    if(!out)throw new Error('The engine returned nothing.');
+    const files=out.slice(0,8).filter(x=>x&&(x.url||x.path));if(!files.length)throw new Error(String(out[10]||'No audio came back.'));
+    stat('Saving to your library…');
+    const lyrUsed=C.mode==='simple'?'':(isInst()?'':C.lyr.trim()),base=(C.mode==='simple'?(C.desc.trim().split(/[,.]/)[0].slice(0,40)):(C.title.trim()||'Untitled'))||'KEBBEK song';
+    const made=[];
+    for(let i=0;i<files.length;i++){const r=await fetch(files[i].url,tok?{headers:{Authorization:'Bearer '+tok}}:{});if(!r.ok)continue;
+      const b=await r.blob(),lrc=lrcFrom(out[28+i]);made.push(await addResult(b,base+(files.length>1?' · v'+(i+1):''),lyrUsed,lrc))}
+    if(!made.length)throw new Error('Couldn’t download the new song.');
+    renderList();const sec=Math.round((Date.now()-t0)/1000);
+    stat(`Done in ${sec} s · ${made.length} version${made.length>1?'s':''} added to “KEBBEK Create”.`+(out[11]?' Seed '+out[11]+'.':''));
+    const ul=g('crRes');made.forEach(t=>{const li=document.createElement('li');li.innerHTML='<b></b><span></span><button class="chip" type="button">Play</button>';li.querySelector('b').textContent=t.name;li.querySelector('span').textContent=new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});li.querySelector('button').onclick=()=>{const i=idxOf(t.id);if(i>=0)playIndex(i)};ul.prepend(li)});
+    if(C.autoplay){const i=idxOf(made[0].id);if(i>=0)playIndex(i)}
+    toast('New song ready');
+  }catch(e){console.warn('[KEBBEK Create]',e);stat(friendly(e));if(/connect|config/i.test(String(e&&e.message)))client=null}
+  finally{setBusy(false);job=null;g('crBarI').style.width='0'}
+}
+g('crGo').addEventListener('click',run);
+g('crStop').addEventListener('click',()=>{try{job&&job.cancel()}catch(e){}setBusy(false);stat('Stopped.')});
+g('crBtn').addEventListener('click',()=>showPanel('cr'));
+paint();
+if(location.hash==='#debug')window.__kebbekCreate={C,buildArgs,promptText,friendly,getClient};
+})();
+
 })();
 </script>
 
