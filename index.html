@@ -430,7 +430,6 @@ body.notele .tele{display:none}
         <button class="chip" type="button" data-fx="hud">HUD arcs</button>
         <button class="chip" type="button" data-fx="dust">Particles</button>
         <button class="chip" type="button" data-fx="shake">Shake</button>
-        <button class="chip" type="button" data-fx="shatter">Shatter</button>
       </div>
     </div>
     <div class="fld"><span>Scene glow</span>
@@ -683,7 +682,7 @@ const surroundM=new THREE.MeshStandardMaterial({color:0x090a0f,metalness:.2,roug
 arcs(12,2.2,(a0,ar)=>new THREE.TorusGeometry(2.2,0.15,24,Math.ceil(160/12),ar).rotateZ(a0),0,surroundM);
 // sparks thrown out when the speaker bursts
 const NSP=240,spP=new Float32Array(NSP*3),spV=new Float32Array(NSP*3),spL=new Float32Array(NSP);const spG=new THREE.BufferGeometry();spG.setAttribute('position',new THREE.BufferAttribute(spP,3));
-const spM=new THREE.PointsMaterial({size:.16,color:0xffb347,transparent:true,opacity:0,depthWrite:false,blending:THREE.AdditiveBlending});let spI=0,shatterCool=0,burst=0;for(let i=0;i<NSP;i++)spP[i*3+2]=-999;const sparks=add(new THREE.Points(spG,spM));sparks.frustumCulled=false;
+const spM=new THREE.PointsMaterial({size:.16,color:0xffb347,transparent:true,opacity:0,depthWrite:false,blending:THREE.AdditiveBlending});let spI=0,shatterCool=0,burst=0;for(let i=0;i<NSP;i++)spP[i*3+2]=-999;
 function shatter(st){if(reduce||!S.fx.shatter)return;burst=Math.max(burst,st);for(const f of FR){const k=st*(5+Math.random()*5);f.v.x+=Math.cos(f.dir)*k;f.v.y+=Math.sin(f.dir)*k;f.v.z+=(Math.random()*1.8-.4)*k;
     f.w.set((Math.random()-.5)*14*st,(Math.random()-.5)*14*st,(Math.random()-.5)*9*st)}
   for(let n=0;n<70;n++){const i=spI++%NSP,a=Math.random()*Math.PI*2,r=2.2+Math.random()*1.1,sp=4+Math.random()*9*st;spP[i*3]=Math.cos(a)*r;spP[i*3+1]=Math.sin(a)*r;spP[i*3+2]=Math.random()*.4;spV[i*3]=Math.cos(a)*sp;spV[i*3+1]=Math.sin(a)*sp;spV[i*3+2]=(Math.random()-.3)*sp*.6;spL[i]=1}}
@@ -1017,7 +1016,7 @@ addEventListener('drop',e=>{e.preventDefault();dragN=0;dropEl.hidden=true;addFil
 document.getElementById('seek').addEventListener('click',e=>{if(!audioEl||!audioEl.duration)return;const r=e.currentTarget.getBoundingClientRect();audioEl.currentTime=(e.clientX-r.left)/r.width*audioEl.duration});
 
 // ---------- settings (saved on this device)
-const DEF={name:'KEBBEK',c1:'#2fe0ff',c2:'#5a7bff',logo:'default',logoSize:1,bloom:.6,bloomV:2,sens:1,removeBg:true,crisp:true,logoStraight:true,logoPos:'both',logoHidden:false,clean:true,tele:true,logoGlow:.35,logoBack:.55,cycle:false,lyStyle:'karaoke',lyZ:1,lyPos:'side',lyClean:true,autoSync:true,lyV:2,snd:{preset:'Natural',eq:[0,0,0,0,0,0,0,0,0,0],bass:0,clar:0,warm:0,rev:0,width:1,loud:false,lim:true,vol:1,rate:1,fade:2,one:false,off:false,avms:0},fx:{lasers:true,stars:true,grid:true,glitch:true,shell:true,hud:true,dust:true,shake:true,shatter:true}};
+const DEF={name:'KEBBEK',c1:'#2fe0ff',c2:'#5a7bff',logo:'default',logoSize:1,bloom:.6,bloomV:2,sens:1,removeBg:true,crisp:true,logoStraight:true,logoPos:'both',logoHidden:false,clean:true,tele:true,logoGlow:.35,logoBack:.55,cycle:false,lyStyle:'karaoke',lyZ:1,lyPos:'side',lyClean:true,autoSync:true,lyV:2,snd:{preset:'Natural',eq:[0,0,0,0,0,0,0,0,0,0],bass:0,clar:0,warm:0,rev:0,width:1,loud:false,lim:true,vol:1,rate:1,fade:2,one:false,off:false,avms:0},fx:{lasers:true,stars:true,grid:true,glitch:true,shell:true,hud:true,dust:true,shake:true}};
 let S=JSON.parse(JSON.stringify(DEF));
 try{const raw=localStorage.getItem('kebbek-zeri-cfg');if(raw){const o=JSON.parse(raw);S=Object.assign(S,o);S.fx=Object.assign({},DEF.fx,o.fx||{});S.snd=Object.assign({},DEF.snd,o.snd||{});if((o.bloomV||0)<2){S.bloom=Math.min(S.bloom,.6);S.bloomV=2}if((o.lyV||0)<2){S.lyPos='side';S.lyV=2}if(o.thV===3){if(String(o.c1).toLowerCase()==='#e5e4e2'){S.c1=DEF.c1;S.c2=DEF.c2;S.bloom=DEF.bloom}S.thV=4}if(!Array.isArray(S.snd.eq)||S.snd.eq.length!==10)S.snd.eq=DEF.snd.eq.slice()}}catch(e){}
 const saveS=()=>{try{localStorage.setItem('kebbek-zeri-cfg',JSON.stringify(S))}catch(e){}};
@@ -1488,7 +1487,7 @@ function lyFrame(sbv){const L0=lines(),L=timedLines(L0),pOpen=!listEl.hidden||!c
   lyEl.style.setProperty('--b',sbv.toFixed(3));lyEl.style.setProperty('--lyS',(1+sbv*.03*K).toFixed(3))}
 syncLyUI();
 renderLy();
-if(location.hash==='#debug')window.__kebbek={shatter:(s)=>shatter(s),lib,alignLines,readTags,ask,toPCM16k,lines,curTrack,normalize,cleanLyricText,get S(){return S}};
+if(location.hash==='#debug')window.__kebbek={lib,alignLines,readTags,ask,toPCM16k,lines,curTrack,normalize,cleanLyricText,get S(){return S}};
 
 // ---------- camera drag
 let yaw=0,pitch=0,ty=0,tp=0,drag=null;
@@ -1539,7 +1538,7 @@ const tCur=$('tCur'),tDur=$('tDur');const spec=$('spec'),sctx=spec.getContext('2
 let sb=0,sm=0,sh=0,avgB=.2,cool=0,kickEnv=0,glitch=0,last=performance.now(),t0=last,bpm=0;const kicks=[];
 const ca=new THREE.Color(),cb=new THREE.Color(),cc=new THREE.Color();
 function band(a,b){let s=0;for(let i=a;i<b;i++)s+=data[i];return s/((b-a)*255)}
-function onKick(strength){if(strength>.68&&shatterCool<=0){shatter(Math.min(1,(strength-.45)*1.8));shatterCool=1.2}spawnWave(1+strength);if(S.fx.lasers&&strength>.35)spawnLaser();kickEnv=1;glitch=reduce||!S.fx.glitch?0:Math.min(1,strength*2.5);
+function onKick(strength){spawnWave(1+strength);if(S.fx.lasers&&strength>.35)spawnLaser();kickEnv=1;glitch=reduce||!S.fx.glitch?0:Math.min(1,strength*2.5);
 }
 // tempo: onset envelope + autocorrelation (independent of frame rate)
 const envT=[],envV=[];let tempoAt=0;
@@ -1651,7 +1650,6 @@ function frame(now){
   cycleTick(dt,kickEnv,hudTick);sndTick();
 
   lyFrame(sb);
-  shatterTick(dt);
   // lights: fully dark until music plays, then the scene fades in over 5 s; fades back out when the music stops
   {const tgt=live?1:0,wn=performance.now(),wd=Math.min(.5,(wn-(wakeT||wn))/1000);wakeT=wn;wakeLv+=tgt?wd/5:-wd/1.2;wakeLv=Math.max(0,Math.min(1,wakeLv));const e=wakeLv*wakeLv*(3-2*wakeLv),o=(1-e).toFixed(3);if(o!==darkO){darkO=o;darkEl.style.opacity=o}}
   if((hudTick&1)===0){const bl=brandLogoEl;if(!bl.hidden){const sc=1+sb*.14*K+kickEnv*.1*K;bl.style.transform=`perspective(300px) rotateY(${(yaw*.9).toFixed(3)}rad) rotateX(${(-pitch*.9).toFixed(3)}rad) scale(${sc.toFixed(3)})`;bl.style.filter=`drop-shadow(0 0 ${(4+sb*16+kickEnv*10).toFixed(1)}px color-mix(in srgb, var(--accent) ${Math.round(35+sb*45)}%, transparent))`}}
