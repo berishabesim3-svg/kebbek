@@ -479,7 +479,7 @@ body.notele .tele{display:none}
     <div class="fld" id="lyAutoBox"><span>Automatic lyrics</span>
       <div class="lopts">
         <select id="lyLang" aria-label="Song language"><option value="albanian">Albanian</option><option value="english">English</option><option value="german">German</option><option value="">Auto-detect</option></select>
-        <select id="lyModel" aria-label="Accuracy"><option value="onnx-community/whisper-base">Fast</option><option value="onnx-community/whisper-small">Accurate (heavier)</option></select>
+        <select id="lyModel" aria-label="Accuracy"><option value="onnx-community/whisper-base_timestamped">Fast</option><option value="onnx-community/whisper-small_timestamped">Accurate (heavier)</option></select>
         <button class="chip on" id="lyAuto" type="button">Generate lyrics</button>
       </div>
       <div class="pbar" id="lyBar" hidden><i id="lyBarI"></i></div>
@@ -1252,19 +1252,24 @@ function alignLines(L,chunks){const A=[];chunks.forEach(c=>{const t0=c.timestamp
     const dg=D[(i-1)*W+j-1]+(sim>=.55?1+sim:-1),up=D[(i-1)*W+j]-.15,lf=D[i*W+j-1]-.4;
     if(dg>=up&&dg>=lf){D[i*W+j]=dg;P[i*W+j]=sim>=.55?3:0}else if(up>=lf){D[i*W+j]=up;P[i*W+j]=1}else{D[i*W+j]=lf;P[i*W+j]=2}}
   const T=new Array(L.length).fill(null);let i=n,j=m,hits=0;
-  while(i>0&&j>0){const p=P[i*W+j];if(p===3||p===0){if(p===3){const bw=B[j-1],t=A[i-1].t-bw.wi*.28;if(T[bw.li]==null||t<T[bw.li])T[bw.li]=t;hits++}i--;j--}else if(p===1)i--;else j--}
+  while(i>0&&j>0){const p=P[i*W+j];if(p===3||p===0){if(p===3){const bw=B[j-1],t=A[i-1].t-bw.wi*.3;if(T[bw.li]==null||t<T[bw.li])T[bw.li]=t;hits++}i--;j--}else if(p===1)i--;else j--}
   if(hits<Math.max(3,m*.15))return null;
   for(let k=0;k<T.length;k++){if(T[k]!=null)continue;let a=k-1;while(a>=0&&T[a]==null)a--;let b=k+1;while(b<T.length&&T[b]==null)b++;
     const ta=a>=0?T[a]:(b<T.length?Math.max(0,T[b]-3*(b-k)):0),tb=b<T.length?T[b]:ta+3*(k-a);T[k]=a>=0&&b<T.length?ta+(tb-ta)*(k-a)/(b-a):a<0?Math.max(0,tb-3*(b-k)):ta+3*(k-a)}
   for(let k=1;k<T.length;k++)if(T[k]<=T[k-1]+.3)T[k]=T[k-1]+.3;
   return L.map((l,k)=>({t:Math.max(0,T[k]),e:0,text:l.text}))}
+function groupWords(ch){const out=[];let cur=null;const flush=()=>{if(cur&&cur.text.trim())out.push(cur);cur=null};
+  ch.forEach(c=>{const tx=(c.text||'').trim();const t0=c.timestamp&&c.timestamp[0],t1=c.timestamp&&c.timestamp[1]!=null?c.timestamp[1]:t0;if(t0==null)return;
+    if(!normW(tx)){if(/♪|\[|\(/.test(tx))flush();return}
+    if(cur&&(t0-cur.end>.65||cur.n>=11||(cur.n>=4&&/[.!?,]$/.test(cur.last))))flush();
+    if(!cur)cur={timestamp:[t0,t1],text:'',n:0,end:t1,last:''};cur.text+=(cur.text?' ':'')+tx;cur.n++;cur.end=t1;cur.timestamp[1]=t1;cur.last=tx});flush();return out}
 // automatic
 function setStat(msg,err){lyStat.textContent=msg;lyStat.classList.toggle('err',!!err)}
 const WORKER_SRC=`let pipe=null,cur='',T=null;
 self.onmessage=async e=>{const d=e.data;try{
  if(!T){T=await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.0.2');T.env.allowLocalModels=false}
  if(d.cmd==='load'){if(!pipe||cur!==d.model){pipe=null;pipe=await T.pipeline('automatic-speech-recognition',d.model,{dtype:'q8',device:'wasm',progress_callback:p=>self.postMessage({type:'dl',p:{status:p.status,file:p.file,progress:p.progress}})});cur=d.model}self.postMessage({type:'ready'});return}
- if(d.cmd==='run'){const o={return_timestamps:true,chunk_length_s:30,stride_length_s:5,task:'transcribe'};if(d.lang)o.language=d.lang;
+ if(d.cmd==='run'){const o={return_timestamps:'word',chunk_length_s:30,stride_length_s:5,task:'transcribe'};if(d.lang)o.language=d.lang;
   const out=await pipe(d.audio,o);self.postMessage({type:'done',chunks:out.chunks||[],text:out.text||''})}
 }catch(err){self.postMessage({type:'err',msg:String(err&&err.message||err)})}};`;
 function getWorker(){if(!worker){worker=new Worker(URL.createObjectURL(new Blob([WORKER_SRC],{type:'text/javascript'})),{type:'module'})}return worker}
@@ -1282,15 +1287,17 @@ lyAutoBtn.addEventListener('click',async()=>{const t=curTrack();if(!t||lyBusy)re
   delete lyAutoBtn.dataset.arm;
   lyBusy=true;renderLy();lyBar.hidden=false;lyBar.classList.add('busy');setStat('Loading the voice model…');const started=Date.now();let tick=0;
   try{
-    await ask({cmd:'load',model:$l('lyModel').value});
+    try{await ask({cmd:'load',model:$l('lyModel').value})}catch(e1){if(/small/.test($l('lyModel').value)){setStat('The accurate model is unavailable, using the fast one…');await ask({cmd:'load',model:'onnx-community/whisper-base_timestamped'})}else throw e1}
     lyBar.classList.add('busy');setStat('Preparing audio…');
-    const pcm=await toPCM16k(t.blob);
+    let out=null;if(Array.isArray(t.asrWords)&&t.asrWords.length&&t.asrLang===$l('lyLang').value){out={chunks:t.asrWords}}
+    if(!out){const pcm=await toPCM16k(t.blob);
     tick=setInterval(()=>setStat('Listening to the song and writing the words · '+Math.round((Date.now()-started)/1000)+' s (usually 1–3 minutes)'),1000);
-    const out=await ask({cmd:'run',audio:pcm,lang:$l('lyLang').value},[pcm.buffer]);
+    out=await ask({cmd:'run',audio:pcm,lang:$l('lyLang').value},[pcm.buffer]);
+    t.asrWords=(out.chunks||[]).filter(c=>c.timestamp&&c.timestamp[0]!=null).map(c=>({timestamp:[c.timestamp[0],c.timestamp[1]],text:c.text}));t.asrLang=$l('lyLang').value;dbDo(st=>st.put(t))}
     if(plainText){const al=alignLines(lines(),out.chunks||[]);
       if(al){toast('Lyrics synced to the song');lycKey='';if(curTrack()===t){setLines(al,true);renderLy()}else{t.lyrics=normalize(al);dbDo(st=>st.put(t))}setStat(`Done: ${al.length} lines synced to the song. Check them and adjust with ⏱ where needed.`);return}
       setStat('The text didn’t match the vocals well. Try "Accurate", pick the right language, or use "Tap to sync".',true);return}
-    const L=(out.chunks||[]).map(c=>({t:c.timestamp&&c.timestamp[0]!=null?c.timestamp[0]:-1,e:c.timestamp&&c.timestamp[1]!=null?c.timestamp[1]:0,text:(c.text||'').trim()}))
+    const L=groupWords(out.chunks||[]).map(c=>({t:c.timestamp&&c.timestamp[0]!=null?c.timestamp[0]:-1,e:c.timestamp&&c.timestamp[1]!=null?c.timestamp[1]:0,text:(c.text||'').trim()}))
       .filter(l=>l.text&&!/^[\[\(♪*].*[\]\)♪*]$/.test(l.text)&&!/^(music|muzik[eë])$/i.test(l.text));
     if(curTrack()===t){setLines(L,true);renderLy()}else{t.lyrics=normalize(L);dbDo(st=>st.put(t))}
     setStat(L.length?`Done: ${L.length} lines. Check them below and fix any words or timings.`:'No clear vocals were heard in this song. Try "Accurate" or type the lyrics yourself.',!L.length);
@@ -1358,6 +1365,7 @@ function lyFrame(sbv){const L0=lines(),L=timedLines(L0),pOpen=!listEl.hidden||!c
   lyEl.style.setProperty('--b',sbv.toFixed(3));lyEl.style.setProperty('--lyS',(1+sbv*.03*K).toFixed(3))}
 syncLyUI();
 renderLy();
+if(location.hash==='#debug')window.__kebbek={lib,alignLines,readTags,ask,toPCM16k,lines,curTrack,normalize,cleanLyricText,get S(){return S}};
 
 // ---------- camera drag
 let yaw=0,pitch=0,ty=0,tp=0,drag=null;
