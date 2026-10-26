@@ -1,11 +1,11 @@
 <!doctype html>
-<html lang="sq" translate="no" class="notranslate">
+<html lang="en" translate="no" class="notranslate">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#05060a">
 <meta name="google" content="notranslate">
-<meta name="description" content="KEBBEK Zëri: player muzike me reaktor zëri 3D, titra karaoke dhe ekualizues.">
+<meta name="description" content="KEBBEK: a music player with a 3D sound reactor, karaoke lyrics and equalizer.">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -14,7 +14,7 @@
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon-192.png">
 <meta property="og:title" content="KEBBEK Zëri">
-<meta property="og:description" content="Reaktor zëri 3D që reagon ndaj çdo kënge.">
+<meta property="og:description" content="A 3D sound reactor that reacts to every song.">
 <meta property="og:image" content="icon-512.png">
 <style>*{box-sizing:border-box}:root{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}body{margin:0;font:14px system-ui,sans-serif;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}input[type=text],textarea{-webkit-user-select:text;user-select:text}[hidden]{display:none!important}</style>
 <title>KEBBEK Zëri</title>
@@ -312,21 +312,21 @@ body.notele .tele{display:none}
 
 </head>
 <body>
-<canvas id="stage" aria-label="Altoparlant 3D KEBBEK që reagon ndaj muzikës"></canvas>
+<canvas id="stage" aria-label="KEBBEK 3D speaker that reacts to music"></canvas>
 
 <div class="hud" aria-hidden="true"><i class="c tl"></i><i class="c tr"></i><i class="c bl"></i><i class="c br"></i></div>
 
 <div class="top">
   <div id="status" class="brandblk">
-    <div class="eyebrow"><span class="dot"></span><span id="stTxt">Gati</span></div>
+    <div class="eyebrow"><span class="dot"></span><span id="stTxt">Ready</span></div>
     <div class="brandrow"><img id="brandLogo" alt="" width="44" height="44"><h1 id="brand">KEBBEK</h1></div>
   </div>
-  <div class="tele" id="tele" aria-label="Analiza e zërit">
+  <div class="tele" id="tele" aria-label="Sound analysis">
     <div class="tl-bpm"><b id="bpm">—</b><span>BPM</span></div>
     <div class="tl-meters">
-      <div class="mt"><span>Bas</span><i><s id="gB"></s></i></div>
-      <div class="mt"><span>Mes</span><i><s id="gM"></s></i></div>
-      <div class="mt"><span>Lart</span><i><s id="gH"></s></i></div>
+      <div class="mt"><span>Bass</span><i><s id="gB"></s></i></div>
+      <div class="mt"><span>Mid</span><i><s id="gM"></s></i></div>
+      <div class="mt"><span>High</span><i><s id="gH"></s></i></div>
     </div>
     <canvas id="spec" width="480" height="64"></canvas>
   </div>
@@ -334,129 +334,129 @@ body.notele .tele{display:none}
 
 <div class="list" id="list" hidden>
   <div class="lhead">
-    <span class="ltitle">Muzika ime</span>
+    <span class="ltitle">My music</span>
   </div>
-  <div class="pltabs" id="plTabs" role="tablist" aria-label="Listat"></div>
+  <div class="pltabs" id="plTabs" role="tablist" aria-label="Playlists"></div>
   <form class="plnew" id="plNew" hidden autocomplete="off">
-    <label for="plNewName">Emri i playlistës së re</label>
-    <div class="plrow"><input type="text" id="plNewName" maxlength="40" placeholder="p.sh. Gym, Natë, Country"><button class="chip on" id="plCreate" type="submit">Krijo</button><button class="chip" id="plCancel" type="button">Anulo</button></div>
+    <label for="plNewName">New playlist name</label>
+    <div class="plrow"><input type="text" id="plNewName" maxlength="40" placeholder="e.g. Gym, Night, Country"><button class="chip on" id="plCreate" type="submit">Create</button><button class="chip" id="plCancel" type="button">Cancel</button></div>
   </form>
   <div class="plhead" id="plHead" hidden>
-    <label class="plname"><span aria-hidden="true">✎</span><input type="text" id="plName" maxlength="40" aria-label="Riemërto playlistën" autocomplete="off"></label>
+    <label class="plname"><span aria-hidden="true">✎</span><input type="text" id="plName" maxlength="40" aria-label="Rename playlist" autocomplete="off"></label>
     <div class="lopts">
-      <button class="chip on" id="plPlay" type="button">▶ Luaj</button>
-      <button class="chip on" id="plAdd" type="button">+ Shto këngë</button>
-      <button class="chip danger" id="plDel" type="button">Fshi playlistën</button>
+      <button class="chip on" id="plPlay" type="button">▶ Play</button>
+      <button class="chip on" id="plAdd" type="button">+ Add songs</button>
+      <button class="chip danger" id="plDel" type="button">Delete playlist</button>
     </div>
   </div>
   <div class="plpick" id="plPick" hidden>
-    <p class="plpickT">Prek këngët që do t'i shtosh</p>
+    <p class="plpickT">Tap the songs to add</p>
     <div id="plPickList"></div>
-    <div class="lopts"><button class="chip" id="plUpload" type="button">Ngarko këngë të reja nga pajisja</button><button class="chip on" id="plPickDone" type="button">Gati</button></div>
+    <div class="lopts"><button class="chip" id="plUpload" type="button">Upload new songs from device</button><button class="chip on" id="plPickDone" type="button">Ready</button></div>
   </div>
   <div class="lopts">
-    <button class="chip" id="shuf" type="button" aria-pressed="false">Përzie</button>
-    <button class="chip" id="rep" type="button" aria-pressed="true">Përsërit listën</button>
-    <button class="chip" id="demoBtn" type="button">Ritëm demo</button>
-    <button class="chip danger" id="clear" type="button">Fshi të gjitha</button>
+    <button class="chip" id="shuf" type="button" aria-pressed="false">Shuffle</button>
+    <button class="chip" id="rep" type="button" aria-pressed="true">Repeat</button>
+    <button class="chip" id="demoBtn" type="button">Demo beat</button>
+    <button class="chip danger" id="clear" type="button">Delete all</button>
   </div>
   <ol id="tracks"></ol>
-  <p class="empty" id="empty">Lista është bosh. Shtyp <b>+ Shto këngë</b> dhe zgjidh një ose disa MP3 nga Files. Ruhen këtu edhe për herën tjetër.</p>
+  <p class="empty" id="empty">No songs yet. Tap <b>+ Add songs</b> and pick one or more MP3s from Files. They stay here for next time.</p>
 </div>
 
 <div class="list cfg" id="cfg" hidden>
-  <div class="lhead"><span class="ltitle">Personalizo</span><button class="chip" id="cfgReset" type="button">Rikthe origjinalin</button></div>
-  <div class="thm"><button class="chip" id="thmExport" type="button">Ruaj temën si skedar</button><input type="file" id="thmFile" accept=".json,application/json"><label for="thmFile" class="chip" tabindex="0">Hap një temë</label></div>
+  <div class="lhead"><span class="ltitle">Customize</span><button class="chip" id="cfgReset" type="button">Reset to original</button></div>
+  <div class="thm"><button class="chip" id="thmExport" type="button">Save theme to file</button><input type="file" id="thmFile" accept=".json,application/json"><label for="thmFile" class="chip" tabindex="0">Open a theme</label></div>
   <div class="cfgBody">
-    <label class="fld"><span>Emri në ekran</span><input id="sName" type="text" maxlength="24" autocomplete="off"></label>
-    <div class="fld"><span>Logoja në qendër</span>
+    <label class="fld"><span>Name on screen</span><input id="sName" type="text" maxlength="24" autocomplete="off"></label>
+    <div class="fld"><span>Logo in the centre</span>
       <div class="lopts">
-        <label for="logoFile" class="chip on" tabindex="0" id="logoLbl">Ngarko logon tënde</label>
-        <button class="chip" id="logoDef" type="button" aria-pressed="true">Logo KEBBEK</button>
-        <button class="chip" id="logoNone" type="button" aria-pressed="false">Pa logo</button>
+        <label for="logoFile" class="chip on" tabindex="0" id="logoLbl">Upload your logo</label>
+        <button class="chip" id="logoDef" type="button" aria-pressed="true">KEBBEK logo</button>
+        <button class="chip" id="logoNone" type="button" aria-pressed="false">No logo</button>
       </div>
-      <label class="chk"><input type="checkbox" id="sBg" checked> Hiq sfondin automatikisht kur ngarkoj</label>
-      <div class="fld"><span>Pozicioni i logos</span><div class="lopts" id="logoPos"><button class="chip" type="button" data-p="center">Në qendër</button><button class="chip" type="button" data-p="corner">Lart majtas</button><button class="chip" type="button" data-p="both">Të dyja</button></div></div>
-      <label class="rng"><span>Madhësia</span><input type="range" id="sLogo" min="0.5" max="1.4" step="0.05"><b id="vLogo"></b></label>
-      <label class="chk"><input type="checkbox" id="sCrisp"> Logo e qartë, mbi shkëlqimin e skenës</label>
-      <label class="chk"><input type="checkbox" id="sStraight"> Logo gjithmonë drejt, në qendër</label>
-      <label class="chk"><input type="checkbox" id="sClean"> Pamje e pastër (pa kokërr filmi, vija dhe kënde)</label>
-      <label class="chk"><input type="checkbox" id="sTele"> Shfaq panelin e analizës (BPM, nivelet)</label>
-      <p class="note">Prek dy herë logon në ekran: e zëvendëson me një tjetër, kthen logon KEBBEK ose e heq. Butoni i logos te shiriti e fsheh ose e shfaq me një klik.</p>
-      <label class="rng"><span>Shkëlqimi i logos</span><input type="range" id="sLogoGlow" min="0" max="1" step="0.05"><b id="vLogoGlow"></b></label>
-      <label class="rng"><span>Sfondi pas logos</span><input type="range" id="sLogoBack" min="0" max="1" step="0.05"><b id="vLogoBack"></b></label>
+      <label class="chk"><input type="checkbox" id="sBg" checked> Remove the background automatically on upload</label>
+      <div class="fld"><span>Logo position</span><div class="lopts" id="logoPos"><button class="chip" type="button" data-p="center">Centre</button><button class="chip" type="button" data-p="corner">Top left</button><button class="chip" type="button" data-p="both">Both</button></div></div>
+      <label class="rng"><span>Size</span><input type="range" id="sLogo" min="0.5" max="1.4" step="0.05"><b id="vLogo"></b></label>
+      <label class="chk"><input type="checkbox" id="sCrisp"> Crisp logo, above the scene glow</label>
+      <label class="chk"><input type="checkbox" id="sStraight"> Logo always upright, centred</label>
+      <label class="chk"><input type="checkbox" id="sClean"> Clean look (no film grain, scanlines or corners)</label>
+      <label class="chk"><input type="checkbox" id="sTele"> Show the analysis panel (BPM, levels)</label>
+      <p class="note">Double-tap the logo on screen to replace it, restore the KEBBEK logo or remove it. The logo button on the bar hides or shows it in one click.</p>
+      <label class="rng"><span>Logo glow</span><input type="range" id="sLogoGlow" min="0" max="1" step="0.05"><b id="vLogoGlow"></b></label>
+      <label class="rng"><span>Backdrop behind logo</span><input type="range" id="sLogoBack" min="0" max="1" step="0.05"><b id="vLogoBack"></b></label>
     </div>
-    <div class="fld"><span>Ngjyrat</span>
-      <div class="presets" id="presets" role="group" aria-label="Paletat"></div>
+    <div class="fld"><span>Colours</span>
+      <div class="presets" id="presets" role="group" aria-label="Palettes"></div>
       <div class="lopts">
-        <button class="chip" id="cLogo" type="button">Nga logoja</button>
-        <button class="chip" id="cRand" type="button">Rastësisht</button>
-        <button class="chip" id="cSwap" type="button">Ndërro vendet</button>
-        <button class="chip" id="cCycle" type="button" aria-pressed="false">Lëvizin me ritmin</button>
+        <button class="chip" id="cLogo" type="button">From logo</button>
+        <button class="chip" id="cRand" type="button">Random</button>
+        <button class="chip" id="cSwap" type="button">Swap</button>
+        <button class="chip" id="cCycle" type="button" aria-pressed="false">Move with the beat</button>
       </div>
-      <div class="cpick"><label class="col"><input type="color" id="sC1"> Kryesore</label><label class="col"><input type="color" id="sC2"> Dytësore</label></div>
+      <div class="cpick"><label class="col"><input type="color" id="sC1"> Primary</label><label class="col"><input type="color" id="sC2"> Secondary</label></div>
     </div>
-    <div class="fld"><span>Efektet</span>
+    <div class="fld"><span>Effects</span>
       <div class="lopts" id="fx">
-        <button class="chip" type="button" data-fx="lasers">Lazerë</button>
-        <button class="chip" type="button" data-fx="stars">Yje</button>
-        <button class="chip" type="button" data-fx="grid">Dysheme</button>
+        <button class="chip" type="button" data-fx="lasers">Lasers</button>
+        <button class="chip" type="button" data-fx="stars">Stars</button>
+        <button class="chip" type="button" data-fx="grid">Floor</button>
         <button class="chip" type="button" data-fx="glitch">Glitch</button>
-        <button class="chip" type="button" data-fx="shell">Sferë</button>
-        <button class="chip" type="button" data-fx="hud">Harqe HUD</button>
-        <button class="chip" type="button" data-fx="dust">Grimca</button>
-        <button class="chip" type="button" data-fx="shake">Dridhje</button>
+        <button class="chip" type="button" data-fx="shell">Sphere</button>
+        <button class="chip" type="button" data-fx="hud">HUD arcs</button>
+        <button class="chip" type="button" data-fx="dust">Particles</button>
+        <button class="chip" type="button" data-fx="shake">Shake</button>
       </div>
     </div>
-    <div class="fld"><span>Shkëlqimi i skenës</span>
-      <div class="lopts" id="bloomPre"><button class="chip" type="button" data-b="0">Pa</button><button class="chip" type="button" data-b="0.45">I butë</button><button class="chip" type="button" data-b="1">Normal</button><button class="chip" type="button" data-b="1.7">I fortë</button></div>
-      <label class="rng"><span>Saktë</span><input type="range" id="sBloom" min="0" max="2" step="0.05"><b id="vBloom"></b></label>
+    <div class="fld"><span>Scene glow</span>
+      <div class="lopts" id="bloomPre"><button class="chip" type="button" data-b="0">Off</button><button class="chip" type="button" data-b="0.45">Soft</button><button class="chip" type="button" data-b="1">Normal</button><button class="chip" type="button" data-b="1.7">Strong</button></div>
+      <label class="rng"><span>Fine</span><input type="range" id="sBloom" min="0" max="2" step="0.05"><b id="vBloom"></b></label>
     </div>
-    <label class="rng"><span>Ndjeshmëria</span><input type="range" id="sSens" min="0.5" max="2" step="0.05"><b id="vSens"></b></label>
+    <label class="rng"><span>Sensitivity</span><input type="range" id="sSens" min="0.5" max="2" step="0.05"><b id="vSens"></b></label>
   </div>
 </div>
 
 <div class="rail" id="rail">
-  <div class="grip" id="grip" title="Tërhiq për ta lëvizur · prek dy herë për ta rikthyer"><i></i></div>
-  <div class="rz" id="rz" title="Tërhiq për ta zmadhuar ose zvogëluar" aria-hidden="true"><svg viewBox="0 0 12 12"><path d="M11 3v8H3M11 7v4H7"/></svg></div>
+  <div class="grip" id="grip" title="Drag to move · double-tap to reset"><i></i></div>
+  <div class="rz" id="rz" title="Drag to resize" aria-hidden="true"><svg viewBox="0 0 12 12"><path d="M11 3v8H3M11 7v4H7"/></svg></div>
   <div class="time"><span id="tCur">0:00</span><div class="bar" id="seek"><i id="prog"></i></div><span id="tDur">0:00</span></div>
   <div class="row">
     <input type="file" id="file" multiple accept=".mp3,.m4a,.wav,.aac,.flac,.ogg,.opus,.lrc,.srt,audio/mpeg,audio/mp4,audio/wav,audio/*">
-    <label for="file" class="btn primary" tabindex="0" id="fileLbl">+ Shto këngë</label>
-    <span class="track" id="track">Pa këngë · shtyp ▶ për demo</span>
-    <button class="btn ghost" id="listBtn" type="button" aria-expanded="false">Lista <span id="count">0</span></button>
-    <button class="ic sm" id="logoBtn" type="button" aria-pressed="true" aria-label="Shfaq ose fshih logon" title="Fshih logon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M9 7.5v9M9 12l4.5-4.5M9 12l4.5 4.5M13 7.5h1.8a2.2 2.2 0 0 1 0 4.4H13h2.2a2.3 2.3 0 0 1 0 4.6H13" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-    <button class="ic sm" id="sndBtn" type="button" aria-expanded="false" aria-label="Zëri dhe ekualizuesi"><svg viewBox="0 0 24 24"><path d="M5 3h2v6.2a3 3 0 0 1 0 5.6V21H5v-6.2a3 3 0 0 1 0-5.6zm6 0h2v2.2a3 3 0 0 1 0 5.6V21h-2V10.8a3 3 0 0 1 0-5.6zm6 0h2v10.2a3 3 0 0 1 0 5.6V21h-2v-2.2a3 3 0 0 1 0-5.6z"/></svg></button>
-    <button class="ic sm" id="lyBtn" type="button" aria-expanded="false" aria-label="Titrat"><svg viewBox="0 0 24 24"><path d="M3 5h18v14H3zm2 2v10h14V7zm2 3h4v1.6H7zm0 3h7v1.6H7zm9 0h2v1.6h-2zm-3-3h5v1.6h-5z"/></svg></button>
-    <button class="ic sm" id="cfgBtn" type="button" aria-expanded="false" aria-label="Personalizo"><svg viewBox="0 0 24 24"><path d="M19.4 13a7.5 7.5 0 0 0 0-2l2.1-1.6-2-3.5-2.5 1a7.6 7.6 0 0 0-1.7-1L15 3h-4l-.4 2.6a7.6 7.6 0 0 0-1.7 1l-2.5-1-2 3.5L6.6 11a7.5 7.5 0 0 0 0 2l-2.1 1.6 2 3.5 2.5-1c.5.4 1.1.7 1.7 1L11 21h4l.4-2.6c.6-.3 1.2-.6 1.7-1l2.5 1 2-3.5zM13 15.5A3.5 3.5 0 1 1 13 8.5a3.5 3.5 0 0 1 0 7z"/></svg></button>
+    <label for="file" class="btn primary" tabindex="0" id="fileLbl">+ Add songs</label>
+    <span class="track" id="track">No songs · press ▶ for demo</span>
+    <button class="btn ghost" id="listBtn" type="button" aria-expanded="false">Library <span id="count">0</span></button>
+    <button class="ic sm" id="logoBtn" type="button" aria-pressed="true" aria-label="Show or hide the logo" title="Hide logo"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M9 7.5v9M9 12l4.5-4.5M9 12l4.5 4.5M13 7.5h1.8a2.2 2.2 0 0 1 0 4.4H13h2.2a2.3 2.3 0 0 1 0 4.6H13" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <button class="ic sm" id="sndBtn" type="button" aria-expanded="false" aria-label="Sound and equalizer"><svg viewBox="0 0 24 24"><path d="M5 3h2v6.2a3 3 0 0 1 0 5.6V21H5v-6.2a3 3 0 0 1 0-5.6zm6 0h2v2.2a3 3 0 0 1 0 5.6V21h-2V10.8a3 3 0 0 1 0-5.6zm6 0h2v10.2a3 3 0 0 1 0 5.6V21h-2v-2.2a3 3 0 0 1 0-5.6z"/></svg></button>
+    <button class="ic sm" id="lyBtn" type="button" aria-expanded="false" aria-label="Lyrics"><svg viewBox="0 0 24 24"><path d="M3 5h18v14H3zm2 2v10h14V7zm2 3h4v1.6H7zm0 3h7v1.6H7zm9 0h2v1.6h-2zm-3-3h5v1.6h-5z"/></svg></button>
+    <button class="ic sm" id="cfgBtn" type="button" aria-expanded="false" aria-label="Customize"><svg viewBox="0 0 24 24"><path d="M19.4 13a7.5 7.5 0 0 0 0-2l2.1-1.6-2-3.5-2.5 1a7.6 7.6 0 0 0-1.7-1L15 3h-4l-.4 2.6a7.6 7.6 0 0 0-1.7 1l-2.5-1-2 3.5L6.6 11a7.5 7.5 0 0 0 0 2l-2.1 1.6 2 3.5 2.5-1c.5.4 1.1.7 1.7 1L11 21h4l.4-2.6c.6-.3 1.2-.6 1.7-1l2.5 1 2-3.5zM13 15.5A3.5 3.5 0 1 1 13 8.5a3.5 3.5 0 0 1 0 7z"/></svg></button>
   </div>
   <div class="ctrls">
     <span class="cl" aria-hidden="true"></span>
     <div class="cc">
-      <button class="ic" id="prev" type="button" aria-label="Kënga e mëparshme"><svg viewBox="0 0 24 24"><path d="M6 5h2v14H6zM20 5v14L9 12z"/></svg></button>
-      <button class="ic big" id="play" type="button" aria-label="Luaj"><svg viewBox="0 0 24 24" id="playIco"><path d="M7 4v16l13-8z"/></svg></button>
-      <button class="ic" id="next" type="button" aria-label="Kënga tjetër"><svg viewBox="0 0 24 24"><path d="M16 5h2v14h-2zM4 5v14l11-7z"/></svg></button>
+      <button class="ic" id="prev" type="button" aria-label="Previous song"><svg viewBox="0 0 24 24"><path d="M6 5h2v14H6zM20 5v14L9 12z"/></svg></button>
+      <button class="ic big" id="play" type="button" aria-label="Play"><svg viewBox="0 0 24 24" id="playIco"><path d="M7 4v16l13-8z"/></svg></button>
+      <button class="ic" id="next" type="button" aria-label="Next song"><svg viewBox="0 0 24 24"><path d="M16 5h2v14h-2zM4 5v14l11-7z"/></svg></button>
     </div>
     <div class="volrow">
-      <button class="vbtn" id="vMute" type="button" aria-label="Hesht zërin"><svg viewBox="0 0 24 24"><path id="vIco" d="M4 9h4l5-4v14l-5-4H4zM16 8.5a4.5 4.5 0 0 1 0 7M18.5 6a8 8 0 0 1 0 12"/></svg></button>
-      <input type="range" id="rVol" min="0" max="1.5" step="0.01" aria-label="Volumi">
+      <button class="vbtn" id="vMute" type="button" aria-label="Mute"><svg viewBox="0 0 24 24"><path id="vIco" d="M4 9h4l5-4v14l-5-4H4zM16 8.5a4.5 4.5 0 0 1 0 7M18.5 6a8 8 0 0 1 0 12"/></svg></button>
+      <input type="range" id="rVol" min="0" max="1.5" step="0.01" aria-label="Volume">
       <b id="rVolV">100%</b>
       </div>
   </div>
 </div>
-<aside class="lycol" id="lyCol" hidden aria-label="Titrat e këngës">
-  <div class="lyc-head"><span>Titrat</span><b id="lycTitle"></b></div>
+<aside class="lycol" id="lyCol" hidden aria-label="Song lyrics">
+  <div class="lyc-head"><span>Lyrics</span><b id="lycTitle"></b></div>
   <div class="lyc-win"><div class="lyc-scroll" id="lycList"></div></div>
   <div class="lyc-sync" id="lycSync">
-    <span class="lyc-est" id="lycEst" hidden>Po sinkronizohet me zërin…</span>
+    <span class="lyc-est" id="lycEst" hidden>Syncing to the vocals…</span>
     <div class="lyc-ctl">
-      <button type="button" data-o="-1" aria-label="Titrat 1 sekondë më herët">−1s</button>
-      <button type="button" data-o="-0.25" aria-label="Titrat 0.25 sekonda më herët">−¼</button>
-      <b id="lycOff" title="Zhvendosja e titrave për këtë këngë · prek dy herë për zero">0.0s</b>
-      <button type="button" data-o="0.25" aria-label="Titrat 0.25 sekonda më vonë">+¼</button>
-      <button type="button" data-o="1" aria-label="Titrat 1 sekondë më vonë">+1s</button>
+      <button type="button" data-o="-1" aria-label="Lyrics 1 s earlier">−1s</button>
+      <button type="button" data-o="-0.25" aria-label="Lyrics 0.25 s earlier">−¼</button>
+      <b id="lycOff" title="Lyrics offset for this song · double-tap to reset">0.0s</b>
+      <button type="button" data-o="0.25" aria-label="Lyrics 0.25 s later">+¼</button>
+      <button type="button" data-o="1" aria-label="Lyrics 1 s later">+1s</button>
     </div>
-    <button type="button" class="lyc-now" id="lycNow">Vargu i radhës nis tani</button>
+    <button type="button" class="lyc-now" id="lycNow">Next line starts now</button>
   </div>
 </aside>
 <div class="lyr" id="lyr" hidden aria-live="off">
@@ -466,37 +466,37 @@ body.notele .tele{display:none}
 </div>
 
 <div class="list cfg" id="lyp" hidden>
-  <div class="lhead"><span class="ltitle">Titrat</span><button class="chip" id="lyShow" type="button" aria-pressed="true">Shfaq në ekran</button></div>
+  <div class="lhead"><span class="ltitle">Lyrics</span><button class="chip" id="lyShow" type="button" aria-pressed="true">Show on screen</button></div>
   <div class="cfgBody">
-    <div class="fld"><span>Stili i titrave</span>
-      <label class="chk"><input type="checkbox" id="sAutoSync" checked> Sinkronizo vetë tekstin me zërin kur luhet kënga (shkarkon modelin 80 MB herën e parë)</label>
-      <label class="chk"><input type="checkbox" id="sLyClean" checked> Vetëm fjalët e këngës (pa [Refreni], (intro), na-na-na, oh-oh, bla-bla)</label>
-      <div class="lopts" id="lyPos"><button class="chip" type="button" data-lp="side">Anash (kolonë)</button><button class="chip" type="button" data-lp="center">Në qendër</button><button class="chip" type="button" data-lp="both">Të dyja</button></div>
-      <div class="lopts" id="lyStyles"><button class="chip" type="button" data-ls="karaoke">Karaoke</button><button class="chip" type="button" data-ls="neon">Neon</button><button class="chip" type="button" data-ls="kin">Kinetike</button><button class="chip" type="button" data-ls="wave">Valë</button></div>
-      <label class="rng"><span>Madhësia</span><input type="range" id="sLyZ" min="0.6" max="1.8" step="0.05"><b id="vLyZ"></b></label>
+    <div class="fld"><span>Lyrics style</span>
+      <label class="chk"><input type="checkbox" id="sAutoSync" checked> Auto-sync lyrics to the vocals when a song plays (downloads an 80 MB model the first time)</label>
+      <label class="chk"><input type="checkbox" id="sLyClean" checked> Sung words only (no [Chorus], (intro), na-na-na, oh-oh, bla-bla)</label>
+      <div class="lopts" id="lyPos"><button class="chip" type="button" data-lp="side">Side column</button><button class="chip" type="button" data-lp="center">Centre</button><button class="chip" type="button" data-lp="both">Both</button></div>
+      <div class="lopts" id="lyStyles"><button class="chip" type="button" data-ls="karaoke">Karaoke</button><button class="chip" type="button" data-ls="neon">Neon</button><button class="chip" type="button" data-ls="kin">Kinetic</button><button class="chip" type="button" data-ls="wave">Wave</button></div>
+      <label class="rng"><span>Size</span><input type="range" id="sLyZ" min="0.6" max="1.8" step="0.05"><b id="vLyZ"></b></label>
     </div>
-    <p class="empty" id="lyFor">Luaj një këngë nga lista dhe pastaj krijo titrat e saj këtu.</p>
-    <div class="fld" id="lyAutoBox"><span>Titra automatike</span>
+    <p class="empty" id="lyFor">Play a song from the list, then create its lyrics here.</p>
+    <div class="fld" id="lyAutoBox"><span>Automatic lyrics</span>
       <div class="lopts">
-        <select id="lyLang" aria-label="Gjuha e këngës"><option value="albanian">Shqip</option><option value="english">Anglisht</option><option value="german">Gjermanisht</option><option value="">Zbulo vetë</option></select>
-        <select id="lyModel" aria-label="Saktësia"><option value="onnx-community/whisper-base">E shpejtë</option><option value="onnx-community/whisper-small">E saktë (më e rëndë)</option></select>
-        <button class="chip on" id="lyAuto" type="button">Gjenero titrat</button>
+        <select id="lyLang" aria-label="Song language"><option value="albanian">Albanian</option><option value="english">English</option><option value="german">German</option><option value="">Auto-detect</option></select>
+        <select id="lyModel" aria-label="Accuracy"><option value="onnx-community/whisper-base">Fast</option><option value="onnx-community/whisper-small">Accurate (heavier)</option></select>
+        <button class="chip on" id="lyAuto" type="button">Generate lyrics</button>
       </div>
       <div class="pbar" id="lyBar" hidden><i id="lyBarI"></i></div>
-      <p class="note" id="lyStat">Nëse MP3 ka titra brenda, ngarkohen vetë. Nëse ke vetëm tekstin, aplikacioni e dëgjon këngën dhe ia vendos kohët çdo vargu. Pa tekst, i shkruan vetë fjalët. Herën e parë shkarkon modelin e zërit (rreth 80 MB).</p>
+      <p class="note" id="lyStat">Lyrics inside the MP3 load automatically. If you only have the text, the app listens to the song and times every line. With no text, it writes the words itself. The first time it downloads the voice model (about 80 MB).</p>
     </div>
-    <div class="fld"><span>Me dorë</span>
+    <div class="fld"><span>Manual</span>
       <div class="lopts">
-        <button class="chip" id="lyPaste" type="button">Shkruaj ose ngjit tekstin</button>
+        <button class="chip" id="lyPaste" type="button">Type or paste lyrics</button>
         <input type="file" id="lyFile" accept=".lrc,.srt,.txt,text/plain">
-        <label for="lyFile" class="chip" tabindex="0" id="lyFileLbl">Ngarko .lrc / .srt</label>
-        <button class="chip" id="lyTap" type="button">Sinkronizo me prekje</button>
-        <button class="chip" id="lyCopy" type="button">Kopjo si LRC</button>
-        <button class="chip danger" id="lyClear" type="button">Fshi titrat</button>
+        <label for="lyFile" class="chip" tabindex="0" id="lyFileLbl">Load .lrc / .srt</label>
+        <button class="chip" id="lyTap" type="button">Tap to sync</button>
+        <button class="chip" id="lyCopy" type="button">Copy as LRC</button>
+        <button class="chip danger" id="lyClear" type="button">Delete lyrics</button>
       </div>
       <div class="pasteBox" id="pasteBox" hidden>
-        <textarea id="lyText" rows="7" placeholder="Një varg për çdo rresht"></textarea>
-        <button class="chip on" id="lySaveText" type="button">Ruaj tekstin</button>
+        <textarea id="lyText" rows="7" placeholder="One line per row"></textarea>
+        <button class="chip on" id="lySaveText" type="button">Save text</button>
       </div>
     </div>
     <div class="fld"><span id="lyCount">Vargjet</span><ol id="lyLines"></ol></div>
@@ -504,48 +504,48 @@ body.notele .tele{display:none}
 </div>
 
 <div class="list cfg" id="snd" hidden>
-  <div class="lhead"><span class="ltitle">Zëri</span><div class="lopts"><button class="chip on" id="qAB" type="button" aria-pressed="true">Efektet: Ndezur</button><button class="chip" id="sndReset" type="button">Rikthe</button></div></div>
+  <div class="lhead"><span class="ltitle">Sound</span><div class="lopts"><button class="chip on" id="qAB" type="button" aria-pressed="true">Effects: On</button><button class="chip" id="sndReset" type="button">Reset</button></div></div>
   <div class="cfgBody">
-    <div class="fld"><span>Stili i tingullit</span><div class="lopts" id="eqPre"></div></div>
-    <div class="fld"><span>Cilësia</span>
-      <label class="rng"><span>Basi</span><input type="range" id="qBass" min="0" max="12" step="0.5"><b id="vqBass"></b></label>
-      <label class="rng"><span>Qartësia</span><input type="range" id="qClar" min="0" max="10" step="0.5"><b id="vqClar"></b></label>
-      <label class="rng"><span>Ngrohtësia</span><input type="range" id="qWarm" min="0" max="1" step="0.05"><b id="vqWarm"></b></label>
-      <label class="rng"><span>Hapësira</span><input type="range" id="qRev" min="0" max="1" step="0.02"><b id="vqRev"></b></label>
-      <label class="rng"><span>Gjerësia stereo</span><input type="range" id="qWidth" min="0" max="2" step="0.05"><b id="vqWidth"></b></label>
-      <div class="lopts"><button class="chip" id="qLoud" type="button" aria-pressed="false">Zë i barabartë</button><button class="chip" id="qLim" type="button" aria-pressed="true">Mbrojtje nga çjerrja</button></div>
+    <div class="fld"><span>Sound style</span><div class="lopts" id="eqPre"></div></div>
+    <div class="fld"><span>Quality</span>
+      <label class="rng"><span>Bass</span><input type="range" id="qBass" min="0" max="12" step="0.5"><b id="vqBass"></b></label>
+      <label class="rng"><span>Clarity</span><input type="range" id="qClar" min="0" max="10" step="0.5"><b id="vqClar"></b></label>
+      <label class="rng"><span>Warmth</span><input type="range" id="qWarm" min="0" max="1" step="0.05"><b id="vqWarm"></b></label>
+      <label class="rng"><span>Space</span><input type="range" id="qRev" min="0" max="1" step="0.02"><b id="vqRev"></b></label>
+      <label class="rng"><span>Stereo width</span><input type="range" id="qWidth" min="0" max="2" step="0.05"><b id="vqWidth"></b></label>
+      <div class="lopts"><button class="chip" id="qLoud" type="button" aria-pressed="false">Even loudness</button><button class="chip" id="qLim" type="button" aria-pressed="true">Clip protection</button></div>
     </div>
-    <div class="fld"><span>Ekualizuesi · 10 banda</span><div class="eq" id="eqBands"></div></div>
-    <div class="fld"><span>Luajtja</span>
-      <label class="rng"><span>Volumi</span><input type="range" id="qVol" min="0" max="1.5" step="0.01"><b id="vqVol"></b></label>
-      <label class="rng"><span>Shpejtësia</span><input type="range" id="qRate" min="0.5" max="1.5" step="0.05"><b id="vqRate"></b></label>
-      <label class="rng"><span>Sinkronizimi i grafikës</span><input type="range" id="qAV" min="-150" max="400" step="10"><b id="vqAV"></b></label>
-      <p class="note">Grafika dhe titrat rregullohen vetë sipas vonesës së pajisjes. Me kufje Bluetooth, nëse grafika del para zërit, rrite pak këtë vlerë.</p>
-      <label class="rng"><span>Fade mes këngëve</span><input type="range" id="qFade" min="0" max="8" step="0.5"><b id="vqFade"></b></label>
-      <div class="lopts"><button class="chip" id="qOne" type="button" aria-pressed="false">Përsërit këngën</button></div>
+    <div class="fld"><span>Equalizer · 10 bands</span><div class="eq" id="eqBands"></div></div>
+    <div class="fld"><span>Playback</span>
+      <label class="rng"><span>Volume</span><input type="range" id="qVol" min="0" max="1.5" step="0.01"><b id="vqVol"></b></label>
+      <label class="rng"><span>Speed</span><input type="range" id="qRate" min="0.5" max="1.5" step="0.05"><b id="vqRate"></b></label>
+      <label class="rng"><span>Visual sync</span><input type="range" id="qAV" min="-150" max="400" step="10"><b id="vqAV"></b></label>
+      <p class="note">Visuals and lyrics adjust to your device’s audio delay automatically. With Bluetooth headphones, raise this a little if the visuals run ahead of the sound.</p>
+      <label class="rng"><span>Crossfade</span><input type="range" id="qFade" min="0" max="8" step="0.5"><b id="vqFade"></b></label>
+      <div class="lopts"><button class="chip" id="qOne" type="button" aria-pressed="false">Repeat song</button></div>
     </div>
-    <div class="fld"><span>Timer gjumi</span>
-      <div class="lopts" id="sleep"><button class="chip" type="button" data-m="0">Fikur</button><button class="chip" type="button" data-m="15">15 min</button><button class="chip" type="button" data-m="30">30 min</button><button class="chip" type="button" data-m="60">1 orë</button><button class="chip" type="button" data-m="end">Në fund të këngës</button></div>
+    <div class="fld"><span>Sleep timer</span>
+      <div class="lopts" id="sleep"><button class="chip" type="button" data-m="0">Off</button><button class="chip" type="button" data-m="15">15 min</button><button class="chip" type="button" data-m="30">30 min</button><button class="chip" type="button" data-m="60">1 hour</button><button class="chip" type="button" data-m="end">End of song</button></div>
       <p class="note" id="sleepNote"></p>
     </div>
   </div>
 </div>
 <input type="file" id="logoFile" accept="image/png,image/jpeg,image/webp,image/*" tabindex="-1" aria-hidden="true">
 <div class="toast" id="toast" hidden></div>
-<div class="lmenu" id="lmenu" hidden role="menu" aria-label="Logoja">
-  <button type="button" role="menuitem" id="lmReplace">Zëvendëso logon</button>
-  <button type="button" role="menuitem" id="lmDefault">Logo KEBBEK</button>
-  <button type="button" role="menuitem" id="lmRemove" class="dang">Hiqe logon</button>
+<div class="lmenu" id="lmenu" hidden role="menu" aria-label="Logo">
+  <button type="button" role="menuitem" id="lmReplace">Replace logo</button>
+  <button type="button" role="menuitem" id="lmDefault">KEBBEK logo</button>
+  <button type="button" role="menuitem" id="lmRemove" class="dang">Remove logo</button>
 </div>
 
 <div class="tapBox" id="tapBox" hidden>
-  <p class="tapHint">Prek butonin kur fillon ky varg</p>
+  <p class="tapHint">Tap the button when this line starts</p>
   <p class="tapLine" id="tapLine"></p>
   <p class="tapNext" id="tapNext"></p>
-  <div class="row"><button class="btn" id="tapUndo" type="button">Kthehu një</button><button class="btn primary tapGo" id="tapGo" type="button">Tani</button><button class="btn" id="tapStop" type="button">Ndalo</button></div>
+  <div class="row"><button class="btn" id="tapUndo" type="button">Back one</button><button class="btn primary tapGo" id="tapGo" type="button">Now</button><button class="btn" id="tapStop" type="button">Stop</button></div>
 </div>
 
-<div class="drop" id="drop" hidden>LËSHO KËNGËN KËTU</div>
+<div class="drop" id="drop" hidden>DROP YOUR SONG HERE</div>
 
 <script src="three.min.js"></script>
 <script>if(!window.THREE)document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\/script>')</script>
@@ -727,7 +727,7 @@ let ctx,analyser,data,wave,src,audioEl,demo=null;
 function ensureCtx(){if(!ctx){ctx=new (window.AudioContext||window.webkitAudioContext)();analyser=ctx.createAnalyser();analyser.fftSize=2048;analyser.smoothingTimeConstant=.35;data=new Uint8Array(analyser.frequencyBinCount);wave=new Uint8Array(analyser.fftSize);buildFx()}if(ctx.state==='suspended')ctx.resume()}
 const trackEl=document.getElementById('track'),playBtn=document.getElementById('play'),playIco=document.getElementById('playIco');
 const ICO_PLAY='<path d="M7 4v16l13-8z"/>',ICO_PAUSE='<path d="M6 4h4v16H6zM14 4h4v16h-4z"/>';
-function setPlaying(on){playIco.innerHTML=on?ICO_PAUSE:ICO_PLAY;playBtn.setAttribute('aria-label',on?'Pauzë':'Luaj');try{navigator.mediaSession&&(navigator.mediaSession.playbackState=on?'playing':'paused')}catch(e){}}
+function setPlaying(on){playIco.innerHTML=on?ICO_PAUSE:ICO_PLAY;playBtn.setAttribute('aria-label',on?'Pause':'Play');try{navigator.mediaSession&&(navigator.mediaSession.playbackState=on?'playing':'paused')}catch(e){}}
 function stopDemo(){if(demo){clearInterval(demo.iv);demo.out.disconnect();demo=null;demoBtn.setAttribute('aria-pressed','false')}}
 const isAudio=f=>(f.type||'').startsWith('audio')||/\.(mp3|wav|ogg|m4a|flac|aac|opus)$/i.test(f.name);
 // library (saved in this browser with IndexedDB)
@@ -735,7 +735,7 @@ const lib=[];let cur=-1,shuffle=false,repeat=true,db=null;
 const listEl=document.getElementById('list'),tracksEl=document.getElementById('tracks'),emptyEl=document.getElementById('empty'),countEl=document.getElementById('count'),listBtn=document.getElementById('listBtn'),demoBtn=document.getElementById('demoBtn');
 function openDB(){return new Promise(res=>{try{const r=indexedDB.open('kebbek-zeri',2);r.onupgradeneeded=()=>{const d=r.result;if(!d.objectStoreNames.contains('tracks'))d.createObjectStore('tracks',{keyPath:'id'});if(!d.objectStoreNames.contains('settings'))d.createObjectStore('settings')};r.onsuccess=()=>res(r.result);r.onerror=()=>res(null)}catch(e){res(null)}})}
 function dbDo(fn){if(!db)return;try{const tx=db.transaction('tracks','readwrite');fn(tx.objectStore('tracks'))}catch(e){}}
-openDB().then(d=>{db=d;if(!db)return;loadCustomLogo();try{const q=db.transaction('tracks').objectStore('tracks').getAll();q.onsuccess=()=>{(q.result||[]).sort((x,y)=>x.added-y.added).forEach(r=>{if(S.lyClean!==false&&Array.isArray(r.lyrics)&&r.lyrics.length){const n=r.lyrics.length;r.lyrics=normalize(r.lyrics);if(r.lyrics.length!==n)dbDo(st=>st.put(r))}lib.push(r)});renderList();if(lib.length)trackEl.textContent=lib.length+' këngë · shtyp ▶'}}catch(e){}});
+openDB().then(d=>{db=d;if(!db)return;loadCustomLogo();try{const q=db.transaction('tracks').objectStore('tracks').getAll();q.onsuccess=()=>{(q.result||[]).sort((x,y)=>x.added-y.added).forEach(r=>{if(S.lyClean!==false&&Array.isArray(r.lyrics)&&r.lyrics.length){const n=r.lyrics.length;r.lyrics=normalize(r.lyrics);if(r.lyrics.length!==n)dbDo(st=>st.put(r))}lib.push(r)});renderList();if(lib.length)trackEl.textContent=lib.length+' songs · press ▶'}}catch(e){}});
 function fmt(s){if(!isFinite(s))return'0:00';s=Math.floor(s);return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')}
 // playlists (saved on this device)
 let PL=[];try{PL=JSON.parse(localStorage.getItem('kebbek-zeri-pl')||'[]')||[]}catch(e){}
@@ -747,54 +747,54 @@ function ctxOrder(ctxv){const c=ctxv||playCtx;if(c==='all')return lib.map((_,i)=
 const plTabs=document.getElementById('plTabs'),plHead=document.getElementById('plHead'),plName=document.getElementById('plName');
 let pendingSong=null;
 const plNew=document.getElementById('plNew'),plNewName=document.getElementById('plNewName');
-function newPlaylist(withId){pendingSong=withId||null;popFor=null;plNew.hidden=false;plNewName.value='';plNewName.placeholder='p.sh. Gym, Natë, Country · Lista ime '+(PL.length+1);renderList();setTimeout(()=>plNewName.focus(),30)}
-plNew.addEventListener('submit',e=>{e.preventDefault();const name=plNewName.value.trim()||('Lista ime '+(PL.length+1));
+function newPlaylist(withId){pendingSong=withId||null;popFor=null;plNew.hidden=false;plNewName.value='';plNewName.placeholder='e.g. Gym, Night, Country · My playlist '+(PL.length+1);renderList();setTimeout(()=>plNewName.focus(),30)}
+plNew.addEventListener('submit',e=>{e.preventDefault();const name=plNewName.value.trim()||('My playlist '+(PL.length+1));
   const p={id:'pl'+Date.now().toString(36),name,ids:pendingSong?[pendingSong]:[]};PL.push(p);view=p.id;plNew.hidden=true;savePL();
-  toast(pendingSong?'Playlista "'+name+'" u krijua me këngën':'Playlista "'+name+'" u krijua');pendingSong=null;renderList();if(!p.ids.length)openPick()});
+  toast(pendingSong?'Playlist "'+name+'" created with the song':'Playlist "'+name+'" created');pendingSong=null;renderList();if(!p.ids.length)openPick()});
 document.getElementById('plCancel').addEventListener('click',()=>{plNew.hidden=true;pendingSong=null;renderList()});
 // add songs to the open playlist
 const plPick=document.getElementById('plPick'),plPickList=document.getElementById('plPickList');
 function openPick(){if(view==='all')return;plPick.hidden=false;renderPick()}
 function renderPick(){const p=plById(view);if(!p){plPick.hidden=true;return}plPickList.textContent='';
-  if(!lib.length){const e=document.createElement('p');e.className='note';e.textContent='Nuk ke ende këngë. Ngarko nga pajisja me butonin më poshtë.';plPickList.append(e);return}
+  if(!lib.length){const e=document.createElement('p');e.className='note';e.textContent='No songs yet. Upload from your device with the button below.';plPickList.append(e);return}
   lib.forEach(t=>{const on=p.ids.includes(t.id);const b=document.createElement('button');b.type='button';b.className='pk';b.setAttribute('aria-pressed',String(on));b.innerHTML='<i>✓</i><span></span>';b.querySelector('span').textContent=t.name;
     b.addEventListener('click',()=>{if(p.ids.includes(t.id))p.ids=p.ids.filter(x=>x!==t.id);else p.ids.push(t.id);savePL();renderPick();renderList()});plPickList.append(b)})}
 document.getElementById('plAdd').addEventListener('click',()=>{plPick.hidden?openPick():plPick.hidden=true});
 document.getElementById('plPickDone').addEventListener('click',()=>{plPick.hidden=true});
 document.getElementById('plUpload').addEventListener('click',()=>document.getElementById('file').click());
-function addTo(p,id){if(p.ids.includes(id)){toast('Kjo këngë është tashmë te '+p.name);return}p.ids.push(id);savePL();toast('U shtua te '+p.name)}
+function addTo(p,id){if(p.ids.includes(id)){toast('This song is already in '+p.name);return}p.ids.push(id);savePL();toast('Added to '+p.name)}
 function renderList(){if(view!=='all'&&!plById(view))view='all';countEl.textContent=lib.length;
   plTabs.textContent='';const tab=(label,n,v,cls)=>{const b=document.createElement('button');b.type='button';b.className='pltab'+(cls?' '+cls:'');b.setAttribute('role','tab');
     b.setAttribute('aria-selected',String(view===v));b.textContent=label;if(n!=null){const x=document.createElement('b');x.textContent=n;b.append(x)}
     b.addEventListener('click',()=>{if(v==='+'){newPlaylist();return}view=v;popFor=null;plPick.hidden=true;plNew.hidden=true;savePL();renderList()});plTabs.append(b)};
-  tab('Të gjitha',lib.length,'all');PL.forEach(p=>tab(p.name,p.ids.filter(id=>idxOf(id)>=0).length,p.id));tab('+ Playlistë e re',null,'+','new');
+  tab('All songs',lib.length,'all');PL.forEach(p=>tab(p.name,p.ids.filter(id=>idxOf(id)>=0).length,p.id));tab('+ New playlist',null,'+','new');
   const pl=view==='all'?null:plById(view);plHead.hidden=!pl;document.getElementById('clear').hidden=!!pl;if(pl&&document.activeElement!==plName)plName.value=pl.name;
   const order=ctxOrder(view);
-  emptyEl.hidden=order.length>0;emptyEl.innerHTML=pl?'Kjo listë është bosh. Te <b>Të gjitha</b> shtyp <b>+</b> pranë një kënge për ta shtuar këtu, ose shto këngë të reja me <b>+ Shto këngë</b>.':'Nuk ke ende këngë. Shtyp <b>+ Shto këngë</b> dhe zgjidh një ose disa MP3 nga Files. Ruhen këtu edhe për herën tjetër.';
+  emptyEl.hidden=order.length>0;emptyEl.innerHTML=pl?'This playlist is empty. In <b>All songs</b>, tap <b>+</b> next to a song to add it here, or add new songs with <b>+ Add songs</b>.':'No songs yet. Tap <b>+ Add songs</b> and pick one or more MP3s from Files. They stay here for next time.';
   tracksEl.innerHTML='';
   order.forEach((i,k)=>{const t=lib[i];const li=document.createElement('li');if(i===cur&&(playCtx===view||view==='all'))li.className='on';
     const p=document.createElement('button');p.className='pick';p.type='button';p.innerHTML='<i>'+(k+1)+'</i><span></span>';p.querySelector('span').textContent=t.name;p.addEventListener('click',()=>playIndex(i,view));
     const mk=(txt,lab,fn,dis)=>{const b=document.createElement('button');b.type='button';b.className='mini';b.textContent=txt;b.setAttribute('aria-label',lab);b.title=lab;b.disabled=!!dis;b.addEventListener('click',fn);return b};
     li.append(p);
-    if(pl){li.append(mk('↑','Lëviz lart',()=>{[pl.ids[k-1],pl.ids[k]]=[pl.ids[k],pl.ids[k-1]];savePL();renderList()},k===0),
-                     mk('↓','Lëviz poshtë',()=>{[pl.ids[k+1],pl.ids[k]]=[pl.ids[k],pl.ids[k+1]];savePL();renderList()},k===order.length-1),
-                     mk('×','Hiq nga lista',()=>{pl.ids=pl.ids.filter(x=>x!==t.id);savePL();renderList()}))}
-    else{li.append(mk('+','Shto në një listë',()=>{popFor=popFor===t.id?null:t.id;renderList()}));const d=document.createElement('button');d.className='del';d.type='button';d.textContent='×';d.setAttribute('aria-label','Fshi '+t.name);d.title='Fshi këngën';d.addEventListener('click',()=>removeTrack(i));li.append(d)}
+    if(pl){li.append(mk('↑','Move up',()=>{[pl.ids[k-1],pl.ids[k]]=[pl.ids[k],pl.ids[k-1]];savePL();renderList()},k===0),
+                     mk('↓','Move down',()=>{[pl.ids[k+1],pl.ids[k]]=[pl.ids[k],pl.ids[k+1]];savePL();renderList()},k===order.length-1),
+                     mk('×','Remove from playlist',()=>{pl.ids=pl.ids.filter(x=>x!==t.id);savePL();renderList()}))}
+    else{li.append(mk('+','Add to a playlist',()=>{popFor=popFor===t.id?null:t.id;renderList()}));const d=document.createElement('button');d.className='del';d.type='button';d.textContent='×';d.setAttribute('aria-label','Delete '+t.name);d.title='Delete song';d.addEventListener('click',()=>removeTrack(i));li.append(d)}
     tracksEl.append(li);
-    if(!pl&&popFor===t.id){const pop=document.createElement('li');pop.className='pop';const h=document.createElement('p');h.textContent='Shto te';pop.append(h);
+    if(!pl&&popFor===t.id){const pop=document.createElement('li');pop.className='pop';const h=document.createElement('p');h.textContent='Add to';pop.append(h);
       PL.forEach(q=>{const b=document.createElement('button');b.type='button';b.className='chip';b.textContent=q.name;b.addEventListener('click',()=>{addTo(q,t.id);popFor=null;renderList()});pop.append(b)});
-      const nb=document.createElement('button');nb.type='button';nb.className='chip on';nb.textContent='+ Playlistë e re me këtë këngë';nb.addEventListener('click',()=>newPlaylist(t.id));pop.append(nb);tracksEl.append(pop)}})}
-plName.addEventListener('input',()=>{const p=plById(view);if(!p)return;p.name=plName.value.trim()||'Pa emër';savePL();
+      const nb=document.createElement('button');nb.type='button';nb.className='chip on';nb.textContent='+ New playlist with this song';nb.addEventListener('click',()=>newPlaylist(t.id));pop.append(nb);tracksEl.append(pop)}})}
+plName.addEventListener('input',()=>{const p=plById(view);if(!p)return;p.name=plName.value.trim()||'Untitled';savePL();
   [...plTabs.children].forEach(b=>{if(b.getAttribute('aria-selected')==='true'){b.firstChild.textContent=p.name}})});
-document.getElementById('plPlay').addEventListener('click',()=>{const o=ctxOrder(view);if(!o.length){toast('Lista është bosh');return}playIndex(shuffle?o[Math.floor(Math.random()*o.length)]:o[0],view)});
+document.getElementById('plPlay').addEventListener('click',()=>{const o=ctxOrder(view);if(!o.length){toast('Playlist is empty');return}playIndex(shuffle?o[Math.floor(Math.random()*o.length)]:o[0],view)});
 const plDel=document.getElementById('plDel');let plArm=0;
-plDel.addEventListener('click',()=>{const p=plById(view);if(!p)return;if(Date.now()-plArm>3000){plArm=Date.now();plDel.textContent='Shtyp sërish';setTimeout(()=>plDel.textContent='Fshi listën',3000);return}
-  plArm=0;plDel.textContent='Fshi listën';PL=PL.filter(x=>x!==p);if(playCtx===p.id)playCtx='all';view='all';savePL();renderList();toast('Lista u fshi · këngët mbeten te Të gjitha')});
+plDel.addEventListener('click',()=>{const p=plById(view);if(!p)return;if(Date.now()-plArm>3000){plArm=Date.now();plDel.textContent='Tap again';setTimeout(()=>plDel.textContent='Delete playlist',3000);return}
+  plArm=0;plDel.textContent='Delete playlist';PL=PL.filter(x=>x!==p);if(playCtx===p.id)playCtx='all';view='all';savePL();renderList();toast('Playlist deleted · songs stay in All songs')});
 const isLyr=f=>/\.(lrc|srt)$/i.test(f.name);
 const baseName=n=>n.replace(/\.[^.]+$/,'').toLowerCase().trim();
 function addFiles(files){const all=[...files],ok=all.filter(f=>isAudio(f)&&!isLyr(f)),lyrF=all.filter(isLyr);
-  if(!ok.length){if(lyrF.length&&curTrack()){lyrF[0].text().then(tx=>{const L=/-->/.test(tx)?parseSRT(tx):parseLRC(tx);if(L.length){setLines(L,true);renderLy();toast('Titrat u shtuan te kjo këngë')}});return}
-    trackEl.textContent='Ky skedar nuk është audio. Provo MP3, WAV ose M4A.';return}
+  if(!ok.length){if(lyrF.length&&curTrack()){lyrF[0].text().then(tx=>{const L=/-->/.test(tx)?parseSRT(tx):parseLRC(tx);if(L.length){setLines(L,true);renderLy();toast('Lyrics added to this song')}});return}
+    trackEl.textContent='This file isn’t audio. Try MP3, WAV or M4A.';return}
   const first=lib.length,made=ok.map((f,k)=>{const t={id:Date.now()+'-'+k+'-'+Math.random().toString(36).slice(2,7),name:f.name.replace(/\.[^.]+$/,''),blob:f,added:Date.now()+k};lib.push(t);dbDo(st=>st.put(t));return t});
   const tgt=view!=='all'?plById(view):null;if(tgt){made.forEach(t=>tgt.ids.push(t.id));savePL()}
   if(typeof plPick!=='undefined'&&!plPick.hidden)setTimeout(renderPick,0);
@@ -807,7 +807,7 @@ function addFiles(files){const all=[...files],ok=all.filter(f=>isAudio(f)&&!isLy
     if(!(L&&L.length)&&tg.plain){L=/\[\d+:\d+/.test(tg.plain)?parseLRC(tg.plain):tg.plain.split(/\r?\n/).map(x=>x.trim()).filter(Boolean).map(text=>({t:-1,e:0,text}))}
     if(L&&L.length){t.lyrics=normalize(L);found++}
     dbDo(st=>st.put(t));if(t===curTrack()){trackEl.textContent=t.name;lyIdx=-2;setSession();if(!$l('lyp').hidden)renderLy()}
-  })).then(()=>{renderList();if(found)toast(found===1?(synced(made.find(x=>x.lyrics).lyrics)?'Titrat u gjetën brenda këngës':'Teksti u gjet brenda këngës · hap Titrat për ta sinkronizuar'):`U gjetën titra në ${found} këngë`)})}
+  })).then(()=>{renderList();if(found)toast(found===1?(synced(made.find(x=>x.lyrics).lyrics)?'Lyrics found inside the song':'Lyrics text found in the song · open Lyrics to sync it'):`Lyrics found in ${found} songs`)})}
 // ---- read tags (ID3 for MP3, atoms for M4A, Vorbis comments for FLAC/OGG)
 function decTxt(b,enc){try{if(enc===1){if(b[0]===0xFF&&b[1]===0xFE)return new TextDecoder('utf-16le').decode(b.subarray(2));if(b[0]===0xFE&&b[1]===0xFF)return new TextDecoder('utf-16be').decode(b.subarray(2));return new TextDecoder('utf-16le').decode(b)}
   if(enc===2)return new TextDecoder('utf-16be').decode(b);if(enc===3)return new TextDecoder('utf-8').decode(b);return new TextDecoder('windows-1252').decode(b)}catch(e){return''}}
@@ -840,7 +840,7 @@ async function readTags(f){const out={};try{
 }catch(e){}return out}
 let toastT=0;function toast(m){const el=document.getElementById('toast');el.textContent=m;el.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>el.hidden=true,3800)}
 function removeTrack(i){const t=lib[i];dbDo(st=>st.delete(t.id));lib.splice(i,1);PL.forEach(p=>p.ids=p.ids.filter(x=>x!==t.id));savePL();
-  if(i===cur){if(audioEl){audioEl.pause();audioEl.removeAttribute('src');audioEl.load()}setPlaying(false);cur=-1;lyTrackChanged();trackEl.textContent=lib.length?lib.length+' këngë · shtyp ▶':'Pa këngë · shtyp ▶ për demo'}else if(i<cur)cur--;
+  if(i===cur){if(audioEl){audioEl.pause();audioEl.removeAttribute('src');audioEl.load()}setPlaying(false);cur=-1;lyTrackChanged();trackEl.textContent=lib.length?lib.length+' songs · press ▶':'No songs · press ▶ for demo'}else if(i<cur)cur--;
   renderList()}
 function playIndex(i,ctxv){if(!lib.length)return;if(ctxv)playCtx=ctxv;cur=((i%lib.length)+lib.length)%lib.length;ensureCtx();stopDemo();
   if(!audioEl){audioEl=new Audio();audioEl.preload='auto';src=ctx.createMediaElementSource(audioEl);src.connect(trackGain);
@@ -854,8 +854,8 @@ function togglePlay(){ensureCtx();
   if(audioEl&&audioEl.src&&cur>=0){audioEl.paused?audioEl.play():audioEl.pause();return}
   {const o=ctxOrder(view);if(o.length){playIndex(o[0],view);return}}
   toggleDemo()}
-function toggleDemo(){ensureCtx();if(demo){stopDemo();setPlaying(false);trackEl.textContent=lib.length?lib.length+' këngë · shtyp ▶':'Pa këngë · shtyp ▶ për demo';return}
-  if(audioEl&&!audioEl.paused)audioEl.pause();startDemo();demoBtn.setAttribute('aria-pressed','true');setPlaying(true);trackEl.textContent='Ritëm demo · 128 BPM'}
+function toggleDemo(){ensureCtx();if(demo){stopDemo();setPlaying(false);trackEl.textContent=lib.length?lib.length+' songs · press ▶':'No songs · press ▶ for demo';return}
+  if(audioEl&&!audioEl.paused)audioEl.pause();startDemo();demoBtn.setAttribute('aria-pressed','true');setPlaying(true);trackEl.textContent='Demo beat · 128 BPM'}
 function setSession(){try{if(!('mediaSession' in navigator))return;navigator.mediaSession.metadata=new MediaMetadata({title:lib[cur].name,artist:S.name||'KEBBEK',album:'Zëri',artwork:[{src:LOGO,sizes:'768x768',type:'image/webp'}]});
   [['play',()=>audioEl.play()],['pause',()=>audioEl.pause()],['previoustrack',prev],['nexttrack',next],['seekto',d=>{audioEl.currentTime=d.seekTime}]].forEach(([a,f])=>{try{navigator.mediaSession.setActionHandler(a,f)}catch(e){}})}catch(e){}}
 let wl=null;async function wake(){try{if(navigator.wakeLock&&!wl){wl=await navigator.wakeLock.request('screen');wl.addEventListener('release',()=>wl=null)}}catch(e){}}
@@ -871,8 +871,8 @@ const shufBtn=document.getElementById('shuf'),repBtn=document.getElementById('re
 shufBtn.addEventListener('click',()=>{shuffle=!shuffle;shufBtn.setAttribute('aria-pressed',String(shuffle))});
 repBtn.addEventListener('click',()=>{repeat=!repeat;repBtn.setAttribute('aria-pressed',String(repeat))});
 const clearBtn=document.getElementById('clear');let clearArm=0;
-clearBtn.addEventListener('click',()=>{if(!lib.length)return;if(Date.now()-clearArm>3000){clearArm=Date.now();clearBtn.textContent='Shtyp sërish për të fshirë';setTimeout(()=>clearBtn.textContent='Fshi të gjitha',3000);return}
-  clearArm=0;clearBtn.textContent='Fshi të gjitha';dbDo(st=>st.clear());lib.length=0;cur=-1;PL.forEach(p=>p.ids=[]);savePL();if(audioEl){audioEl.pause();audioEl.removeAttribute('src');audioEl.load()}setPlaying(false);trackEl.textContent='Pa këngë · shtyp ▶ për demo';renderList()});
+clearBtn.addEventListener('click',()=>{if(!lib.length)return;if(Date.now()-clearArm>3000){clearArm=Date.now();clearBtn.textContent='Tap again to delete';setTimeout(()=>clearBtn.textContent='Delete all',3000);return}
+  clearArm=0;clearBtn.textContent='Delete all';dbDo(st=>st.clear());lib.length=0;cur=-1;PL.forEach(p=>p.ids=[]);savePL();if(audioEl){audioEl.pause();audioEl.removeAttribute('src');audioEl.load()}setPlaying(false);trackEl.textContent='No songs · press ▶ for demo';renderList()});
 addEventListener('keydown',e=>{if(e.target.tagName==='INPUT')return;if(e.code==='Space'&&e.target===document.body){e.preventDefault();togglePlay()}else if(e.key==='ArrowRight'&&e.shiftKey)next();else if(e.key==='ArrowLeft'&&e.shiftKey)prev()});
 function startDemo(){
   const out=ctx.createGain();out.gain.value=.5;out.connect(fxIn);let step=0;const bt=60/128/4;
@@ -894,15 +894,15 @@ addEventListener('drop',e=>{e.preventDefault();dragN=0;dropEl.hidden=true;addFil
 document.getElementById('seek').addEventListener('click',e=>{if(!audioEl||!audioEl.duration)return;const r=e.currentTarget.getBoundingClientRect();audioEl.currentTime=(e.clientX-r.left)/r.width*audioEl.duration});
 
 // ---------- settings (saved on this device)
-const DEF={name:'KEBBEK',c1:'#2fe0ff',c2:'#5a7bff',logo:'default',logoSize:1,bloom:.6,bloomV:2,sens:1,removeBg:true,crisp:true,logoStraight:true,logoPos:'both',logoHidden:false,clean:true,tele:true,logoGlow:.35,logoBack:.55,cycle:false,lyStyle:'karaoke',lyZ:1,lyPos:'side',lyClean:true,autoSync:true,lyV:2,snd:{preset:'Natyral',eq:[0,0,0,0,0,0,0,0,0,0],bass:0,clar:0,warm:0,rev:0,width:1,loud:false,lim:true,vol:1,rate:1,fade:2,one:false,off:false,avms:0},fx:{lasers:true,stars:true,grid:true,glitch:true,shell:true,hud:true,dust:true,shake:true}};
+const DEF={name:'KEBBEK',c1:'#2fe0ff',c2:'#5a7bff',logo:'default',logoSize:1,bloom:.6,bloomV:2,sens:1,removeBg:true,crisp:true,logoStraight:true,logoPos:'both',logoHidden:false,clean:true,tele:true,logoGlow:.35,logoBack:.55,cycle:false,lyStyle:'karaoke',lyZ:1,lyPos:'side',lyClean:true,autoSync:true,lyV:2,snd:{preset:'Natural',eq:[0,0,0,0,0,0,0,0,0,0],bass:0,clar:0,warm:0,rev:0,width:1,loud:false,lim:true,vol:1,rate:1,fade:2,one:false,off:false,avms:0},fx:{lasers:true,stars:true,grid:true,glitch:true,shell:true,hud:true,dust:true,shake:true}};
 let S=JSON.parse(JSON.stringify(DEF));
 try{const raw=localStorage.getItem('kebbek-zeri-cfg');if(raw){const o=JSON.parse(raw);S=Object.assign(S,o);S.fx=Object.assign({},DEF.fx,o.fx||{});S.snd=Object.assign({},DEF.snd,o.snd||{});if((o.bloomV||0)<2){S.bloom=Math.min(S.bloom,.6);S.bloomV=2}if((o.lyV||0)<2){S.lyPos='side';S.lyV=2}if(!Array.isArray(S.snd.eq)||S.snd.eq.length!==10)S.snd.eq=DEF.snd.eq.slice()}}catch(e){}
 const saveS=()=>{try{localStorage.setItem('kebbek-zeri-cfg',JSON.stringify(S))}catch(e){}};
 const hexN=h=>parseInt(h.slice(1),16),hx=n=>'#'+n.toString(16).padStart(6,'0');
-const PRESETS=[['Reaktor','#2fe0ff','#5a7bff'],['Neon Tokio','#ff2e88','#2ee6ff'],['Plazma','#ff3df2','#7a3dff'],['Supernova','#ffd23d','#ff3d6e'],['Matrica','#3dff7a','#00a86b'],
-  ['Akull kuantik','#d9f6ff','#5ec8ff'],['Lava','#ff5a1f','#ffcf3d'],['Aurora','#3dffc9','#b46bff'],['Krom','#eef1f6','#8a96a8'],['Ultravjollcë','#8f5bff','#ff5bc8'],
-  ['Cyberpunk','#f7ff3d','#ff2a6d'],['Oqean i thellë','#00e1d9','#0047ff'],['Hologram','#a6fff2','#ff9cf2'],['Laser','#ff2b2b','#7a0cff'],['Ar galaktik','#ffbf3d','#6a5bff'],
-  ['Biolumineshencë','#00ffa3','#00c2ff'],['Synthwave','#ff6ad5','#ffb86c'],['Toksik','#c6ff00','#ff00a8'],['Mars','#ff7a3d','#c2261b'],['Hëna','#f0e9ff','#9b8cff']];
+const PRESETS=[['Reactor','#2fe0ff','#5a7bff'],['Neon Tokio','#ff2e88','#2ee6ff'],['Plasma','#ff3df2','#7a3dff'],['Supernova','#ffd23d','#ff3d6e'],['Matrix','#3dff7a','#00a86b'],
+  ['Quantum ice','#d9f6ff','#5ec8ff'],['Lava','#ff5a1f','#ffcf3d'],['Aurora','#3dffc9','#b46bff'],['Chrome','#eef1f6','#8a96a8'],['Ultraviolet','#8f5bff','#ff5bc8'],
+  ['Cyberpunk','#f7ff3d','#ff2a6d'],['Deep ocean','#00e1d9','#0047ff'],['Hologram','#a6fff2','#ff9cf2'],['Laser','#ff2b2b','#7a0cff'],['Galactic gold','#ffbf3d','#6a5bff'],
+  ['Bioluminescence','#00ffa3','#00c2ff'],['Synthwave','#ff6ad5','#ffb86c'],['Toxic','#c6ff00','#ff00a8'],['Mars','#ff7a3d','#c2261b'],['Moon','#f0e9ff','#9b8cff']];
 function paintColors(a,c){colA.setHex(a);colB.setHex(c);rimA.color.setHex(a);rimB.color.setHex(c);
   dotGlow.material.color.setHex(a);osc.material.color.setHex(a);pMat.color.setHex(c);shellM.color.setHex(c);tickM.color.setHex(c);
   hudMats.forEach(m=>m.color.setHex(a));waves.forEach(w=>w.material.color.setHex(a));lasers.forEach(l=>l.material.color.setHex(a).multiplyScalar(2.5));recolorGrid(a,c)}
@@ -916,12 +916,12 @@ function renderPresets(){presetsEl.textContent='';const mine=Array.isArray(S.myP
   [...PRESETS.map(p=>[...p,false]),...mine.map(p=>[...p,true])].forEach(([n,a,c,own],k)=>{const b=document.createElement('button');b.type='button';b.className='pre'+(own?' own':'');b.dataset.a=a;b.dataset.c=c;b.innerHTML='<i></i><span></span>';
     b.querySelector('i').style.background=`linear-gradient(135deg,${a} 45%,${c} 55%)`;b.querySelector('span').textContent=n;b.title=n;
     b.addEventListener('click',e=>{if(e.target.closest('.x'))return;S.c1=a;S.c2=c;applyColors();saveS()});
-    if(own){const x=document.createElement('span');x.className='x';x.textContent='×';x.setAttribute('role','button');x.setAttribute('aria-label','Fshi paletën '+n);
+    if(own){const x=document.createElement('span');x.className='x';x.textContent='×';x.setAttribute('role','button');x.setAttribute('aria-label','Delete palette '+n);
       x.addEventListener('click',()=>{S.myPal=mine.filter(p=>!(p[0]===n&&p[1]===a&&p[2]===c));saveS();renderPresets();applyColors()});b.append(x)}
     presetsEl.append(b)});
-  const add=document.createElement('button');add.type='button';add.className='pre addp';add.innerHTML='<i>+</i><span>Ruaj ngjyrat e tanishme</span>';
-  add.addEventListener('click',()=>{const L=Array.isArray(S.myPal)?S.myPal:[];if(L.some(p=>p[1]===S.c1.toLowerCase()&&p[2]===S.c2.toLowerCase())){toast('Kjo paletë është ruajtur tashmë');return}
-    L.push(['Imja '+(L.length+1),S.c1.toLowerCase(),S.c2.toLowerCase()]);S.myPal=L;saveS();renderPresets();applyColors();toast('Paleta u ruajt')});presetsEl.append(add)}
+  const add=document.createElement('button');add.type='button';add.className='pre addp';add.innerHTML='<i>+</i><span>Save current colours</span>';
+  add.addEventListener('click',()=>{const L=Array.isArray(S.myPal)?S.myPal:[];if(L.some(p=>p[1]===S.c1.toLowerCase()&&p[2]===S.c2.toLowerCase())){toast('This palette is already saved');return}
+    L.push(['Mine '+(L.length+1),S.c1.toLowerCase(),S.c2.toLowerCase()]);S.myPal=L;saveS();renderPresets();applyColors();toast('Palette saved')});presetsEl.append(add)}
 renderPresets();
 sC1.addEventListener('input',()=>{S.c1=sC1.value;applyColors();saveS()});sC2.addEventListener('input',()=>{S.c2=sC2.value;applyColors();saveS()});
 const hsl2hex=(h,s,l)=>'#'+new THREE.Color().setHSL(((h%1)+1)%1,s,l).getHexString();
@@ -939,8 +939,8 @@ function colorsFromImage(src){const c=document.createElement('canvas');c.width=c
   let b2=-1,v2=0;bins.forEach((v,k)=>{const d=Math.min(Math.abs(k-b1),24-Math.abs(k-b1));if(d>=3&&v>v2&&v>v1*.12){v2=v;b2=k}});
   const avg=k=>{const hs=acc.filter(x=>x[0]===k).map(x=>x[1]);return hs.reduce((a,b)=>a+b,0)/hs.length};const h1=avg(b1);
   return [hsl2hex(h1,.95,.58),b2>=0?hsl2hex(avg(b2),.9,.6):hsl2hex(h1+.6,.85,.62)]}
-document.getElementById('cLogo').addEventListener('click',()=>{const img=logoU.uMap.value.image;if(!img){toast('Logoja nuk është ngarkuar ende');return}
-  const r=colorsFromImage(img);if(!r){toast('Logoja nuk ka ngjyra të forta · u zgjodh Mono');S.c1='#f2f4f8';S.c2='#7a8494'}else{[S.c1,S.c2]=r;toast('Ngjyrat u morën nga logoja')}applyColors();saveS()});
+document.getElementById('cLogo').addEventListener('click',()=>{const img=logoU.uMap.value.image;if(!img){toast('The logo hasn’t loaded yet');return}
+  const r=colorsFromImage(img);if(!r){toast('The logo has no strong colours · Mono chosen');S.c1='#f2f4f8';S.c2='#7a8494'}else{[S.c1,S.c2]=r;toast('Colours taken from the logo')}applyColors();saveS()});
 // bloom presets
 document.querySelectorAll('#bloomPre .chip').forEach(b=>b.addEventListener('click',()=>{S.bloom=+b.dataset.b;showers.forEach(f=>f());saveS()}));
 function markBloom(){document.querySelectorAll('#bloomPre .chip').forEach(b=>b.setAttribute('aria-pressed',String(Math.abs(+b.dataset.b-S.bloom)<.03)))}
@@ -968,9 +968,9 @@ const logoDef=document.getElementById('logoDef'),logoNone=document.getElementByI
 function applyLogo(){const mode=S.logo==='custom'&&!customTex?'default':S.logo;const hid=!!S.logoHidden;
   const bl=document.getElementById('brandLogo');bl.hidden=mode==='none'||hid||S.logoPos==='center';if(mode==='custom'&&customTex&&customTex.image&&customTex.image.toDataURL){try{bl.src=customTex.image.toDataURL('image/png')}catch(e){}}else if(mode==='default')bl.src=LOGO;
   const inC=mode!=='none'&&!hid&&S.logoPos!=='corner';logo.visible=inC;dotGlow.visible=inC&&mode==='default';
-  document.querySelectorAll('#logoPos .chip').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.p===S.logoPos)));const lb=document.getElementById('logoBtn');if(lb){lb.setAttribute('aria-pressed',String(!hid));lb.title=hid?'Shfaq logon':'Fshih logon'}logoU.uMap.value=mode==='custom'?customTex:DEF_TEX;if(mode!=='custom')logoAsp=[1,1];
+  document.querySelectorAll('#logoPos .chip').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.p===S.logoPos)));const lb=document.getElementById('logoBtn');if(lb){lb.setAttribute('aria-pressed',String(!hid));lb.title=hid?'Show logo':'Hide logo'}logoU.uMap.value=mode==='custom'?customTex:DEF_TEX;if(mode!=='custom')logoAsp=[1,1];
   logoDef.setAttribute('aria-pressed',String(mode==='default'));logoNone.setAttribute('aria-pressed',String(mode==='none'));logoLbl.classList.toggle('on',mode==='custom');
-  logoLbl.textContent=customTex?'Logoja ime':'Ngarko logon tënde';sBg.checked=S.removeBg}
+  logoLbl.textContent=customTex?'My logo':'Upload your logo';sBg.checked=S.removeBg}
 function texFromCanvas(c){const t=new THREE.CanvasTexture(c);t.anisotropy=4;const w=c.width,h=c.height;logoAsp=w>h?[1,h/w]:[w/h,1];return t}
 async function imgToCanvas(blob,removeBg){const url=URL.createObjectURL(blob);try{const img=new Image();img.src=url;await img.decode();
   const sc=Math.min(1,1024/Math.max(img.naturalWidth,img.naturalHeight));const w=Math.max(1,Math.round(img.naturalWidth*sc)),h=Math.max(1,Math.round(img.naturalHeight*sc));
@@ -981,29 +981,29 @@ async function imgToCanvas(blob,removeBg){const url=URL.createObjectURL(blob);tr
   return c}finally{URL.revokeObjectURL(url)}}
 document.getElementById('logoFile').addEventListener('change',async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;
   try{const c=await imgToCanvas(f,S.removeBg);customTex=texFromCanvas(c);S.logo='custom';applyLogo();saveS();
-    c.toBlob(bl=>{if(bl)dbSet('logo',bl)},'image/png')}catch(err){logoLbl.textContent='Kjo foto nuk u hap. Provo PNG ose JPG.'}});
+    c.toBlob(bl=>{if(bl)dbSet('logo',bl)},'image/png')}catch(err){logoLbl.textContent='This image couldn’t be opened. Try PNG or JPG.'}});
 document.getElementById('logoLbl').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();document.getElementById('logoFile').click()}});
 logoDef.addEventListener('click',()=>{S.logo='default';S.logoHidden=false;applyLogo();saveS()});
 document.querySelectorAll('#logoPos .chip').forEach(b=>b.addEventListener('click',()=>{S.logoPos=b.dataset.p;S.logoHidden=false;applyLogo();saveS()}));
-document.getElementById('logoBtn').addEventListener('click',()=>{S.logoHidden=!S.logoHidden;applyLogo();saveS();toast(S.logoHidden?'Logoja u fsheh · prek sërish për ta shfaqur':'Logoja u shfaq')});
+document.getElementById('logoBtn').addEventListener('click',()=>{S.logoHidden=!S.logoHidden;applyLogo();saveS();toast(S.logoHidden?'Logo hidden · tap again to show it':'Logo shown')});
 logoNone.addEventListener('click',()=>{S.logo='none';applyLogo();saveS()});
 sBg.addEventListener('change',()=>{S.removeBg=sBg.checked;saveS()});
 function dbSet(k,v){if(!db)return;try{db.transaction('settings','readwrite').objectStore('settings').put(v,k)}catch(e){}}
 function loadCustomLogo(){if(!db)return;try{const q=db.transaction('settings').objectStore('settings').get('logo');q.onsuccess=async()=>{if(!q.result)return;try{customTex=texFromCanvas(await imgToCanvas(q.result,false));applyLogo()}catch(e){}}}catch(e){}}
 // reset
 const cfgReset=document.getElementById('cfgReset');let resetArm=0;
-cfgReset.addEventListener('click',()=>{if(Date.now()-resetArm>3000){resetArm=Date.now();cfgReset.textContent='Shtyp sërish';setTimeout(()=>cfgReset.textContent='Rikthe origjinalin',3000);return}
-  resetArm=0;cfgReset.textContent='Rikthe origjinalin';S=JSON.parse(JSON.stringify(DEF));customTex=null;try{db&&db.transaction('settings','readwrite').objectStore('settings').delete('logo')}catch(e){}saveS();applyAll();if(typeof syncSnd==='function'){syncSnd();applySnd()}if(typeof syncLyUI==='function')syncLyUI()});
+cfgReset.addEventListener('click',()=>{if(Date.now()-resetArm>3000){resetArm=Date.now();cfgReset.textContent='Tap again';setTimeout(()=>cfgReset.textContent='Reset to original',3000);return}
+  resetArm=0;cfgReset.textContent='Reset to original';S=JSON.parse(JSON.stringify(DEF));customTex=null;try{db&&db.transaction('settings','readwrite').objectStore('settings').delete('logo')}catch(e){}saveS();applyAll();if(typeof syncSnd==='function'){syncSnd();applySnd()}if(typeof syncLyUI==='function')syncLyUI()});
 // themes: export all looks, sound and playlists names as one JSON file, import it on any device
 document.getElementById('thmExport').addEventListener('click',async()=>{const data={app:'KEBBEK Zëri',version:1,settings:S,playlists:PL.map(p=>({name:p.name})),saved:new Date().toISOString()};
   try{if(db){const lg=await new Promise(r=>{try{const q=db.transaction('settings').objectStore('settings').get('logo');q.onsuccess=()=>r(q.result||null);q.onerror=()=>r(null)}catch(e){r(null)}});
     if(lg&&S.logo==='custom')data.logo=await new Promise(r=>{const fr=new FileReader();fr.onload=()=>r(fr.result);fr.readAsDataURL(lg)})}}catch(e){}
-  const blob=new Blob([JSON.stringify(data,null,1)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=(S.name||'kebbek').replace(/[^\w-]+/g,'_')+'-tema.json';document.body.append(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500);toast('Tema u ruajt si skedar')});
+  const blob=new Blob([JSON.stringify(data,null,1)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=(S.name||'kebbek').replace(/[^\w-]+/g,'_')+'-theme.json';document.body.append(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500);toast('Theme saved to file')});
 document.getElementById('thmFile').addEventListener('change',async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;
   try{const d=JSON.parse(await f.text());if(!d||!d.settings)throw 0;const o=d.settings;S=Object.assign(JSON.parse(JSON.stringify(DEF)),o);S.fx=Object.assign({},DEF.fx,o.fx||{});S.snd=Object.assign({},DEF.snd,o.snd||{});
     if(d.logo){const bl=await (await fetch(d.logo)).blob();customTex=texFromCanvas(await imgToCanvas(bl,false));dbSet('logo',bl);S.logo='custom'}
     (d.playlists||[]).forEach(p=>{if(p.name&&!PL.some(x=>x.name===p.name))PL.push({id:'pl'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),name:p.name,ids:[]})});savePL();
-    saveS();applyAll();if(typeof syncSnd==='function'){syncSnd();applySnd()}if(typeof syncLyUI==='function')syncLyUI();renderList();toast('Tema u hap: '+(S.name||'KEBBEK'))}catch(err){toast('Ky skedar nuk është temë KEBBEK')}});
+    saveS();applyAll();if(typeof syncSnd==='function'){syncSnd();applySnd()}if(typeof syncLyUI==='function')syncLyUI();renderList();toast('Theme opened: '+(S.name||'KEBBEK'))}catch(err){toast('This file isn’t a KEBBEK theme')}});
 // panel toggles
 const cfgEl=document.getElementById('cfg'),cfgBtn=document.getElementById('cfgBtn');
 function showPanel(which){const P={list:[listEl,listBtn],cfg:[cfgEl,cfgBtn],ly:[document.getElementById('lyp'),document.getElementById('lyBtn')],snd:[document.getElementById('snd'),document.getElementById('sndBtn')]};
@@ -1015,8 +1015,8 @@ applyAll();
 // ---------- sound engine: 10-band EQ, bass, clarity, warmth, space, stereo width, loudness, limiter
 let visDelay=null,visLag=0,fxIn=null,trackGain=null,FX=null,sleepEnd=false,sleepTimer=0,sleepAt=0,fadingOut=false;
 const EQF=[31,62,125,250,500,1000,2000,4000,8000,16000],EQL=['31','62','125','250','500','1k','2k','4k','8k','16k'];
-const EQP={Natyral:[0,0,0,0,0,0,0,0,0,0],'Bas i fortë':[6,7,7,5,1,0,0,0,1,1],'Deep House':[6,5,3,0,-1,-1,0,1,2,3],Pop:[-1,0,1,2,3,3,2,1,1,1],Rock:[4,3,2,0,-1,-1,1,2,3,4],
-  'Hip-Hop':[5,6,5,2,-1,-1,1,1,2,2],Elektronike:[5,4,1,0,-2,1,0,2,4,5],Vokal:[-2,-2,-1,1,3,4,4,3,1,0],Akustike:[2,2,1,1,2,1,2,2,2,1],Jazz:[3,2,1,2,-1,-1,0,1,2,3],Klasike:[3,2,1,0,0,0,-1,1,2,3],Natë:[-3,-2,-1,0,1,1,1,0,-2,-3]};
+const EQP={Natural:[0,0,0,0,0,0,0,0,0,0],'Bass boost':[6,7,7,5,1,0,0,0,1,1],'Deep House':[6,5,3,0,-1,-1,0,1,2,3],Pop:[-1,0,1,2,3,3,2,1,1,1],Rock:[4,3,2,0,-1,-1,1,2,3,4],
+  'Hip-Hop':[5,6,5,2,-1,-1,1,1,2,2],Electronic:[5,4,1,0,-2,1,0,2,4,5],Vocal:[-2,-2,-1,1,3,4,4,3,1,0],Acoustic:[2,2,1,1,2,1,2,2,2,1],Country:[3,2,1,1,0,1,3,4,3,2],Jazz:[3,2,1,2,-1,-1,0,1,2,3],Classical:[3,2,1,0,0,0,-1,1,2,3],Night:[-3,-2,-1,0,1,1,1,0,-2,-3]};
 function impulse(sec){const n=Math.floor(ctx.sampleRate*sec),b=ctx.createBuffer(2,n,ctx.sampleRate);for(let c=0;c<2;c++){const d=b.getChannelData(c);for(let i=0;i<n;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/n,3.2)}return b}
 function satCurve(k){const n=1024,c=new Float32Array(n);for(let i=0;i<n;i++){const x=i*2/n-1;c[i]=(1+k)*x/(1+k*Math.abs(x))}return c}
 function buildFx(){const C=ctx;trackGain=C.createGain();fxIn=C.createGain();trackGain.connect(fxIn);const chainIn=C.createGain(),byp=C.createGain();byp.gain.value=0;fxIn.connect(chainIn);
@@ -1051,34 +1051,34 @@ function onTrackStart(){fadingOut=false;applySnd();if(!trackGain)return;const g=
   if(S.snd.fade>0){g.setValueAtTime(.0001,T);g.exponentialRampToValueAtTime(1,T+Math.min(3,S.snd.fade))}else g.setValueAtTime(1,T)}
 function sndTick(){if(!audioEl||audioEl.paused||!trackGain)return;const d=audioEl.duration,f=S.snd.fade;
   if(f>0&&!fadingOut&&!S.snd.one&&isFinite(d)&&d-audioEl.currentTime<f&&d>f*2){fadingOut=true;const g=trackGain.gain,T=ctx.currentTime;g.cancelScheduledValues(T);g.setValueAtTime(g.value,T);g.linearRampToValueAtTime(.0001,T+Math.max(.2,d-audioEl.currentTime))}
-  if(sleepAt&&Date.now()>=sleepAt){sleepAt=0;const g=trackGain.gain,T=ctx.currentTime;g.cancelScheduledValues(T);g.setValueAtTime(g.value,T);g.linearRampToValueAtTime(.0001,T+8);setTimeout(()=>{audioEl.pause();g.setValueAtTime(1,ctx.currentTime);setSleep('0');toast('Timer i gjumit: muzika u ndal')},8200)}
-  if(sleepAt&&(hudTick&63)===0)sleepNote.textContent='Ndalet pas '+Math.ceil((sleepAt-Date.now())/60000)+' min, me zbehje të butë.'}
+  if(sleepAt&&Date.now()>=sleepAt){sleepAt=0;const g=trackGain.gain,T=ctx.currentTime;g.cancelScheduledValues(T);g.setValueAtTime(g.value,T);g.linearRampToValueAtTime(.0001,T+8);setTimeout(()=>{audioEl.pause();g.setValueAtTime(1,ctx.currentTime);setSleep('0');toast('Sleep timer: music stopped')},8200)}
+  if(sleepAt&&(hudTick&63)===0)sleepNote.textContent='Stops in '+Math.ceil((sleepAt-Date.now())/60000)+' min, with a soft fade.'}
 // UI
 const $s=id=>document.getElementById(id),eqPre=$s('eqPre'),eqBands=$s('eqBands'),sleepNote=$s('sleepNote');
 Object.keys(EQP).forEach(n=>{const b=document.createElement('button');b.type='button';b.className='chip';b.textContent=n;b.dataset.p=n;
-  b.addEventListener('click',()=>{S.snd.preset=n;S.snd.eq=EQP[n].slice();if(n==='Natë')S.snd.loud=true;saveSnd()});eqPre.append(b)});
+  b.addEventListener('click',()=>{S.snd.preset=n;S.snd.eq=EQP[n].slice();if(n==='Night')S.snd.loud=true;saveSnd()});eqPre.append(b)});
 const eqIn=EQF.map((f,i)=>{const l=document.createElement('label');l.title=f+' Hz';l.innerHTML=`<b></b><input type="range" min="-12" max="12" step="0.5" aria-label="${EQL[i]} Hz"><span>${EQL[i]}</span>`;
   const inp=l.querySelector('input');inp.addEventListener('input',()=>{S.snd.eq[i]=+inp.value;S.snd.preset='';saveSnd()});eqBands.append(l);return l});
 const qs={qBass:['bass',v=>'+'+v.toFixed(1)+' dB'],qClar:['clar',v=>'+'+v.toFixed(1)+' dB'],qWarm:['warm',v=>Math.round(v*100)+'%'],qRev:['rev',v=>Math.round(v*100)+'%'],
-  qAV:['avms',v=>(v>0?'+':'')+Math.round(v)+' ms'],qWidth:['width',v=>v===0?'Mono':Math.round(v*100)+'%'],qVol:['vol',v=>Math.round(v*100)+'%'],qRate:['rate',v=>v.toFixed(2)+'×'],qFade:['fade',v=>v?v.toFixed(1)+' s':'Pa']};
+  qAV:['avms',v=>(v>0?'+':'')+Math.round(v)+' ms'],qWidth:['width',v=>v===0?'Mono':Math.round(v*100)+'%'],qVol:['vol',v=>Math.round(v*100)+'%'],qRate:['rate',v=>v.toFixed(2)+'×'],qFade:['fade',v=>v?v.toFixed(1)+' s':'Off']};
 Object.entries(qs).forEach(([id,[k]])=>$s(id).addEventListener('input',e=>{S.snd[k]=+e.target.value;saveSnd()}));
-$s('qAB').addEventListener('click',()=>{S.snd.off=!S.snd.off;saveSnd();toast(S.snd.off?'Efektet e zërit u fikën · tingulli origjinal':'Efektet e zërit u ndezën')});
+$s('qAB').addEventListener('click',()=>{S.snd.off=!S.snd.off;saveSnd();toast(S.snd.off?'Sound effects off · original sound':'Sound effects on')});
 [['qLoud','loud'],['qLim','lim'],['qOne','one']].forEach(([id,k])=>$s(id).addEventListener('click',()=>{S.snd[k]=!S.snd[k];saveSnd()}));
 function syncSnd(){const q=S.snd;syncVolRow();eqPre.querySelectorAll('.chip').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.p===q.preset)));
   eqIn.forEach((l,i)=>{l.querySelector('input').value=q.eq[i];l.querySelector('b').textContent=(q.eq[i]>0?'+':'')+q.eq[i]});
   Object.entries(qs).forEach(([id,[k,f]])=>{$s(id).value=q[k];$s('v'+id).textContent=f(+q[k])});
-  const ab=$s('qAB');ab.setAttribute('aria-pressed',String(!q.off));ab.classList.toggle('on',!q.off);ab.textContent=q.off?'Efektet: Fikur':'Efektet: Ndezur';
+  const ab=$s('qAB');ab.setAttribute('aria-pressed',String(!q.off));ab.classList.toggle('on',!q.off);ab.textContent=q.off?'Effects: Off':'Effects: On';
   $s('qLoud').setAttribute('aria-pressed',String(!!q.loud));$s('qLim').setAttribute('aria-pressed',String(!!q.lim));$s('qOne').setAttribute('aria-pressed',String(!!q.one))}
 function saveSnd(){syncSnd();applySnd();updateLag();saveS()}
-$s('sndReset').addEventListener('click',()=>{S.snd=JSON.parse(JSON.stringify(DEF.snd));saveSnd();toast('Zëri u rikthye në origjinal')});
+$s('sndReset').addEventListener('click',()=>{S.snd=JSON.parse(JSON.stringify(DEF.snd));saveSnd();toast('Sound reset to original')});
 $s('sndBtn').addEventListener('click',()=>showPanel('snd'));
 function setSleep(m){clearTimeout(sleepTimer);sleepAt=0;sleepEnd=false;
-  if(m==='end'){sleepEnd=true;sleepNote.textContent='Muzika ndalet kur mbaron kjo këngë.'}else if(+m>0){sleepAt=Date.now()+m*60000;sleepNote.textContent='Ndalet pas '+m+' min, me zbehje të butë.'}else sleepNote.textContent='';
+  if(m==='end'){sleepEnd=true;sleepNote.textContent='Music stops when this song ends.'}else if(+m>0){sleepAt=Date.now()+m*60000;sleepNote.textContent='Stops in '+m+' min, with a soft fade.'}else sleepNote.textContent='';
   document.querySelectorAll('#sleep .chip').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.m===String(m))))}
 document.querySelectorAll('#sleep .chip').forEach(b=>b.addEventListener('click',()=>setSleep(b.dataset.m)));
-function syncVolRow(){const v=S.snd.vol,m=!!S.snd.mute;const r=$s('rVol');r.value=v;$s('rVolV').textContent=m?'Hesht':Math.round(v*100)+'%';
+function syncVolRow(){const v=S.snd.vol,m=!!S.snd.mute;const r=$s('rVol');r.value=v;$s('rVolV').textContent=m?'Muted':Math.round(v*100)+'%';
   $s('vIco').setAttribute('d',m||v===0?'M4 9h4l5-4v14l-5-4H4zM17 9l5 6M22 9l-5 6':v<.5?'M4 9h4l5-4v14l-5-4H4zM16 8.5a4.5 4.5 0 0 1 0 7':'M4 9h4l5-4v14l-5-4H4zM16 8.5a4.5 4.5 0 0 1 0 7M18.5 6a8 8 0 0 1 0 12');
-  $s('vMute').setAttribute('aria-label',m?'Ndiz zërin':'Hesht zërin')}
+  $s('vMute').setAttribute('aria-label',m?'Unmute':'Mute')}
 $s('rVol').addEventListener('input',e=>{S.snd.vol=+e.target.value;S.snd.mute=false;saveSnd()});
 $s('vMute').addEventListener('click',()=>{S.snd.mute=!S.snd.mute;saveSnd()});
 syncSnd();setSleep('0');
@@ -1185,22 +1185,22 @@ function lyTrackChanged(){setTimeout(()=>{const t=curTrack();const L=lines();if(
 const canModel=()=>/^https?:$/.test(location.protocol)&&!/claude(usercontent)?\.(ai|com)$/.test(location.hostname)||location.protocol==='kebbek:';
 let autoTried=new Set();
 function maybeAutoSync(){const t=curTrack();if(!t||S.autoSync===false||lyBusy||!canModel()||autoTried.has(t.id))return;const L=lines();if(!L.length||synced(L))return;
-  autoTried.add(t.id);toast('Po sinkronizoj titrat me zërin e këngës…');$l('lycEst').textContent='Po sinkronizohet me zërin…';lyAutoBtn.click()}
+  autoTried.add(t.id);toast('Syncing lyrics to the vocals…');$l('lycEst').textContent='Syncing to the vocals…';lyAutoBtn.click()}
 function renderLy(){const t=curTrack(),L=lines();
-  lyFor.textContent=t?'Kënga: '+t.name:'Luaj një këngë nga lista dhe pastaj krijo titrat e saj këtu.';
+  lyFor.textContent=t?'Song: '+t.name:'Play a song from the list, then create its lyrics here.';
   lyShowBtn.setAttribute('aria-pressed',String(lyShowOn));
   ['lyAuto','lyPaste','lyTap','lyCopy','lyClear'].forEach(id=>$l(id).disabled=!t||(id==='lyAuto'&&lyBusy));
-  lyAutoBtn.textContent=L.length&&!synced(L)?'Sinkronizo tekstin automatikisht':'Gjenero titrat';
-  lyCount.textContent=L.length?`Vargjet · ${L.length}${synced(L)?'':' · pa kohë: sinkronizoje automatikisht ose me prekje'}`:'Vargjet';
+  lyAutoBtn.textContent=L.length&&!synced(L)?'Auto-sync the text':'Generate lyrics';
+  lyCount.textContent=L.length?`Lines · ${L.length}${synced(L)?'':' · no timings: sync automatically or by tapping'}`:'Vargjet';
   lyLinesEl.innerHTML='';
   L.forEach((l,i)=>{const li=document.createElement('li');
-    const tm=document.createElement('button');tm.type='button';tm.className='tm'+(l.t>=0?'':' no');tm.textContent=fmtT(l.t);tm.title='Shko te ky varg';
+    const tm=document.createElement('button');tm.type='button';tm.className='tm'+(l.t>=0?'':' no');tm.textContent=fmtT(l.t);tm.title='Go to this line';
     tm.addEventListener('click',()=>{if(audioEl&&l.t>=0){audioEl.currentTime=l.t;if(audioEl.paused)audioEl.play()}});
-    const inp=document.createElement('input');inp.type='text';inp.value=l.text;inp.setAttribute('aria-label','Vargu '+(i+1));
+    const inp=document.createElement('input');inp.type='text';inp.value=l.text;inp.setAttribute('aria-label','Line '+(i+1));
     inp.addEventListener('input',()=>{l.text=inp.value;setLines(lines(),false)});
-    const now=document.createElement('button');now.type='button';now.className='now';now.textContent='⏱';now.title='Vendos kohën e tanishme';now.setAttribute('aria-label','Vendos kohën e tanishme për vargun '+(i+1));
+    const now=document.createElement('button');now.type='button';now.className='now';now.textContent='⏱';now.title='Set current time';now.setAttribute('aria-label','Set current time for line '+(i+1));
     now.addEventListener('click',()=>{if(!audioEl)return;l.t=Math.max(0,audioEl.currentTime-visLag);l.e=0;setLines(lines(),true);renderLy()});
-    const x=document.createElement('button');x.type='button';x.className='x';x.textContent='×';x.setAttribute('aria-label','Fshi vargun '+(i+1));
+    const x=document.createElement('button');x.type='button';x.className='x';x.textContent='×';x.setAttribute('aria-label','Delete line '+(i+1));
     x.addEventListener('click',()=>{lines().splice(i,1);setLines(lines(),true);renderLy()});
     li.append(tm,inp,now,x);lyLinesEl.append(li)})}
 lyShowBtn.addEventListener('click',()=>{lyShowOn=!lyShowOn;try{localStorage.setItem('kebbek-zeri-lyshow',lyShowOn?'1':'0')}catch(e){}lyShowBtn.setAttribute('aria-pressed',String(lyShowOn))});
@@ -1217,24 +1217,24 @@ function parseSRT(txt){const out=[];const ts=x=>{const m=x.match(/(\d+):(\d+):(\
   txt.replace(/\r/g,'').split(/\n\n+/).forEach(b=>{const r=b.split('\n');const i=r.findIndex(x=>x.includes('-->'));if(i<0)return;const[a,z]=r[i].split('-->');const text=r.slice(i+1).join(' ').replace(/<[^>]+>/g,'').trim();if(text)out.push({t:ts(a),e:ts(z),text})});return out}
 $l('lyFile').addEventListener('change',async e=>{const f=e.target.files[0];e.target.value='';if(!f||!curTrack())return;const txt=await f.text();
   let L=/-->/.test(txt)?parseSRT(txt):parseLRC(txt);if(!L.length)L=txt.split(/\r?\n/).map(x=>x.trim()).filter(Boolean).map(text=>({t:-1,e:0,text}));
-  setLines(L,true);renderLy();setStat(`U ngarkuan ${L.length} vargje.`)});
+  setLines(L,true);renderLy();setStat(`Loaded ${L.length} lines.`)});
 $l('lyFileLbl').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();$l('lyFile').click()}});
 // copy
 $l('lyCopy').addEventListener('click',()=>{const L=lines();if(!L.length)return;const p=n=>String(n).padStart(2,'0');
   const txt=L.map(l=>l.t>=0?`[${p(Math.floor(l.t/60))}:${p(Math.floor(l.t%60))}.${p(Math.floor(l.t%1*100))}]${l.text}`:l.text).join('\n');
-  const fall=()=>{pasteBox.hidden=false;lyText.value=txt;lyText.select();setStat('Teksti është zgjedhur më poshtë. Kopjoje me Copy.')};
-  try{navigator.clipboard.writeText(txt).then(()=>setStat('U kopjua si LRC.'),fall)}catch(e){fall()}});
+  const fall=()=>{pasteBox.hidden=false;lyText.value=txt;lyText.select();setStat('The text is selected below. Copy it with Copy.')};
+  try{navigator.clipboard.writeText(txt).then(()=>setStat('Copied as LRC.'),fall)}catch(e){fall()}});
 // clear (two taps)
 let clrArm=0;const lyClear=$l('lyClear');
-lyClear.addEventListener('click',()=>{if(!lines().length)return;if(Date.now()-clrArm>3000){clrArm=Date.now();lyClear.textContent='Shtyp sërish';setTimeout(()=>lyClear.textContent='Fshi titrat',3000);return}
-  clrArm=0;lyClear.textContent='Fshi titrat';setLines([],true);renderLy()});
+lyClear.addEventListener('click',()=>{if(!lines().length)return;if(Date.now()-clrArm>3000){clrArm=Date.now();lyClear.textContent='Tap again';setTimeout(()=>lyClear.textContent='Delete lyrics',3000);return}
+  clrArm=0;lyClear.textContent='Delete lyrics';setLines([],true);renderLy()});
 // tap sync
 const tapBox=$l('tapBox'),tapLine=$l('tapLine'),tapNext=$l('tapNext');let tapOn=false,tapI=0;
-function tapShow(){const L=lines();tapLine.textContent=L[tapI]?L[tapI].text:'';tapNext.textContent=L[tapI+1]?'Pastaj: '+L[tapI+1].text:'Vargu i fundit'}
-$l('lyTap').addEventListener('click',()=>{const L=lines();if(!L.length){setStat('Fillimisht shkruaj ose ngjit tekstin e këngës.',true);pasteBox.hidden=false;return}
+function tapShow(){const L=lines();tapLine.textContent=L[tapI]?L[tapI].text:'';tapNext.textContent=L[tapI+1]?'Next: '+L[tapI+1].text:'Last line'}
+$l('lyTap').addEventListener('click',()=>{const L=lines();if(!L.length){setStat('First type or paste the song’s lyrics.',true);pasteBox.hidden=false;return}
   L.forEach(l=>{l.t=-1;l.e=0});tapOn=true;tapI=0;showPanel(null);tapBox.hidden=false;tapShow();audioEl.currentTime=0;audioEl.play()});
 function tapHit(){if(!tapOn||!audioEl)return;const L=lines();L[tapI].t=Math.max(0,audioEl.currentTime-visLag);if(tapI>0)L[tapI-1].e=L[tapI].t;tapI++;if(tapI>=L.length){stopTap(true);return}tapShow()}
-function stopTap(done){tapOn=false;tapBox.hidden=true;const L=lines();if(done||synced(L))setLines(L,true);else{L.forEach(l=>{if(!(l.t>=0))l.t=-1});setLines(L,true)}if(done)setStat('Titrat u sinkronizuan.')}
+function stopTap(done){tapOn=false;tapBox.hidden=true;const L=lines();if(done||synced(L))setLines(L,true);else{L.forEach(l=>{if(!(l.t>=0))l.t=-1});setLines(L,true)}if(done)setStat('Lyrics synced.')}
 $l('tapGo').addEventListener('click',tapHit);
 $l('tapUndo').addEventListener('click',()=>{if(tapI>0){tapI--;const L=lines();L[tapI].t=-1;if(audioEl)audioEl.currentTime=Math.max(0,(tapI>0?L[tapI-1].t:0));tapShow()}});
 $l('tapStop').addEventListener('click',()=>stopTap(false));
@@ -1269,7 +1269,7 @@ self.onmessage=async e=>{const d=e.data;try{
 }catch(err){self.postMessage({type:'err',msg:String(err&&err.message||err)})}};`;
 function getWorker(){if(!worker){worker=new Worker(URL.createObjectURL(new Blob([WORKER_SRC],{type:'text/javascript'})),{type:'module'})}return worker}
 function ask(msg,transfer){return new Promise((res,rej)=>{const w=getWorker();const files={};
-  w.onmessage=e=>{const d=e.data;if(d.type==='dl'){if(d.p.status==='progress'&&d.p.file){files[d.p.file]=d.p.progress||0;const v=Object.values(files);const pct=v.reduce((a,b)=>a+b,0)/v.length;lyBar.classList.remove('busy');lyBarI.style.width=pct.toFixed(0)+'%';setStat('Po shkarkoj modelin e zërit · '+pct.toFixed(0)+'% (vetëm herën e parë)')}}
+  w.onmessage=e=>{const d=e.data;if(d.type==='dl'){if(d.p.status==='progress'&&d.p.file){files[d.p.file]=d.p.progress||0;const v=Object.values(files);const pct=v.reduce((a,b)=>a+b,0)/v.length;lyBar.classList.remove('busy');lyBarI.style.width=pct.toFixed(0)+'%';setStat('Downloading the voice model · '+pct.toFixed(0)+'% (first time only)')}}
     else if(d.type==='err')rej(new Error(d.msg));else res(d)};
   w.onerror=e=>rej(new Error(e.message||'worker'));w.postMessage(msg,transfer||[])})}
 async function toPCM16k(blob){ensureCtx();const dec=await ctx.decodeAudioData(await blob.arrayBuffer());
@@ -1278,25 +1278,25 @@ async function toPCM16k(blob){ensureCtx();const dec=await ctx.decodeAudioData(aw
   s.connect(hp).connect(lp).connect(off.destination);s.start();return (await off.startRendering()).getChannelData(0)}
 lyAutoBtn.addEventListener('click',async()=>{const t=curTrack();if(!t||lyBusy)return;
   const plainText=lines().length&&!synced(lines());
-  if(!plainText&&lines().length&&!lyAutoBtn.dataset.arm){lyAutoBtn.dataset.arm='1';lyAutoBtn.textContent='Zëvendëso titrat? Shtyp sërish';setTimeout(()=>{delete lyAutoBtn.dataset.arm;lyAutoBtn.textContent='Gjenero titrat'},3000);return}
+  if(!plainText&&lines().length&&!lyAutoBtn.dataset.arm){lyAutoBtn.dataset.arm='1';lyAutoBtn.textContent='Replace lyrics? Tap again';setTimeout(()=>{delete lyAutoBtn.dataset.arm;lyAutoBtn.textContent='Generate lyrics'},3000);return}
   delete lyAutoBtn.dataset.arm;
-  lyBusy=true;renderLy();lyBar.hidden=false;lyBar.classList.add('busy');setStat('Po ngarkoj modelin e zërit…');const started=Date.now();let tick=0;
+  lyBusy=true;renderLy();lyBar.hidden=false;lyBar.classList.add('busy');setStat('Loading the voice model…');const started=Date.now();let tick=0;
   try{
     await ask({cmd:'load',model:$l('lyModel').value});
-    lyBar.classList.add('busy');setStat('Po përgatis audion…');
+    lyBar.classList.add('busy');setStat('Preparing audio…');
     const pcm=await toPCM16k(t.blob);
-    tick=setInterval(()=>setStat('Po dëgjoj këngën dhe po shkruaj fjalët · '+Math.round((Date.now()-started)/1000)+' s (zakonisht 1–3 minuta)'),1000);
+    tick=setInterval(()=>setStat('Listening to the song and writing the words · '+Math.round((Date.now()-started)/1000)+' s (usually 1–3 minutes)'),1000);
     const out=await ask({cmd:'run',audio:pcm,lang:$l('lyLang').value},[pcm.buffer]);
     if(plainText){const al=alignLines(lines(),out.chunks||[]);
-      if(al){toast('Titrat u sinkronizuan me këngën');lycKey='';if(curTrack()===t){setLines(al,true);renderLy()}else{t.lyrics=normalize(al);dbDo(st=>st.put(t))}setStat(`Gati: ${al.length} vargje u sinkronizuan me këngën. Kontrolloji dhe rregullo me ⏱ ku duhet.`);return}
-      setStat('Teksti nuk u përputh mirë me zërin e këngës. Provo "E saktë", zgjidh gjuhën e duhur, ose përdor "Sinkronizo me prekje".',true);return}
+      if(al){toast('Lyrics synced to the song');lycKey='';if(curTrack()===t){setLines(al,true);renderLy()}else{t.lyrics=normalize(al);dbDo(st=>st.put(t))}setStat(`Done: ${al.length} lines synced to the song. Check them and adjust with ⏱ where needed.`);return}
+      setStat('The text didn’t match the vocals well. Try "Accurate", pick the right language, or use "Tap to sync".',true);return}
     const L=(out.chunks||[]).map(c=>({t:c.timestamp&&c.timestamp[0]!=null?c.timestamp[0]:-1,e:c.timestamp&&c.timestamp[1]!=null?c.timestamp[1]:0,text:(c.text||'').trim()}))
       .filter(l=>l.text&&!/^[\[\(♪*].*[\]\)♪*]$/.test(l.text)&&!/^(music|muzik[eë])$/i.test(l.text));
     if(curTrack()===t){setLines(L,true);renderLy()}else{t.lyrics=normalize(L);dbDo(st=>st.put(t))}
-    setStat(L.length?`Gati: ${L.length} vargje. Kontrolloji më poshtë dhe korrigjo fjalët ose kohët ku duhet.`:'Nuk u dëgjua zë i qartë në këtë këngë. Provo "E saktë" ose shkruaj tekstin me dorë.',!L.length);
-  }catch(err){const m=String(err.message||err);try{$l('lycEst').textContent='Kohë e përafërt'}catch(e){}
+    setStat(L.length?`Done: ${L.length} lines. Check them below and fix any words or timings.`:'No clear vocals were heard in this song. Try "Accurate" or type the lyrics yourself.',!L.length);
+  }catch(err){const m=String(err.message||err);try{$l('lycEst').textContent='Approximate timing'}catch(e){}
     const blocked=/fetch|network|load|import|Failed|NetworkError|CSP|denied|module/i.test(m);
-    setStat(!navigator.onLine?'Nuk ka internet. Modeli i zërit shkarkohet vetëm herën e parë, pastaj punon pa internet.':location.protocol==='file:'?'Kur faqja hapet si skedar (file://), shfletuesi e bllokon modelin e zërit. Hape me "Hap KEBBEK.cmd" te dosja e projektit.':blocked?'Kjo pamje (lidhja brenda Claude) nuk lejon shkarkimin e modelit të zërit. Titrat automatike punojnë në aplikacionin iOS dhe te laptopi me "Hap KEBBEK.cmd".':'Titrat nuk u krijuan: '+m,true);
+    setStat(!navigator.onLine?'No internet connection. The voice model downloads once, then works offline.':location.protocol==='file:'?'When the page is opened as a file (file://), the browser blocks the voice model. Open it with "Open KEBBEK.cmd" in the project folder.':blocked?'This view (the link inside Claude) can’t download the voice model. Automatic lyrics work in the iOS app and on your computer with "Open KEBBEK.cmd".':'Lyrics couldn’t be created: '+m,true);
     if(worker){worker.terminate();worker=null}
   }finally{clearInterval(tick);lyBusy=false;lyBar.hidden=true;lyBar.classList.remove('busy');renderLy()}});
 // styles
@@ -1307,7 +1307,7 @@ lyStylesEl.querySelectorAll('.chip').forEach(b=>b.addEventListener('click',()=>{
 $l('sLyZ').addEventListener('input',e=>{S.lyZ=+e.target.value;syncLyUI();saveS()});
 document.querySelectorAll('#lyPos .chip').forEach(b=>b.addEventListener('click',()=>{S.lyPos=b.dataset.lp;syncLyUI();saveS()}));
 $l('sAutoSync').addEventListener('change',e=>{S.autoSync=e.target.checked;saveS();if(S.autoSync)maybeAutoSync()});
-$l('sLyClean').addEventListener('change',e=>{S.lyClean=e.target.checked;saveS();if(S.lyClean){let n=0;lib.forEach(t=>{if(Array.isArray(t.lyrics)&&t.lyrics.length){const b=t.lyrics.length;t.lyrics=normalize(t.lyrics);n+=b-t.lyrics.length;dbDo(st=>st.put(t))}});lyIdx=-2;lycKey='';renderLy();toast(n?`U hoqën ${n} rreshta që nuk ishin fjalë kënge`:'Titrat janë tashmë të pastra')}});
+$l('sLyClean').addEventListener('change',e=>{S.lyClean=e.target.checked;saveS();if(S.lyClean){let n=0;lib.forEach(t=>{if(Array.isArray(t.lyrics)&&t.lyrics.length){const b=t.lyrics.length;t.lyrics=normalize(t.lyrics);n+=b-t.lyrics.length;dbDo(st=>st.put(t))}});lyIdx=-2;lycKey='';renderLy();toast(n?`Removed ${n} lines that weren’t sung words`:'Lyrics are already clean')}});
 // word layout of the active line
 let wEls=[],wT=[];
 function buildLine(c){lyCur.textContent='';wEls=[];wT=[];if(!c)return;const words=c.text.split(/\s+/).filter(Boolean);const tot=words.reduce((a,w)=>a+w.length+1,0)||1;
@@ -1331,11 +1331,11 @@ function setLyOff(v){const t=curTrack();if(!t)return;t.lyOff=Math.round(Math.max
 document.querySelectorAll('.lyc-ctl button').forEach(b=>b.addEventListener('click',()=>{const t=curTrack();if(t)setLyOff((+t.lyOff||0)+ +b.dataset.o)}));
 $l('lycOff').addEventListener('dblclick',()=>setLyOff(0));
 $l('lycNow').addEventListener('click',()=>{const t=curTrack();if(!t||!audioEl||!lycT.length)return;const h=Math.max(0,audioEl.currentTime-visLag);
-  let n=lycT.findIndex(x=>x>h);if(n<0)n=lycT.length-1;const base=lycT[n]-(+t.lyOff||0);setLyOff(h-base);toast('Titrat u zhvendosën '+fmtOff(t.lyOff))});
+  let n=lycT.findIndex(x=>x>h);if(n<0)n=lycT.length-1;const base=lycT[n]-(+t.lyOff||0);setLyOff(h-base);toast('Lyrics shifted '+fmtOff(t.lyOff))});
 addEventListener('keydown',e=>{if(e.target.matches('input,textarea'))return;if(e.key==='['||e.key===']'){const t=curTrack();if(t)setLyOff((+t.lyOff||0)+(e.key===']'?.25:-.25))}});
 function sideFrame(L,tt){const t=curTrack();const wide=innerWidth>=760;const want=lyShowOn&&S.lyPos!=='center'&&wide&&t&&L.length&&!tapOn;
   lyCol.hidden=!want;if(!want)return;const sy=synced(L);const key=t.id+'|'+L.length+'|'+(L[0]&&L[0].text)+'|'+sy+'|'+(audioEl.duration|0);
-  if(key!==lycKey){if(!sy&&t.vocStart==null)findVocals(t);lycKey=key;lycOn=-2;lycTitle.textContent=t.name;$l('lycOff').textContent=fmtOff(+t.lyOff||0);lycList.textContent='';lycEstT=sy?null:estTimes(L);$l('lycEst').hidden=sy;if(!sy&&!lyBusy)$l('lycEst').textContent='Kohë e përafërt';
+  if(key!==lycKey){if(!sy&&t.vocStart==null)findVocals(t);lycKey=key;lycOn=-2;lycTitle.textContent=t.name;$l('lycOff').textContent=fmtOff(+t.lyOff||0);lycList.textContent='';lycEstT=sy?null:estTimes(L);$l('lycEst').hidden=sy;if(!sy&&!lyBusy)$l('lycEst').textContent='Approximate timing';
     lycEls=L.map((l,k)=>{const p=document.createElement('p');p.textContent=l.text;p.addEventListener('click',()=>{const tm=sy?l.t:lycEstT[k];audioEl.currentTime=tm;if(audioEl.paused)audioEl.play()});lycList.append(p);return p});lycList.style.transform='translateY(0)'}
   const off=+t.lyOff||0;const T=(sy?L.map(l=>l.t):lycEstT).map(x=>x+off);lycT=T;let i=-1;for(let k=0;k<T.length;k++){if(T[k]<=tt)i=k;else break}
   if(i!==lycOn){lycOn=i;lycEls.forEach((p,k)=>{p.classList.toggle('on',k===i);p.classList.toggle('past',k<i);p.classList.toggle('next',k===i+1)});
@@ -1366,13 +1366,13 @@ canvas.addEventListener('pointermove',e=>{if(!drag)return;ty=drag.ty+(e.clientX-
 let tapT=0,tapX=0,tapY=0;
 const lmenu=document.getElementById('lmenu');
 document.getElementById('brandLogo').addEventListener('dblclick',e=>openLogoMenu(e.clientX,e.clientY));
-function openLogoMenu(x,y){if(S.logoHidden){S.logoHidden=false;applyLogo();saveS();toast('Logoja u shfaq');return}if(logo&&!logo.visible&&!S.logoHidden){document.getElementById('logoFile').click();return}
+function openLogoMenu(x,y){if(S.logoHidden){S.logoHidden=false;applyLogo();saveS();toast('Logo shown');return}if(logo&&!logo.visible&&!S.logoHidden){document.getElementById('logoFile').click();return}
   lmenu.hidden=false;const w=lmenu.offsetWidth,h=lmenu.offsetHeight;lmenu.style.left=Math.min(Math.max(8,x-w/2),innerWidth-w-8)+'px';lmenu.style.top=Math.min(Math.max(8,y+12),innerHeight-h-8)+'px';
   document.getElementById('lmDefault').hidden=S.logo==='default';document.getElementById('lmReplace').focus()}
 const closeLM=()=>{lmenu.hidden=true};
 document.getElementById('lmReplace').addEventListener('click',()=>{closeLM();document.getElementById('logoFile').click()});
-document.getElementById('lmDefault').addEventListener('click',()=>{closeLM();S.logo='default';S.logoHidden=false;applyLogo();saveS();toast('U rikthye logoja KEBBEK')});
-document.getElementById('lmRemove').addEventListener('click',()=>{closeLM();S.logoHidden=true;applyLogo();saveS();toast('Logoja u hoq · butoni i logos te shiriti e kthen')});
+document.getElementById('lmDefault').addEventListener('click',()=>{closeLM();S.logo='default';S.logoHidden=false;applyLogo();saveS();toast('KEBBEK logo restored')});
+document.getElementById('lmRemove').addEventListener('click',()=>{closeLM();S.logoHidden=true;applyLogo();saveS();toast('Logo removed · the logo button on the bar brings it back')});
 addEventListener('pointerdown',e=>{if(!lmenu.hidden&&!e.target.closest('#lmenu'))closeLM()},true);
 addEventListener('keydown',e=>{if(e.key==='Escape')closeLM()});
 canvas.addEventListener('pointerup',e=>{const moved=drag&&Math.hypot(e.clientX-drag.x,e.clientY-drag.y)>8;drag=null;if(moved)return;
@@ -1503,7 +1503,7 @@ function frame(now){
   if((hudTick++&3)===0){
     gB.style.width=Math.min(100,sb*130)+'%';gM.style.width=Math.min(100,sm*160)+'%';gH.style.width=Math.min(100,sh*220)+'%';
     bpmEl.textContent=live&&bpm?Math.round(bpm):'—';
-    status.classList.toggle('live',live);stTxt.textContent=live?'Live':(demo?'Demo':'Gati');
+    status.classList.toggle('live',live);stTxt.textContent=live?'Live':(demo?'Demo':'Ready');
     const W=spec.width,H=spec.height;sctx.clearRect(0,0,W,H);const n=96,bw=W/n;sctx.fillStyle=getComputedStyle(document.documentElement).getPropertyValue('--accent');
     for(let i=0;i<n;i++){const v=live?data[Math.floor(2+Math.pow(i/n,1.7)*500)]/255:(.15+.1*Math.sin(t*2+i*.3));const hh=Math.max(1,v*v*H);sctx.globalAlpha=.25+v*.75;sctx.fillRect(i*bw+bw/2-1,H-hh,2,hh)}
     sctx.globalAlpha=1;
