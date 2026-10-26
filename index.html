@@ -522,7 +522,7 @@ body.notele .tele{display:none}
         <button class="chip on" id="lySaveText" type="button">Save text</button>
       </div>
     </div>
-    <div class="fld"><span id="lyCount">Vargjet</span><ol id="lyLines"></ol></div>
+    <div class="fld"><span id="lyCount">Lines</span><ol id="lyLines"></ol></div>
   </div>
 </div>
 
@@ -1283,7 +1283,7 @@ function renderLy(){const t=curTrack(),L=lines();
   lyShowBtn.setAttribute('aria-pressed',String(lyShowOn));
   ['lyAuto','lyPaste','lyTap','lyCopy','lyClear'].forEach(id=>$l(id).disabled=!t||(id==='lyAuto'&&lyBusy));
   lyAutoBtn.textContent=L.length&&!synced(L)?'Auto-sync the text':'Generate lyrics';
-  lyCount.textContent=L.length?`Lines · ${L.length}${synced(L)?'':' · no timings: sync automatically or by tapping'}`:'Vargjet';
+  lyCount.textContent=L.length?`Lines · ${L.length}${synced(L)?'':' · no timings: sync automatically or by tapping'}`:'Lines';
   lyLinesEl.innerHTML='';
   L.forEach((l,i)=>{const li=document.createElement('li');
     const tm=document.createElement('button');tm.type='button';tm.className='tm'+(l.t>=0?'':' no');tm.textContent=fmtT(l.t);tm.title='Go to this line';
