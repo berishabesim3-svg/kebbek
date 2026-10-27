@@ -16,6 +16,7 @@
 <meta property="og:title" content="KEBBEK Zëri">
 <meta property="og:description" content="A 3D sound reactor that reacts to every song.">
 <meta property="og:image" content="icon-512.png">
+<script>if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost'))addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))</script>
 <style>*{box-sizing:border-box}:root{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}body{margin:0;font:14px system-ui,sans-serif;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}input[type=text],textarea{-webkit-user-select:text;user-select:text}[hidden]{display:none!important}</style>
 <title>KEBBEK Zëri</title>
 <meta name="google" content="notranslate">
@@ -446,7 +447,7 @@ body.notele .tele{display:none}
       <label class="rng"><span>Fine</span><input type="range" id="sBloom" min="0" max="2" step="0.05"><b id="vBloom"></b></label>
     </div>
     <label class="rng"><span>Sensitivity</span><input type="range" id="sSens" min="0.5" max="2" step="0.05"><b id="vSens"></b></label>
-    <div class="legal"><a href="https://berishabesim3-svg.github.io/kebbek/privacy.html" target="_blank" rel="noopener">Privacy</a><a href="https://berishabesim3-svg.github.io/kebbek/terms.html" target="_blank" rel="noopener">Terms</a><span class="note">KEBBEK 4.0</span></div>
+    <div class="legal"><a href="https://berishabesim3-svg.github.io/kebbek/privacy.html" target="_blank" rel="noopener">Privacy</a><a href="https://berishabesim3-svg.github.io/kebbek/terms.html" target="_blank" rel="noopener">Terms</a><span class="note">KEBBEK 4.1</span></div>
   </div>
 </div>
 
@@ -553,6 +554,9 @@ body.notele .tele{display:none}
       <label class="rng"><span>Stereo width</span><input type="range" id="qWidth" min="0" max="2" step="0.05"><b id="vqWidth"></b></label>
       <div class="lopts"><button class="chip" id="qLoud" type="button" aria-pressed="false">Even loudness</button><button class="chip" id="qLim" type="button" aria-pressed="true">Clip protection</button></div>
     </div>
+    <div class="fld"><span>Loudness check · EBU R128</span>
+      <div class="lopts"><button class="chip on" id="lzGo" type="button">Measure this song</button></div>
+      <p class="note" id="lzOut">Measures integrated loudness (LUFS), true peak (dBTP) and loudness range (LU) of the song as a file, the way streaming services do. It doesn’t change the sound.</p></div>
     <div class="fld"><span>Equalizer · 10 bands</span><div class="eq" id="eqBands"></div></div>
     <div class="fld"><span>Playback</span>
       <label class="rng"><span>Volume</span><input type="range" id="qVol" min="0" max="1.5" step="0.01"><b id="vqVol"></b></label>
@@ -885,7 +889,7 @@ const iosVis=(()=>{let vb=null,vid=null,vs=null,t0=0,off=0,tap=null;
   const sync=force=>{if(!vb||!audioEl||audioEl.paused||audioEl._tid!==vid){stop();return}const want=audioEl.currentTime,r=audioEl.playbackRate||1;
     if(!force&&vs&&Math.abs(off+(ctx.currentTime-t0)*r-want)<.12)return;stop();need();vs=ctx.createBufferSource();vs.buffer=vb;vs.playbackRate.value=r;vs.connect(tap);off=want;t0=ctx.currentTime;vs.start(0,Math.max(0,Math.min(want,vb.duration-.05)))};
   setInterval(()=>sync(false),1500);
-  return{sync,stop,tapNode(){need();return tap},load(t){stop();vb=null;vid=t.id;t.blob.arrayBuffer().then(ab=>new Promise((ok,no)=>ctx.decodeAudioData(ab,ok,no))).then(b=>{if(vid===t.id){vb=b;sync(true)}}).catch(()=>{})}}})();
+  return{sync,stop,tapNode(){need();return tap},load(t){stop();vb=null;vid=t.id;t.blob.arrayBuffer().then(ab=>new Promise((ok,no)=>ctx.decodeAudioData(ab,ok,no))).then(b=>{if(b.duration<=420)return b;const o=new OfflineAudioContext(1,Math.ceil(b.duration*24000),24000),x=o.createBufferSource();x.buffer=b;x.connect(o.destination);x.start();return o.startRendering()}).then(b=>{if(vid===t.id){vb=b;sync(true)}}).catch(()=>{})}}})();
 function ensureCtx(){iosUnlock();if(!ctx){ctx=new (window.AudioContext||window.webkitAudioContext)();analyser=ctx.createAnalyser();analyser.fftSize=2048;analyser.smoothingTimeConstant=.35;data=new Uint8Array(analyser.frequencyBinCount);wave=new Uint8Array(analyser.fftSize);buildFx()}if(ctx.state!=='running')ctx.resume().catch(()=>{})}
 const trackEl=document.getElementById('track'),playBtn=document.getElementById('play'),playIco=document.getElementById('playIco');
 const ICO_PLAY='<path d="M7 4v16l13-8z"/>',ICO_PAUSE='<path d="M6 4h4v16H6zM14 4h4v16h-4z"/>';
@@ -1781,6 +1785,52 @@ vEl('vClose').addEventListener('click',()=>{const v=vEl('vOut');v.pause();vEl('v
 (()=>{const n=vEl('sndNote'),row=vEl('bgRow'),cb=vEl('sBg2');if(IOSWEB&&n)n.hidden=false;if(IOSAPP&&row){row.hidden=false;cb.checked=BGPLAY;cb.addEventListener('change',()=>{try{localStorage.setItem('kebbek-zeri-bg',cb.checked?'1':'0')}catch(e){}toast('Restarting KEBBEK to apply…');setTimeout(()=>location.reload(),900)})}
   if(IOSAPP&&!IOSWEB&&n){n.hidden=false;n.textContent='Sound effects are on. Music pauses when KEBBEK goes to the background; turn on background playback to keep it playing.'}})();
 
+// ---- KEBBEK Loudness · ITU-R BS.1770-4 / EBU R128 meter (deterministic, no AI) ----
+const Loud=(()=>{
+function kCoefs(fs){let f0=1681.974450955533,G=3.999843853973347,Q=.7071752369554196,K=Math.tan(Math.PI*f0/fs),Vh=Math.pow(10,G/20),Vb=Math.pow(Vh,.4996667741545416),a0=1+K/Q+K*K;
+  const pb=[(Vh+Vb*K/Q+K*K)/a0,2*(K*K-Vh)/a0,(Vh-Vb*K/Q+K*K)/a0],pa=[1,2*(K*K-1)/a0,(1-K/Q+K*K)/a0];
+  f0=38.13547087602444;Q=.5003270373238773;K=Math.tan(Math.PI*f0/fs);const d=1+K/Q+K*K,rb=[1,-2,1],ra=[1,2*(K*K-1)/d,(1-K/Q+K*K)/d];return{pb,pa,rb,ra}}
+function kWeight(x,fs){const {pb,pa,rb,ra}=kCoefs(fs),n=x.length,y=new Float32Array(n);let x1=0,x2=0,y1=0,y2=0;
+  // stage 1: high-shelf (head effect)
+  for(let i=0;i<n;i++){const v=x[i],a=pb[0]*v+pb[1]*x1+pb[2]*x2-pa[1]*y1-pa[2]*y2;x2=x1;x1=v;y2=y1;y1=a;y[i]=a}
+  // stage 2: high-pass (RLB)
+  let u1=0,u2=0,w1=0,w2=0;for(let i=0;i<n;i++){const v=y[i],o=rb[0]*v+rb[1]*u1+rb[2]*u2-ra[1]*w1-ra[2]*w2;u2=u1;u1=v;w2=w1;w1=o;y[i]=o}return y}
+const toL=p=>p>0?-.691+10*Math.log10(p):-Infinity;
+function blockPowers(chs,fs,win,hop){const W=Math.round(win*fs),H=Math.round(hop*fs),n=chs[0].length,out=[];if(n<W)return out;
+  const cs=chs.map(c=>{const s=new Float64Array(n+1);for(let i=0;i<n;i++)s[i+1]=s[i]+c[i]*c[i];return s});
+  for(let a=0;a+W<=n;a+=H){let p=0;for(const s of cs)p+=(s[a+W]-s[a])/W;out.push(p)}return out}
+function truePeak(x,fs){// 4x oversampling (8 taps per phase, Hann-windowed sinc) when fs < 96 kHz; sample peak otherwise
+  let sp=0;for(let i=0;i<x.length;i++){const v=Math.abs(x[i]);if(v>sp)sp=v}if(fs>=96000)return sp;
+  const R=4,T=8,taps=[];for(let ph=1;ph<R;ph++){const h=new Float32Array(T*2);let sum=0;for(let k=-T+1;k<=T;k++){const t=k-ph/R,s=t===0?1:Math.sin(Math.PI*t)/(Math.PI*t),w=.5+.5*Math.cos(Math.PI*t/(T+.5));h[k+T-1]=s*w;sum+=s*w}for(let j=0;j<h.length;j++)h[j]/=sum;taps.push(h)}
+  let tp=sp;const n=x.length;for(let i=T;i<n-T;i++){for(const h of taps){let a=0;for(let j=0;j<h.length;j++)a+=h[j]*x[i-T+1+j];a=Math.abs(a);if(a>tp)tp=a}}return tp}
+function analyze(chs,fs,opt={}){const k=chs.map(c=>kWeight(c,fs));
+  const m=blockPowers(k,fs,.4,.1),absG=m.filter(p=>toL(p)>-70);let I=-Infinity;
+  if(absG.length){const rel=toL(absG.reduce((a,b)=>a+b,0)/absG.length)-10,g=absG.filter(p=>toL(p)>rel);I=g.length?toL(g.reduce((a,b)=>a+b,0)/g.length):-Infinity}
+  const st=blockPowers(k,fs,3,.1).map(toL),stA=st.filter(v=>v>-70);let LRA=0,maxS=-Infinity;st.forEach(v=>{if(v>maxS)maxS=v});
+  if(stA.length){const pw=stA.map(v=>Math.pow(10,(v+.691)/10)),rel=toL(pw.reduce((a,b)=>a+b,0)/pw.length)-20,g=stA.filter(v=>v>rel).sort((a,b)=>a-b);if(g.length>1){const q=p=>g[Math.min(g.length-1,Math.max(0,Math.round(p*(g.length-1))))];LRA=q(.95)-q(.10)}}
+  let mom=-Infinity;m.forEach(p=>{const v=toL(p);if(v>mom)mom=v});
+  let sp=0;chs.forEach(c=>{for(let i=0;i<c.length;i++){const v=Math.abs(c[i]);if(v>sp)sp=v}});
+  const tp=opt.noTP?sp:Math.max(...chs.map(c=>truePeak(c,fs)));const db=v=>v>0?20*Math.log10(v):-Infinity;
+  return{integrated:I,range:LRA,shortTermMax:maxS,momentaryMax:mom,samplePeak:db(sp),truePeak:db(tp),plr:db(tp)-I}}
+function fromBuffer(buf,opt){const chs=[];for(let c=0;c<Math.min(2,buf.numberOfChannels);c++)chs.push(buf.getChannelData(c));return analyze(chs,buf.sampleRate,opt)}
+// gain (linear) that brings a mix to a loudness target without letting the true peak go above the ceiling
+function normGain(r,target=-14,ceiling=-1){if(!isFinite(r.integrated))return 1;const g=target-r.integrated,head=ceiling-r.truePeak;return Math.pow(10,Math.min(g,head)/20)}
+return{analyze,fromBuffer,normGain,kCoefs}})();
+
+
+// ---------- loudness check (sound panel)
+(()=>{const out=document.getElementById('lzOut'),btn=document.getElementById('lzGo');if(!out||!btn)return;
+  const f1=v=>isFinite(v)?v.toFixed(1):'—',sg=v=>(v>0?'+':'')+v.toFixed(1);
+  function show(t,r){const sp=-14-r.integrated,am=-16-r.integrated;
+    out.textContent=`${t.name}: ${f1(r.integrated)} LUFS integrated · true peak ${f1(r.truePeak)} dBTP · range ${f1(r.range)} LU · PLR ${f1(r.plr)} dB. `+
+      `Spotify / YouTube (−14 LUFS): ${Math.abs(sp)<.5?'already at target':sp<0?'turned down '+Math.abs(sp).toFixed(1)+' dB':'quieter by '+sp.toFixed(1)+' dB'}. Apple Music (−16 LUFS): ${Math.abs(am)<.5?'at target':am<0?'turned down '+Math.abs(am).toFixed(1)+' dB':'quieter by '+am.toFixed(1)+' dB'}.`+
+      (r.truePeak>-1?` True peak is above −1 dBTP: lossy encoding may clip; leave 1 dB of headroom.`:'')}
+  btn.addEventListener('click',async()=>{const t=curTrack();if(!t||!t.blob){out.textContent='Play a song from your library first.';return}
+    if(t.loud&&t.loud.v===1){show(t,t.loud);return}
+    btn.disabled=true;out.textContent='Measuring…';await new Promise(r=>setTimeout(r,30));
+    try{ensureCtx();const ab=await t.blob.arrayBuffer(),buf=await new Promise((ok,no)=>ctx.decodeAudioData(ab,ok,no));const r=Loud.fromBuffer(buf);r.v=1;t.loud=r;dbDo(st=>st.put(t));show(t,r)}
+    catch(e){out.textContent='Could not measure this file ('+String(e&&e.message||e).slice(0,80)+').'}finally{btn.disabled=false}});})();
+
 // ---- KEBBEK Studio · on-device composer + synthesizer (works offline, no GPU) ----
 const Studio=(()=>{
 const NOTE={C:0,'C#':1,Db:1,D:2,'D#':3,Eb:3,E:4,F:5,'F#':6,Gb:6,G:7,'G#':8,Ab:8,A:9,'A#':10,Bb:10,B:11};
@@ -2030,7 +2080,9 @@ async function render(P,onProg,opt={}){const sr=opt.sr||44100,len=Math.ceil(P.du
     for(let i=0;i<L.length&&off+i<len;i++){OL[off+i]+=L[i];OR[off+i]+=R[i]}
     SH=0;if(onProg)onProg(Math.min(1,(c0+CH)/P.dur));await new Promise(r=>setTimeout(r,0))}
   let pk=0;for(let i=0;i<len;i++){const v=Math.max(Math.abs(OL[i]),Math.abs(OR[i]));if(v>pk)pk=v}const gn=pk>0?.89/pk:1,fo=Math.min(len,Math.floor(sr*(opt.fade??2.5)));
-  for(let i=0;i<len;i++){let k=gn;if(i>len-fo)k*=(len-i)/fo;if(i<200)k*=i/200;OL[i]*=k;OR[i]*=k}return{L:OL,R:OR,sr}}
+  for(let i=0;i<len;i++){let k=gn;if(i>len-fo)k*=(len-i)/fo;if(i<200)k*=i/200;OL[i]*=k;OR[i]*=k}
+  let meas=null;if(opt.lufs!=null&&typeof Loud!=='undefined'){const m=Loud.analyze([OL,OR],sr),g=Loud.normGain(m,opt.lufs,opt.ceiling??-1);for(let i=0;i<len;i++){OL[i]*=g;OR[i]*=g}const dg=20*Math.log10(g);meas={lufs:m.integrated+dg,tp:m.truePeak+dg,lra:m.range}}
+  return{L:OL,R:OR,sr,meas}}
 function toBuffer(ctx,r){const b=ctx.createBuffer(2,r.L.length,r.sr);b.getChannelData(0).set(r.L);b.getChannelData(1).set(r.R);return b}
 function wav(r){const n=r.L.length,buf=new ArrayBuffer(44+n*4),v=new DataView(buf),w=(o,s)=>{for(let i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i))};
   w(0,'RIFF');v.setUint32(4,36+n*4,true);w(8,'WAVEfmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,2,true);v.setUint32(24,r.sr,true);v.setUint32(28,r.sr*4,true);v.setUint16(32,4,true);v.setUint16(34,16,true);w(36,'data');v.setUint32(40,n*4,true);
@@ -2123,7 +2175,7 @@ async function runDevice(){
   const n=Math.max(1,+C.batch||1),made=[];
   try{for(let v=0;v<n;v++){const U=userSpec(over);if(v>0)U.seed+=v*7919;const refB=(C.mode==='cover'||C.ref)&&typeof bpm==='number'&&bpm>50?bpm:0;
       const P=Studio.plan(U,{refBpm:refB});stat(`Composing${n>1?' version '+(v+1)+' of '+n:''} · ${P.genres.join(' + ')} · ${P.bpm} BPM · ${P.key}`);
-      const r=await Studio.render(P,f=>{g('crBarI').style.width=Math.round(((v+f)/n)*100)+'%';stat(`Recording${n>1?' version '+(v+1)+' of '+n:''} · ${Math.round(f*100)}%`)});
+      const r=await Studio.render(P,f=>{g('crBarI').style.width=Math.round(((v+f)/n)*100)+'%';stat(`Recording${n>1?' version '+(v+1)+' of '+n:''} · ${Math.round(f*100)}%`)},{lufs:-14,ceiling:-1});if(r.meas)P.meas=r.meas;
       const base=C.mode==='cover'&&tr?tr.name.replace(/ · KEBBEK.*$/,'')+' (KEBBEK cover)':C.mode==='simple'?(C.desc.trim().split(/[,.]/)[0].split(/\s+/).filter(w=>!/^(a|an|the|with|and|me|nje|një|dhe|me)$/i.test(w)).slice(0,4).map(w=>w[0].toUpperCase()+w.slice(1)).join(' ')||'KEBBEK song'):(C.title.trim()||'Untitled');
       if(devCancel)break;made.push(await addResult(Studio.wav(r),base+(n>1?' · v'+(v+1):''),'',P.lines.map(l=>({t:l.t,e:l.e,text:l.text})),'wav',P))}
     if(made.length)finishMade(made,null);else stat('Stopped.')}
@@ -2137,11 +2189,13 @@ function finishMade(made,seed){renderList();const sec=Math.round((Date.now()-t0)
 // ---- cloud engine ----
 let GC=null,client=null,clientKey='',job=null,busy=false,t0=0,tick=0;
 const stat=(m)=>g('crStat').textContent=m;
+// a token is attached only to Hugging Face itself (spaces are 'owner/name' or *.hf.space / huggingface.co URLs), never to a custom server
+function hfHost(u){u=String(u||'').trim();if(/^[\w.-]+\/[\w.-]+$/.test(u))return true;try{const h=new URL(u).hostname;return /(^|\.)hf\.space$|(^|\.)huggingface\.co$/.test(h)}catch(e){return false}}
 async function getClient(){
   if(!GC)GC=await import('https://cdn.jsdelivr.net/npm/@gradio/client@2.6.0/dist/index.min.js');
   const src=C.engine==='custom'&&C.url.trim()?C.url.trim():'ACE-Step/Ace-Step-v1.5',k=src+'|'+tok;
   if(client&&clientKey===k)return client;
-  client=await GC.Client.connect(src,Object.assign({events:['data','status']},tok?{hf_token:tok}:{}));clientKey=k;return client;
+  client=await GC.Client.connect(src,Object.assign({events:['data','status']},tok&&hfHost(src)?{hf_token:tok}:{}));clientKey=k;return client;
 }
 async function srcFile(){const t=curTrack();if(!t||!t.blob)throw new Error('Play a song from your library first.');return GC.handle_file(t.blob)}
 async function buildArgs(){
@@ -2170,7 +2224,7 @@ function setBusy(on){busy=on;g('crGo').disabled=on;g('crGo').textContent=on?'Cre
 function lrcFrom(v){if(!v)return null;const s=typeof v==='string'?v:(v.value||'');return /\[\d+:\d+/.test(s)?parseLRC(s):null}
 async function addResult(blob,name,lyrText,lrc,ex,P){
   const ext=ex||(C.fmt==='flac'?'flac':'mp3'),f=new File([blob],name+'.'+ext,{type:blob.type||('audio/'+(ext==='mp3'?'mpeg':ext))});
-  const t={id:Date.now()+'-cr-'+Math.random().toString(36).slice(2,7),name,blob:f,added:Date.now(),artist:'KEBBEK Create',made:{mode:C.mode,prompt:promptText(),seed:C.seed,info:P?`${P.bpm} BPM · ${P.key}`:''}};
+  const t={id:Date.now()+'-cr-'+Math.random().toString(36).slice(2,7),name,blob:f,added:Date.now(),artist:'KEBBEK Create',made:{mode:C.mode,prompt:promptText(),seed:C.seed,info:P?`${P.bpm} BPM · ${P.key}`+(P.meas?` · ${P.meas.lufs.toFixed(1)} LUFS · ${P.meas.tp.toFixed(1)} dBTP`:''):''}};
   let L=lrc&&lrc.length?lrc:null;
   if(!L&&lyrText&&!/^\s*\[instrumental\]\s*$/i.test(lyrText))L=lyrText.split(/\r?\n/).map(x=>x.trim()).filter(Boolean).map(text=>({t:-1,e:0,text}));
   if(L)t.lyrics=normalize(L);
@@ -2194,7 +2248,7 @@ async function run(){
     stat('Saving to your library…');
     const lyrUsed=C.mode==='simple'?'':(isInst()?'':C.lyr.trim()),base=(C.mode==='simple'?(C.desc.trim().split(/[,.]/)[0].slice(0,40)):(C.title.trim()||'Untitled'))||'KEBBEK song';
     const made=[];
-    for(let i=0;i<files.length;i++){const r=await fetch(files[i].url,tok?{headers:{Authorization:'Bearer '+tok}}:{});if(!r.ok)continue;
+    for(let i=0;i<files.length;i++){const r=await fetch(files[i].url,tok&&hfHost(files[i].url)?{headers:{Authorization:'Bearer '+tok}}:{});if(!r.ok)continue;
       const b=await r.blob(),lrc=lrcFrom(out[28+i]);made.push(await addResult(b,base+(files.length>1?' · v'+(i+1):''),lyrUsed,lrc))}
     if(!made.length)throw new Error('Couldn’t download the new song.');
     finishMade(made,out[11]);
