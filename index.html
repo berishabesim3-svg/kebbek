@@ -251,7 +251,7 @@ body.notele .tele{display:none}
 @media (max-width:520px){.tl-meters,#spec{display:none}.tl-bpm{border-right:0;padding-right:0}.tele{padding:8px 10px}.tl-bpm b{font-size:20px}}
 .brandrow{display:flex;align-items:center;gap:12px;margin-top:8px}
 .brandrow h1{margin:0}
-#brandLogo{width:44px;height:44px;object-fit:contain;transform-style:preserve-3d;will-change:transform,filter;filter:drop-shadow(0 0 6px color-mix(in srgb,var(--accent) 40%,transparent))}
+#brandLogo{pointer-events:auto;cursor:pointer;-webkit-touch-callout:none;width:44px;height:44px;object-fit:contain;transform-style:preserve-3d;will-change:transform,filter;filter:drop-shadow(0 0 6px color-mix(in srgb,var(--accent) 40%,transparent))}
 #brandLogo[hidden]{display:none}
 /* side lyrics column */
 .lycol{position:fixed;left:max(28px,env(safe-area-inset-left,0px));top:calc(112px + env(safe-area-inset-top,0px));width:min(330px,28vw);display:flex;flex-direction:column;gap:6px;pointer-events:auto}
@@ -410,7 +410,6 @@ body.notele .tele{display:none}
         <button class="chip" id="logoNone" type="button" aria-pressed="false">No logo</button>
       </div>
       <label class="chk"><input type="checkbox" id="sBg" checked> Remove the background automatically on upload</label>
-      <div class="fld"><span>Logo position</span><div class="lopts" id="logoPos"><button class="chip" type="button" data-p="center">Centre</button><button class="chip" type="button" data-p="corner">Top left</button><button class="chip" type="button" data-p="both">Both</button></div></div>
       <label class="rng"><span>Size</span><input type="range" id="sLogo" min="0.5" max="1.4" step="0.05"><b id="vLogo"></b></label>
       <label class="chk"><input type="checkbox" id="sCrisp"> Crisp logo, above the scene glow</label>
       <label class="chk"><input type="checkbox" id="sStraight"> Logo always upright, centred</label>
@@ -448,7 +447,7 @@ body.notele .tele{display:none}
       <label class="rng"><span>Fine</span><input type="range" id="sBloom" min="0" max="2" step="0.05"><b id="vBloom"></b></label>
     </div>
     <label class="rng"><span>Sensitivity</span><input type="range" id="sSens" min="0.5" max="2" step="0.05"><b id="vSens"></b></label>
-    <div class="legal"><a href="https://berishabesim3-svg.github.io/kebbek/privacy.html" target="_blank" rel="noopener">Privacy</a><a href="https://berishabesim3-svg.github.io/kebbek/terms.html" target="_blank" rel="noopener">Terms</a><span class="note">KEBBEK 4.4</span></div>
+    <div class="legal"><a href="https://berishabesim3-svg.github.io/kebbek/privacy.html" target="_blank" rel="noopener">Privacy</a><a href="https://berishabesim3-svg.github.io/kebbek/terms.html" target="_blank" rel="noopener">Terms</a><span class="note">KEBBEK 4.5</span></div>
   </div>
 </div>
 
@@ -823,15 +822,18 @@ const pMat=new THREE.PointsMaterial({size:.05,map:dotGlowTex,color:colB,transpar
 const dust=add(new THREE.Points(pg,pMat));
 
 // ---------- star field (scene space): ~1600 dots in a deep cloud behind the speaker, drifting slowly, twinkling with the music
-const NF=2200,fg=new THREE.BufferGeometry(),fPos=new Float32Array(NF*3),fSz=new Float32Array(NF),fCol=new Float32Array(NF*3),fPh=new Float32Array(NF*2);
+const NF=2600,fg=new THREE.BufferGeometry(),fPos=new Float32Array(NF*3),fSz=new Float32Array(NF),fCol=new Float32Array(NF*3),fPh=new Float32Array(NF*2);
 {const pal=[[.42,.86,.80],[.45,.80,.88],[.35,.62,1],[.55,.70,1],[1,1,1]];for(let i=0;i<NF;i++){const u=Math.random()*2-1,a=Math.random()*Math.PI*2,r=Math.pow(Math.random(),.6)*24+3,q=Math.sqrt(1-u*u);
-  fPos.set([Math.cos(a)*q*r,Math.sin(a)*q*r*.92,-16+u*r*.55],i*3);const big=Math.random()<.015;fSz[i]=big?2.6:.7+Math.pow(Math.random(),3)*1.9;
+  fPos.set([Math.cos(a)*q*r,Math.sin(a)*q*r*.92,-16+u*r*.55],i*3);const big=Math.random()<.02;fSz[i]=big?2:.55+Math.pow(Math.random(),3)*1.3;
   const c=big?pal[4]:pal[Math.floor(Math.random()*4)];fCol.set(c,i*3);fPh.set([Math.random()*6.283,.6+Math.random()*2.2],i*2)}}
 fg.setAttribute('position',new THREE.BufferAttribute(fPos,3));fg.setAttribute('aSz',new THREE.BufferAttribute(fSz,1));fg.setAttribute('aCol',new THREE.BufferAttribute(fCol,3));fg.setAttribute('aPh',new THREE.BufferAttribute(fPh,2));
 const fMat=new THREE.ShaderMaterial({transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,
-  uniforms:{uT:{value:0},uB:{value:0},uH:{value:0},uK:{value:0},uPR:{value:1},uTex:{value:dotGlowTex},uTint:{value:colB}},
-  vertexShader:'attribute float aSz;attribute vec3 aCol;attribute vec2 aPh;uniform float uT,uB,uH,uK,uPR;varying vec3 vC;varying float vA;void main(){vec4 mv=modelViewMatrix*vec4(position,1.);float tw=.5+.5*sin(uT*aPh.y+aPh.x);float beat=uK*step(.55,fract(aPh.x*7.13))+uH*.6*tw;vA=(.45+.45*tw+beat*.9)*clamp(1.-(-mv.z-8.)/60.,.15,1.);vC=aCol;gl_PointSize=aSz*uPR*(1.+uB*.35+beat*.5)*(150./-mv.z);gl_Position=projectionMatrix*mv;}',
+  uniforms:{uT:{value:0},uM:{value:0},uPs:{value:0},uAsp:{value:1},uP:{value:new THREE.Vector2(9,9)},uB:{value:0},uH:{value:0},uK:{value:0},uPR:{value:1},uTex:{value:dotGlowTex},uTint:{value:colB}},
+  vertexShader:'attribute float aSz;attribute vec3 aCol;attribute vec2 aPh;uniform float uT,uM,uB,uH,uK,uPR,uPs,uAsp;uniform vec2 uP;varying vec3 vC;varying float vA;void main(){vec3 p=position;float a=aPh.x,f=aPh.y;p+=vec3(sin(uM*f*.9+a*3.1)+.5*sin(uM*f*2.3+a*7.7),cos(uM*f*.8+a*5.3)+.5*sin(uM*f*1.9+a*2.9),.6*sin(uM*f*.7+a*4.1))*(.55+uB*.5);vec4 mv=modelViewMatrix*vec4(p,1.);float tw=pow(.5+.5*sin(uT*f*1.6+a),3.);float beat=uK*step(.6,fract(a*7.13))+uH*.8*tw;vec4 cp=projectionMatrix*mv;vec2 nd=cp.xy/cp.w,d=nd-uP;d.x*=uAsp;float r=length(d),near=uPs*exp(-r*r*14.);nd+=(r>1e-4?d/r:vec2(0.))*vec2(1./uAsp,1.)*near*.16;cp.xy=nd*cp.w;vA=(.55+1.1*tw+beat*.9+near*.9)*clamp(1.-(-mv.z-8.)/60.,.15,1.);vC=aCol;gl_PointSize=aSz*uPR*(1.+uB*.25+beat*.45+tw*.35)*(98./-mv.z);gl_Position=cp;}',
   fragmentShader:'uniform sampler2D uTex;uniform vec3 uTint;varying vec3 vC;varying float vA;void main(){vec4 t=texture2D(uTex,gl_PointCoord);gl_FragColor=vec4(mix(vC,uTint,.18)*t.rgb*1.25,t.a*vA);}'});
+// touch / mouse: dots near the finger scatter away and light up, then drift back
+let fPtrS=0;const fPtr=e=>{const r=canvas.getBoundingClientRect();if(!r.width)return;fMat.uniforms.uP.value.set((e.clientX-r.left)/r.width*2-1,1-(e.clientY-r.top)/r.height*2);fPtrS=1};
+addEventListener('pointermove',e=>{if(e.pointerType!=='mouse'||e.buttons)fPtr(e);else{fPtr(e);fPtrS=Math.max(fPtrS*.97,.55)}},{passive:true});addEventListener('pointerdown',fPtr,{passive:true});
 const field=new THREE.Points(fg,fMat);field.frustumCulled=false;field.renderOrder=-2;scene.add(field);
 // soft blue core glow behind the speaker
 const fCore=new THREE.Sprite(new THREE.SpriteMaterial({map:dotGlowTex,color:0x2a7fd0,transparent:true,opacity:.16,depthWrite:false,blending:THREE.AdditiveBlending}));fCore.position.set(0,0,-18);fCore.scale.setScalar(16);fCore.renderOrder=-3;scene.add(fCore);
@@ -1077,9 +1079,9 @@ addEventListener('drop',e=>{e.preventDefault();dragN=0;dropEl.hidden=true;addFil
 document.getElementById('seek').addEventListener('click',e=>{if(!audioEl||!audioEl.duration)return;const r=e.currentTarget.getBoundingClientRect();audioEl.currentTime=(e.clientX-r.left)/r.width*audioEl.duration});
 
 // ---------- settings (saved on this device)
-const DEF={name:'KEBBEK',c1:'#2fe0ff',c2:'#5a7bff',logo:'default',logoSize:1,bloom:.6,bloomV:2,sens:1,removeBg:true,crisp:true,logoStraight:true,logoPos:'both',logoHidden:false,clean:true,tele:true,logoGlow:.35,logoBack:.55,cycle:false,lyStyle:'karaoke',lyZ:1,lyPos:'side',lyClean:true,autoSync:true,lyV:2,snd:{preset:'Natural',eq:[0,0,0,0,0,0,0,0,0,0],bass:0,clar:0,warm:0,rev:0,width:1,loud:false,lim:true,vol:1,rate:1,fade:2,one:false,off:false,avms:0},fx:{lasers:true,stars:true,grid:true,glitch:true,shell:true,hud:true,dust:true,shake:true,field:true}};
+const DEF={name:'KEBBEK',c1:'#2fe0ff',c2:'#5a7bff',logo:'default',logoSize:1,bloom:.6,bloomV:2,sens:1,removeBg:true,crisp:true,logoStraight:true,logoPos:'corner',logoHidden:false,clean:true,tele:true,logoGlow:.35,logoBack:.55,cycle:false,lyStyle:'karaoke',lyZ:1,lyPos:'side',lyClean:true,autoSync:true,lyV:2,snd:{preset:'Natural',eq:[0,0,0,0,0,0,0,0,0,0],bass:0,clar:0,warm:0,rev:0,width:1,loud:false,lim:true,vol:1,rate:1,fade:2,one:false,off:false,avms:0},fx:{lasers:true,stars:true,grid:true,glitch:true,shell:true,hud:true,dust:true,shake:true,field:true}};
 let S=JSON.parse(JSON.stringify(DEF));
-try{const raw=localStorage.getItem('kebbek-zeri-cfg');if(raw){const o=JSON.parse(raw);S=Object.assign(S,o);S.fx=Object.assign({},DEF.fx,o.fx||{});S.snd=Object.assign({},DEF.snd,o.snd||{});if((o.bloomV||0)<2){S.bloom=Math.min(S.bloom,.6);S.bloomV=2}if((o.lyV||0)<2){S.lyPos='side';S.lyV=2}if(o.thV===3){if(String(o.c1).toLowerCase()==='#e5e4e2'){S.c1=DEF.c1;S.c2=DEF.c2;S.bloom=DEF.bloom}S.thV=4}if(!Array.isArray(S.snd.eq)||S.snd.eq.length!==10)S.snd.eq=DEF.snd.eq.slice()}}catch(e){}
+try{const raw=localStorage.getItem('kebbek-zeri-cfg');if(raw){const o=JSON.parse(raw);S=Object.assign(S,o);S.fx=Object.assign({},DEF.fx,o.fx||{});S.snd=Object.assign({},DEF.snd,o.snd||{});if((o.bloomV||0)<2){S.bloom=Math.min(S.bloom,.6);S.bloomV=2}S.logoPos='corner';if((o.lyV||0)<2){S.lyPos='side';S.lyV=2}if(o.thV===3){if(String(o.c1).toLowerCase()==='#e5e4e2'){S.c1=DEF.c1;S.c2=DEF.c2;S.bloom=DEF.bloom}S.thV=4}if(!Array.isArray(S.snd.eq)||S.snd.eq.length!==10)S.snd.eq=DEF.snd.eq.slice()}}catch(e){}
 const saveS=()=>{try{localStorage.setItem('kebbek-zeri-cfg',JSON.stringify(S))}catch(e){}};
 const hexN=h=>parseInt(h.slice(1),16),hx=n=>'#'+n.toString(16).padStart(6,'0');
 const PRESETS=[['Reactor','#2fe0ff','#5a7bff'],['Neon Tokio','#ff2e88','#2ee6ff'],['Plasma','#ff3df2','#7a3dff'],['Supernova','#ffd23d','#ff3d6e'],['Matrix','#3dff7a','#00a86b'],
@@ -1150,7 +1152,8 @@ const DEF_TEX=logoU.uMap.value;let customTex=null,logoAsp=[1,1];
 const logoDef=document.getElementById('logoDef'),logoNone=document.getElementById('logoNone'),logoLbl=document.getElementById('logoLbl'),sBg=document.getElementById('sBg');
 function applyLogo(){const mode=S.logo==='custom'&&!customTex?'default':S.logo;const hid=!!S.logoHidden;
   const bl=document.getElementById('brandLogo');bl.hidden=mode==='none'||hid||S.logoPos==='center';if(mode==='custom'&&customTex&&customTex.image&&customTex.image.toDataURL){try{bl.src=customTex.image.toDataURL('image/png')}catch(e){}}else if(mode==='default')bl.src=LOGO;
-  const inC=mode!=='none'&&!hid&&S.logoPos!=='corner';logo.visible=inC;dotGlow.visible=inC&&mode==='default';
+  const inC=false;// the logo lives only at the top left, never on the speaker
+ logo.visible=inC;dotGlow.visible=inC&&mode==='default';
   document.querySelectorAll('#logoPos .chip').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.p===S.logoPos)));const lb=document.getElementById('logoBtn');if(lb){lb.setAttribute('aria-pressed',String(!hid));lb.title=hid?'Show logo':'Hide logo'}logoU.uMap.value=mode==='custom'?customTex:DEF_TEX;if(mode!=='custom')logoAsp=[1,1];
   logoDef.setAttribute('aria-pressed',String(mode==='default'));logoNone.setAttribute('aria-pressed',String(mode==='none'));logoLbl.classList.toggle('on',mode==='custom');
   logoLbl.textContent=customTex?'My logo':'Upload your logo';sBg.checked=S.removeBg}
@@ -1570,7 +1573,7 @@ canvas.addEventListener('pointermove',e=>{if(!drag||pinch)return;ty=drag.ty+(e.c
 let tapT=0,tapX=0,tapY=0;
 const lmenu=document.getElementById('lmenu');
 document.getElementById('brandLogo').addEventListener('dblclick',e=>openLogoMenu(e.clientX,e.clientY));
-function openLogoMenu(x,y){if(S.logoHidden){S.logoHidden=false;applyLogo();saveS();toast('Logo shown');return}if(logo&&!logo.visible&&!S.logoHidden){document.getElementById('logoFile').click();return}
+function openLogoMenu(x,y){if(S.logoHidden){S.logoHidden=false;applyLogo();saveS();toast('Logo shown');return}
   lmenu.hidden=false;const w=lmenu.offsetWidth,h=lmenu.offsetHeight;lmenu.style.left=Math.min(Math.max(8,x-w/2),innerWidth-w-8)+'px';lmenu.style.top=Math.min(Math.max(8,y+12),innerHeight-h-8)+'px';
   document.getElementById('lmDefault').hidden=S.logo==='default';document.getElementById('lmReplace').focus()}
 const closeLM=()=>{lmenu.hidden=true};
@@ -1581,7 +1584,7 @@ addEventListener('pointerdown',e=>{if(!lmenu.hidden&&!e.target.closest('#lmenu')
 addEventListener('keydown',e=>{if(e.key==='Escape')closeLM()});
 canvas.addEventListener('pointerup',e=>{const moved=drag&&Math.hypot(e.clientX-drag.x,e.clientY-drag.y)>8;drag=null;if(moved||Date.now()-pinchEnd<350)return;
   const r=canvas.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,near=Math.hypot(e.clientX-cx,e.clientY-cy)<Math.min(r.width,r.height)*.22;
-  const n=Date.now();if(near&&n-tapT<450&&Math.hypot(e.clientX-tapX,e.clientY-tapY)<40){tapT=0;openLogoMenu(e.clientX,e.clientY)}else{tapT=n;tapX=e.clientX;tapY=e.clientY}});
+  const n=Date.now();if(false){}else{tapT=n;tapX=e.clientX;tapY=e.clientY}});
 canvas.addEventListener('pointercancel',()=>drag=null);
 
 let baseZ=12,baseY=0;
@@ -1681,7 +1684,7 @@ function frame(now){if(OFF&&!OFF.step)return;
   pg.attributes.position.needsUpdate=true;pMat.size=.04+sh*.09;
 
   // star field: slow drift, rhythm drives size and twinkle
-  if(field.visible){fMat.uniforms.uT.value=t;fMat.uniforms.uB.value=sb*K;fMat.uniforms.uH.value=sh*K;fMat.uniforms.uK.value=kickEnv*K;fMat.uniforms.uPR.value=renderer.getPixelRatio();field.rotation.z+=dt*.012*(1+sb*1.5)*K;field.rotation.y=Math.sin(t*.05)*.06;fCore.visible=true;fCore.material.opacity=.12+sb*.12*K+kickEnv*.06*K}else fCore.visible=false;
+  if(field.visible){fMat.uniforms.uT.value=t;fMat.uniforms.uM.value+=dt*(.35+sb*1.6+kickEnv*.8)*K;fPtrS*=Math.exp(-dt*1.6);fMat.uniforms.uPs.value=fPtrS;fMat.uniforms.uAsp.value=cam.aspect;fMat.uniforms.uB.value=sb*K;fMat.uniforms.uH.value=sh*K;fMat.uniforms.uK.value=kickEnv*K;fMat.uniforms.uPR.value=renderer.getPixelRatio();field.rotation.z+=dt*.012*(1+sb*1.5)*K;field.rotation.y=Math.sin(t*.05)*.06;fCore.visible=true;fCore.material.opacity=.12+sb*.12*K+kickEnv*.06*K}else fCore.visible=false;
   // warp
   const ws=(6+sb*90+kickEnv*40)*dt*K;
   for(let i=0;i<NS;i++){sp[i*3+2]+=ws;if(sp[i*3+2]>baseZ+2){sp[i*3+2]=-80}}
