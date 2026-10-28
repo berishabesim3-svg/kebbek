@@ -447,8 +447,6 @@ body.bare,body.bare canvas{cursor:none}
         <button class="chip" type="button" data-fx="glitch">Glitch</button>
         <button class="chip" type="button" data-fx="shell">Sphere</button>
         <button class="chip" type="button" data-fx="hud">HUD arcs</button>
-        <button class="chip" type="button" data-fx="dust">Particles</button>
-        <button class="chip" type="button" data-fx="field">Star field</button>
         <button class="chip" type="button" data-fx="shake">Shake</button>
       </div>
     </div>
@@ -457,7 +455,7 @@ body.bare,body.bare canvas{cursor:none}
       <label class="rng"><span>Fine</span><input type="range" id="sBloom" min="0" max="2" step="0.05"><b id="vBloom"></b></label>
     </div>
     <label class="rng"><span>Sensitivity</span><input type="range" id="sSens" min="0.5" max="2" step="0.05"><b id="vSens"></b></label>
-    <div class="legal"><a href="https://berishabesim3-svg.github.io/kebbek/privacy.html" target="_blank" rel="noopener">Privacy</a><a href="https://berishabesim3-svg.github.io/kebbek/terms.html" target="_blank" rel="noopener">Terms</a><span class="note">KEBBEK 4.15</span></div>
+    <div class="legal"><a href="https://berishabesim3-svg.github.io/kebbek/privacy.html" target="_blank" rel="noopener">Privacy</a><a href="https://berishabesim3-svg.github.io/kebbek/terms.html" target="_blank" rel="noopener">Terms</a><span class="note">KEBBEK 4.16</span></div>
   </div>
 </div>
 
@@ -851,6 +849,31 @@ addEventListener('pointermove',e=>{if(e.pointerType!=='mouse'||e.buttons)fPtr(e)
 const field=new THREE.Points(fg,fMat);field.frustumCulled=false;field.renderOrder=-2;scene.add(field);
 let fHue=-1;const fHarm=()=>{const h={h:0,s:0,l:0};colA.getHSL(h);if(Math.abs(h.h-fHue)<.002)return;fHue=h.h;const w=x=>(x%1+1)%1,U=fMat.uniforms;
   U.uC1.value.setHSL(w(h.h+.58),.78,.70);U.uC2.value.setHSL(w(h.h+.47),.70,.66);U.uC3.value.setHSL(w(h.h+.40),.55,.74)};fHarm();
+// ---------- deep sky: distant stars on a far sphere, real star colours, scintillation, occasional glints, diffraction spikes on the brightest
+const SKY_N=(/Mobi|iP(hone|od)|Android/.test(navigator.userAgent))?6000:14000;
+const skG=new THREE.BufferGeometry(),skP=new Float32Array(SKY_N*3),skA=new Float32Array(SKY_N*4);
+for(let i=0;i<SKY_N;i++){const u=Math.random()*2-1,a=Math.random()*Math.PI*2,q=Math.sqrt(1-u*u),R=140;skP.set([Math.cos(a)*q*R,Math.sin(a)*q*R,u*R],i*3);
+  const m=Math.pow(Math.random(),5.5),t=Math.random();// m: brightness (most stars faint, a few bright) · t: colour temperature
+  skA.set([m,t,Math.random(),.35+Math.random()*2.6],i*4)}
+skG.setAttribute('position',new THREE.BufferAttribute(skP,3));skG.setAttribute('aS',new THREE.BufferAttribute(skA,4));
+const skMat=new THREE.ShaderMaterial({transparent:true,depthWrite:false,depthTest:false,blending:THREE.AdditiveBlending,
+  uniforms:{uT:{value:0},uK:{value:0},uPR:{value:1}},
+  vertexShader:'attribute vec4 aS;uniform float uT,uK,uPR;varying vec3 vC;varying float vA,vSp;'+
+  'void main(){float m=aS.x,t=aS.y,ph=aS.z*6.2832,f=aS.w;'+
+  // star colours by temperature: blue-white, white, pale yellow, a few soft orange
+  'vec3 c=t<.28?vec3(.70,.82,1.):t<.72?vec3(1.,1.,1.):t<.93?vec3(1.,.93,.78):vec3(1.,.78,.58);vC=c;'+
+  // scintillation: steady flicker + rare sharp glints; bright stars flare softly on kicks
+  'float tw=.72+.28*sin(uT*f+ph)*sin(uT*f*1.7+ph*2.3);float gl=pow(max(0.,sin(uT*.37*f+ph*5.)),60.);'+
+  'vA=clamp((.34+m*1.5)*tw+gl*.9+uK*.35*step(.55,m),0.,1.6);vSp=step(.62,m);'+
+  'gl_PointSize=uPR*(m>.62?14.+m*10.+gl*8.:1.5+m*3.4+gl*2.6);'+
+  'gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
+  fragmentShader:'varying vec3 vC;varying float vA,vSp;void main(){vec2 p=gl_PointCoord-.5;float d=length(p);'+
+  'float core=exp(-d*d*(vSp>.5?160.:22.));'+
+  // diffraction spikes (cross) only on the brightest stars
+  'float sp=vSp*(exp(-abs(p.x)*70.)*exp(-abs(p.y)*5.)+exp(-abs(p.y)*70.)*exp(-abs(p.x)*5.))*.55;'+
+  'float a=(core+sp)*vA;if(a<.004)discard;gl_FragColor=vec4(vC*a,a);}'});
+const sky=new THREE.Points(skG,skMat);sky.frustumCulled=false;sky.renderOrder=-10;scene.add(sky);
+let skyPx=0,skyPy=0;addEventListener('pointermove',e=>{if(e.pointerType!=='mouse')return;skyPx=(e.clientX/innerWidth-.5);skyPy=(e.clientY/innerHeight-.5)},{passive:true});
 // soft blue core glow behind the speaker
 const fCore=new THREE.Sprite(new THREE.SpriteMaterial({map:dotGlowTex,color:0x2a7fd0,transparent:true,opacity:.16,depthWrite:false,blending:THREE.AdditiveBlending}));fCore.position.set(0,0,-18);fCore.scale.setScalar(16);fCore.renderOrder=-3;scene.add(fCore);
 
@@ -1151,8 +1174,8 @@ function applyName(){brandEl.textContent=S.name||' ';sName.value=S.name}
 sName.addEventListener('input',()=>{S.name=sName.value.trim()||'';applyName();saveS()});
 // effects
 const fxBtns=[...document.querySelectorAll('[data-fx]')];
-function applyFx(){fxBtns.forEach(b=>b.setAttribute('aria-pressed',String(!!S.fx[b.dataset.fx])));stars.visible=S.fx.stars;grid.visible=false;// 4.13: the grid floor is removed (owner decision)shell.visible=S.fx.shell;
-  [arc1,arc2,arc3,arc4,ticks].forEach(o=>o.visible=S.fx.hud);dust.visible=S.fx.dust;field.visible=S.fx.field!==false;if(!S.fx.lasers)lasers.forEach(l=>l.userData.t=1)}
+function applyFx(){fxBtns.forEach(b=>b.setAttribute('aria-pressed',String(!!S.fx[b.dataset.fx])));stars.visible=false;/* 4.16: warp stars removed; the Stars chip controls the deep sky */grid.visible=false;/* 4.13: grid floor removed */shell.visible=S.fx.shell;
+  [arc1,arc2,arc3,arc4,ticks].forEach(o=>o.visible=S.fx.hud);dust.visible=false;field.visible=false;/* 4.16: particles and the coloured dot cloud removed */if(!S.fx.lasers)lasers.forEach(l=>l.userData.t=1)}
 fxBtns.forEach(b=>b.addEventListener('click',()=>{S.fx[b.dataset.fx]=!S.fx[b.dataset.fx];applyFx();saveS()}));
 // sliders
 function slider(id,key,fmt){const el=document.getElementById(id),v=document.getElementById('v'+id.slice(1));const show=()=>{el.value=S[key];v.textContent=fmt(S[key])};
@@ -1628,7 +1651,7 @@ canvas.addEventListener('pointercancel',()=>drag=null);
 let baseZ=12,baseY=0,stageBot=0;
 function resize(){const w=EXP?EXP.w:innerWidth,h=EXP?EXP.h:innerHeight;renderer.setSize(w,h,false);cam.aspect=w/h;
   let bot=h;if(!EXP&&!document.body.classList.contains('bare')){const rr=document.getElementById('rail');if(rr&&getComputedStyle(rr).display!=='none'){const r=rr.getBoundingClientRect();if(r.height&&r.top>h*.35&&r.top<h)bot=Math.max(h*.45,r.top-6)}}
-  const fr=bot/h,tn=Math.tan(21*Math.PI/180);baseZ=Math.max(12.5,4.7/(tn*cam.aspect),EXP?0:6/(tn*fr));// videos keep their own framingscene.fog.density=.36/baseZ;baseY=0;
+  const fr=bot/h,tn=Math.tan(21*Math.PI/180);baseZ=Math.max(12.5,4.7/(tn*cam.aspect),EXP?0:6/(tn*fr));/* videos keep their own framing */scene.fog.density=.36/baseZ;baseY=0;
   const off=EXP?0:Math.round((h-bot)/2);if(off>2)cam.setViewOffset(w,h,0,off,w,h);else cam.clearViewOffset();stageBot=bot;cam.updateProjectionMatrix();
   const RP=EXP?1:PR,W=Math.floor(w*RP),H=Math.floor(h*RP);rtMain.setSize(W,H);
   lv.forEach((p,i)=>{const s=2**(i+1);p[0].setSize(Math.max(1,W/s|0),Math.max(1,H/s|0));p[1].setSize(Math.max(1,W/s|0),Math.max(1,H/s|0))});
@@ -1726,6 +1749,7 @@ function frame(now){if(OFF&&!OFF.step)return;
   pg.attributes.position.needsUpdate=true;pMat.size=.04+sh*.09;
 
   // star field: slow drift, rhythm drives size and twinkle
+  sky.visible=S.fx.stars!==false;if(sky.visible){skMat.uniforms.uT.value=t;skMat.uniforms.uK.value=kickEnv*K;skMat.uniforms.uPR.value=renderer.getPixelRatio();sky.rotation.z+=dt*.004;sky.rotation.y+=((-skyPx*.05)-sky.rotation.y)*.03;sky.rotation.x+=((-skyPy*.035)-sky.rotation.x)*.03}
   if(field.visible){fHarm();fMat.uniforms.uT.value=t;fMat.uniforms.uM.value+=dt*(.35+sb*1.6+kickEnv*.8)*K;fPtrS*=Math.exp(-dt*1.6);fMat.uniforms.uPs.value=fPtrS;fMat.uniforms.uAsp.value=cam.aspect;fMat.uniforms.uB.value=sb*K;fMat.uniforms.uH.value=sh*K;fMat.uniforms.uK.value=kickEnv*K;fMat.uniforms.uPR.value=renderer.getPixelRatio();field.rotation.z+=dt*.012*(1+sb*1.5)*K;field.rotation.y=Math.sin(t*.05)*.06;fCore.visible=true;fCore.material.opacity=.12+sb*.12*K+kickEnv*.06*K}else fCore.visible=false;
   // warp
   const ws=(6+sb*90+kickEnv*40)*dt*K;
