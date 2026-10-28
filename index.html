@@ -451,7 +451,7 @@ body.bare,body.bare canvas{cursor:none}
       <label class="rng"><span>Fine</span><input type="range" id="sBloom" min="0" max="2" step="0.05"><b id="vBloom"></b></label>
     </div>
     <label class="rng"><span>Sensitivity</span><input type="range" id="sSens" min="0.5" max="2" step="0.05"><b id="vSens"></b></label>
-    <div class="legal"><a href="https://berishabesim3-svg.github.io/kebbek/privacy.html" target="_blank" rel="noopener">Privacy</a><a href="https://berishabesim3-svg.github.io/kebbek/terms.html" target="_blank" rel="noopener">Terms</a><span class="note">KEBBEK 4.8</span></div>
+    <div class="legal"><a href="https://berishabesim3-svg.github.io/kebbek/privacy.html" target="_blank" rel="noopener">Privacy</a><a href="https://berishabesim3-svg.github.io/kebbek/terms.html" target="_blank" rel="noopener">Terms</a><span class="note">KEBBEK 4.9</span></div>
   </div>
 </div>
 
@@ -466,7 +466,7 @@ body.bare,body.bare canvas{cursor:none}
     <button class="btn ghost" id="listBtn" type="button" aria-expanded="false">Library <span id="count">0</span></button>
     <button class="ic sm" id="logoBtn" type="button" aria-pressed="true" aria-label="Show or hide the logo" title="Hide logo"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M9 7.5v9M9 12l4.5-4.5M9 12l4.5 4.5M13 7.5h1.8a2.2 2.2 0 0 1 0 4.4H13h2.2a2.3 2.3 0 0 1 0 4.6H13" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     <button class="ic sm" id="sndBtn" type="button" aria-expanded="false" aria-label="Sound and equalizer"><svg viewBox="0 0 24 24"><path d="M5 3h2v6.2a3 3 0 0 1 0 5.6V21H5v-6.2a3 3 0 0 1 0-5.6zm6 0h2v2.2a3 3 0 0 1 0 5.6V21h-2V10.8a3 3 0 0 1 0-5.6zm6 0h2v10.2a3 3 0 0 1 0 5.6V21h-2v-2.2a3 3 0 0 1 0-5.6z"/></svg></button>
-    <button class="ic sm" id="lyBtn" type="button" aria-expanded="false" aria-label="Lyrics"><svg viewBox="0 0 24 24"><path d="M3 5h18v14H3zm2 2v10h14V7zm2 3h4v1.6H7zm0 3h7v1.6H7zm9 0h2v1.6h-2zm-3-3h5v1.6h-5z"/></svg></button>
+    <button class="ic sm" id="lyBtn" hidden type="button" aria-expanded="false" aria-label="Lyrics"><svg viewBox="0 0 24 24"><path d="M3 5h18v14H3zm2 2v10h14V7zm2 3h4v1.6H7zm0 3h7v1.6H7zm9 0h2v1.6h-2zm-3-3h5v1.6h-5z"/></svg></button>
     <button class="ic sm" id="vidBtn" type="button" aria-expanded="false" aria-label="Make a video" title="Make a video"><svg viewBox="0 0 24 24"><path d="M3 6.5A1.5 1.5 0 0 1 4.5 5h10A1.5 1.5 0 0 1 16 6.5v2.2l4.2-2.6c.4-.2.8 0 .8.4v11c0 .4-.4.6-.8.4L16 15.3v2.2a1.5 1.5 0 0 1-1.5 1.5h-10A1.5 1.5 0 0 1 3 17.5zm2 .5v10h9V7z"/></svg></button>
     <button class="ic sm" id="crBtn" type="button" aria-expanded="false" aria-label="Create music" title="Create music"><svg viewBox="0 0 24 24"><path d="M12 2.5l1.9 5.6 5.6 1.9-5.6 1.9L12 17.5l-1.9-5.6L4.5 10l5.6-1.9zM18.5 15l.9 2.6 2.6.9-2.6.9-.9 2.6-.9-2.6-2.6-.9 2.6-.9z"/></svg></button>
     <button class="ic sm" id="cfgBtn" type="button" aria-expanded="false" aria-label="Customize"><svg viewBox="0 0 24 24"><path d="M19.4 13a7.5 7.5 0 0 0 0-2l2.1-1.6-2-3.5-2.5 1a7.6 7.6 0 0 0-1.7-1L15 3h-4l-.4 2.6a7.6 7.6 0 0 0-1.7 1l-2.5-1-2 3.5L6.6 11a7.5 7.5 0 0 0 0 2l-2.1 1.6 2 3.5 2.5-1c.5.4 1.1.7 1.7 1L11 21h4l.4-2.6c.6-.3 1.2-.6 1.7-1l2.5 1 2-3.5zM13 15.5A3.5 3.5 0 1 1 13 8.5a3.5 3.5 0 0 1 0 7z"/></svg></button>
@@ -567,7 +567,7 @@ body.bare,body.bare canvas{cursor:none}
       <label class="rng"><span>Volume</span><input type="range" id="qVol" min="0" max="1.5" step="0.01"><b id="vqVol"></b></label>
       <label class="rng"><span>Speed</span><input type="range" id="qRate" min="0.5" max="1.5" step="0.05"><b id="vqRate"></b></label>
       <label class="rng"><span>Visual sync</span><input type="range" id="qAV" min="-150" max="400" step="10"><b id="vqAV"></b></label>
-      <p class="note">Visuals and lyrics adjust to your device’s audio delay automatically. With Bluetooth headphones, raise this a little if the visuals run ahead of the sound.</p>
+      <p class="note">Visuals adjust to your device’s audio delay automatically. With Bluetooth headphones, raise this a little if the visuals run ahead of the sound.</p>
       <label class="rng"><span>Crossfade</span><input type="range" id="qFade" min="0" max="8" step="0.5"><b id="vqFade"></b></label>
       <div class="lopts"><button class="chip" id="qOne" type="button" aria-pressed="false">Repeat song</button></div>
     </div>
@@ -638,7 +638,7 @@ body.bare,body.bare canvas{cursor:none}
     </details>
     <div class="fld"><div class="crGo"><button class="btn ghost" id="crPrev" type="button">▶ Preview</button><button class="btn primary" id="crGo" type="button">Create</button><button class="btn ghost" id="crStop" type="button" hidden>Stop</button></div>
       <div class="pbar" id="crBar" hidden><i id="crBarI"></i></div>
-      <p class="note" id="crStat">Create makes the full song and adds it to your library and the “KEBBEK Create” playlist, with lyrics synced.</p><button class="chip" id="crFallback" type="button" hidden>Make it on this device instead</button></div>
+      <p class="note" id="crStat">Create makes the full song and adds it to your library and the “KEBBEK Create” playlist.</p><button class="chip" id="crFallback" type="button" hidden>Make it on this device instead</button></div>
     <ul class="crRes" id="crRes"></ul>
   </div>
 </div>
@@ -651,14 +651,14 @@ body.bare,body.bare canvas{cursor:none}
     <div class="fld"><span>Start</span><div class="lopts" id="vFrom"><button class="chip" type="button" data-s="start">From the start</button><button class="chip" type="button" data-s="here">From the playhead</button><button class="chip" type="button" data-s="lyrics">First lyric line</button></div></div>
     <div class="fld"><span>On the video</span>
       <label class="chk"><input type="checkbox" id="vTitle"> Song title and artist</label>
-      <label class="chk"><input type="checkbox" id="vLyr"> Lyrics, karaoke style</label>
+      <label class="chk" hidden><input type="checkbox" id="vLyr"> Lyrics, karaoke style</label>
       <label class="chk"><input type="checkbox" id="vBadge"> Logo and name in the corner</label>
       <label class="chk"><input type="checkbox" id="vProg"> Thin progress line</label></div>
     <div class="fld"><span>Render</span><div class="lopts" id="vMode"><button class="chip" type="button" data-m="exact">Exact · frame by frame</button><button class="chip" type="button" data-m="live">Live · real time</button></div>
       <p class="note">Exact draws every frame at its exact moment in the song and encodes it, so the video never drops frames on any device. Live records while the song plays.</p></div>
     <div class="fld"><span>Quality</span><div class="lopts" id="vQ"><button class="chip" type="button" data-q="720">720p · faster</button><button class="chip" type="button" data-q="1080">1080p · sharper</button></div></div>
     <div class="fld"><div class="crGo"><button class="btn primary" id="vGo" type="button">● Record video</button></div>
-      <p class="note" id="vStat">Plays the song and records the speaker, lights and lyrics in real time. When it ends you can watch it, then save or share it.</p></div>
+      <p class="note" id="vStat">Plays the song and records the speaker and lights in real time. When it ends you can watch it, then save or share it.</p></div>
   </div>
 </div>
 <div class="vrec" id="vrec" hidden>
@@ -999,7 +999,7 @@ function addFiles(files){const all=[...files],ok=all.filter(f=>isAudio(f)&&!isLy
     if(!(L&&L.length)&&tg.plain){L=/\[\d+:\d+/.test(tg.plain)?parseLRC(tg.plain):tg.plain.split(/\r?\n/).map(x=>x.trim()).filter(Boolean).map(text=>({t:-1,e:0,text}))}
     if(L&&L.length){t.lyrics=normalize(L);found++}
     dbDo(st=>st.put(t));if(t===curTrack()){trackEl.textContent=t.name;lyIdx=-2;setSession();if(!$l('lyp').hidden)renderLy()}
-  })).then(()=>{renderList();if(found)toast(found===1?(synced(made.find(x=>x.lyrics).lyrics)?'Lyrics found inside the song':'Lyrics text found in the song · open Lyrics to sync it'):`Lyrics found in ${found} songs`)})}
+  })).then(()=>{renderList();if(found&&LYRICS)toast(found===1?(synced(made.find(x=>x.lyrics).lyrics)?'Lyrics found inside the song':'Lyrics text found in the song · open Lyrics to sync it'):`Lyrics found in ${found} songs`)})}
 // ---- read tags (ID3 for MP3, atoms for M4A, Vorbis comments for FLAC/OGG)
 function decTxt(b,enc){try{if(enc===1){if(b[0]===0xFF&&b[1]===0xFE)return new TextDecoder('utf-16le').decode(b.subarray(2));if(b[0]===0xFE&&b[1]===0xFF)return new TextDecoder('utf-16be').decode(b.subarray(2));return new TextDecoder('utf-16le').decode(b)}
   if(enc===2)return new TextDecoder('utf-16be').decode(b);if(enc===3)return new TextDecoder('utf-8').decode(b);return new TextDecoder('windows-1252').decode(b)}catch(e){return''}}
@@ -1339,7 +1339,8 @@ new ResizeObserver(()=>placeFloats()).observe(rail);
 const $l=id=>document.getElementById(id);
 const lyEl=$l('lyr'),lyPrev=$l('lyPrev'),lyCur=$l('lyCur'),lyCurB=$l('lyCurB'),lyCurF=$l('lyCurF'),lyNext=$l('lyNext');
 const lyLinesEl=$l('lyLines'),lyFor=$l('lyFor'),lyStat=$l('lyStat'),lyBar=$l('lyBar'),lyBarI=$l('lyBarI'),lyAutoBtn=$l('lyAuto'),lyShowBtn=$l('lyShow'),lyCount=$l('lyCount');
-let lyShowOn=false;// 4.7: lyrics are never drawn on the screen (owner decision); they stay in the Lyrics panel and in video export
+const LYRICS=false;// 4.9: lyrics removed from the app (owner decision): not on screen, not in videos, no auto-sync. Saved lyrics stay in the library; set true to bring the feature back
+let lyShowOn=false;
 let lyIdx=-2,lyBusy=false,worker=null,workerModel='';
 const curTrack=()=>cur>=0&&lib[cur]?lib[cur]:(audioEl&&audioEl._tid?lib.find(t=>t.id===audioEl._tid)||null:null);
 const lines=()=>{const t=curTrack();return t&&Array.isArray(t.lyrics)?t.lyrics:[]};
@@ -1381,7 +1382,7 @@ async function findVocals(t){if(!t||t.vocStart!=null||!t.blob)return;t.vocStart=
 function lyTrackChanged(){setTimeout(()=>{const t=curTrack();const L=lines();if(t&&L.length&&!synced(L))findVocals(t)},300);lyIdx=-2;lycKey='';if(!$l('lyp').hidden)renderLy();if(tapOn)stopTap();setTimeout(maybeAutoSync,1500)}
 const canModel=()=>/^https?:$/.test(location.protocol)&&!/claude(usercontent)?\.(ai|com)$/.test(location.hostname)||location.protocol==='kebbek:';
 let autoTried=new Set();
-function maybeAutoSync(){const t=curTrack();if(!t||S.autoSync===false||IOSWEB||lyBusy||!canModel()||autoTried.has(t.id))return;const L=lines();if(!L.length||synced(L))return;
+function maybeAutoSync(){const t=curTrack();if(!LYRICS||!t||S.autoSync===false||IOSWEB||lyBusy||!canModel()||autoTried.has(t.id))return;const L=lines();if(!L.length||synced(L))return;
   autoTried.add(t.id);toast('Syncing lyrics to the vocals…');$l('lycEst').textContent='Syncing to the vocals…';lyAutoBtn.click()}
 function renderLy(){const t=curTrack(),L=lines();
   lyFor.textContent=t?'Song: '+t.name:'Play a song from the list, then create its lyrics here.';
@@ -1757,12 +1758,17 @@ function sampleEntry(tr){if(tr.kind==='video'){const vis=[0,0,0,0,0,0,...u16(1),
     if(tr.codec.startsWith('vp09')){const p=tr.codec.split('.'),prof=+p[1]||0,lvl=+p[2]||10,bd=+p[3]||8;return box('vp09',vis,full('vpcC',1,0,prof,lvl,(bd<<4)|(1<<1)|0,1,1,1,...u16(0)))}
     if(tr.codec.startsWith('av01'))return box('av01',vis,box('av1C',[...(tr.desc||[0x81,0,0,0])]));throw new Error('video codec '+tr.codec)}
   const aud=[0,0,0,0,0,0,...u16(1),...u32(0),...u32(0),...u16(tr.ch),...u16(16),...u16(0),...u16(0),...u32(Math.min(65535,tr.sr)*65536)];
+  if(tr.codec==='sowt')return box('sowt',aud);
   if(tr.codec.startsWith('mp4a'))return box('mp4a',aud,esds(tr.desc&&tr.desc.length?[...tr.desc]:ascFor(tr.sr,tr.ch),192000));
   if(tr.codec==='opus'){const ps=tr.desc&&tr.desc.length>=12?(tr.desc[10]|(tr.desc[11]<<8)):312;return box('Opus',aud,box('dOps',0,tr.ch,...u16(ps),...u32(tr.inSr||48000),...u16(0),0))}throw new Error('audio codec '+tr.codec)}
 function ascFor(sr,ch){const T=[96000,88200,64000,48000,44100,32000,24000,22050,16000,12000,11025,8000],i=Math.max(0,T.indexOf(sr));return[(2<<3)|(i>>1),((i&1)<<7)|(ch<<3)]}
-function trak(tr,id,mvTS,dur,off){const n=tr.sizes.length,isV=tr.kind==='video';
-  const stts=[];for(let i=0;i<n;){let j=i;while(j<n&&tr.durs[j]===tr.durs[i])j++;stts.push(...u32(j-i),...u32(tr.durs[i]));i=j}
-  const sttsBox=full('stts',0,0,u32(stts.length/8),stts),stsz=full('stsz',0,0,u32(0),u32(n),tr.sizes.map(u32)),stsc=full('stsc',0,0,u32(1),u32(1),u32(n),u32(1)),stco=full('stco',0,0,u32(1),u32(off));
+function trak(tr,id,mvTS,dur,off){const n=tr.sizes.length,isV=tr.kind==='video';let sttsBox,stsz,stsc,stco;
+  if(tr.codec==='sowt'){// PCM: one sample = one stereo frame (4 bytes), grouped in chunks of 4096 frames
+    const N=tr.total,C=4096,nc=Math.ceil(N/C),rem=N-(nc-1)*C;sttsBox=full('stts',0,0,u32(1),u32(N),u32(1));stsz=full('stsz',0,0,u32(tr.ch*2),u32(N));
+    stsc=rem===C||nc===1?full('stsc',0,0,u32(1),u32(1),u32(nc===1?N:C),u32(1)):full('stsc',0,0,u32(2),u32(1),u32(C),u32(1),u32(nc),u32(rem),u32(1));
+    const co=[];for(let i=0;i<nc;i++)co.push(...u32(off+i*C*tr.ch*2));stco=full('stco',0,0,u32(nc),co)}
+  else{const stts=[];for(let i=0;i<n;){let j=i;while(j<n&&tr.durs[j]===tr.durs[i])j++;stts.push(...u32(j-i),...u32(tr.durs[i]));i=j}
+  sttsBox=full('stts',0,0,u32(stts.length/8),stts);stsz=full('stsz',0,0,u32(0),u32(n),tr.sizes.map(u32));stsc=full('stsc',0,0,u32(1),u32(1),u32(n),u32(1));stco=full('stco',0,0,u32(1),u32(off))}
   const stss=isV?full('stss',0,0,u32(tr.keys.length),tr.keys.map(k=>u32(k+1))):[];
   const stbl=box('stbl',full('stsd',0,0,u32(1),sampleEntry(tr)),sttsBox,stss,stsc,stsz,stco);
   const seg=tr.segment!=null?tr.segment:tr.total-(tr.mediaTime||0),tdur=Math.round(seg*mvTS/tr.ts);
@@ -1773,11 +1779,11 @@ function trak(tr,id,mvTS,dur,off){const n=tr.sizes.length,isV=tr.kind==='video';
   const mh=isV?full('vmhd',0,1,u16(0),u16(0),u16(0),u16(0)):full('smhd',0,0,u16(0),u16(0));
   const dinf=box('dinf',full('dref',0,0,u32(1),full('url ',0,1)));
   return box('trak',tkhd,edts,box('mdia',mdhd,hdlr,box('minf',mh,dinf,stbl)))}
-function build(tracks){const mvTS=1000;const ftyp=box('ftyp',str('isom'),u32(512),str('isom'),str('iso2'),str('avc1'),str('mp41'));
+function build(tracks){const mvTS=1000,qt=tracks.some(t=>t.codec==='sowt');const ftyp=qt?box('ftyp',str('qt  '),u32(0x200),str('qt  ')):box('ftyp',str('isom'),u32(512),str('isom'),str('iso2'),str('avc1'),str('mp41'));
   const dur=Math.max(...tracks.map(t=>Math.round((t.segment!=null?t.segment:t.total-(t.mediaTime||0))*mvTS/t.ts)));
   const mk=offs=>box('moov',full('mvhd',0,0,u32(0),u32(0),u32(mvTS),u32(dur),u32(0x00010000),u16(0x0100),u16(0),u32(0),u32(0),MAT,new Array(24).fill(0),u32(tracks.length+1)),tracks.map((t,i)=>trak(t,i+1,mvTS,dur,offs[i])));
   let moov=mk(tracks.map(()=>0));const dataLen=tracks.reduce((a,t)=>a+t.bytes,0),start=ftyp.length+moov.length+8;const offs=[];let o=start;for(const t of tracks){offs.push(o);o+=t.bytes}moov=mk(offs);
-  const parts=[new Uint8Array(ftyp),new Uint8Array(moov),new Uint8Array([...u32(8+dataLen),...str('mdat')])];for(const t of tracks)parts.push(...t.data);return new Blob(parts,{type:'video/mp4'})}
+  const parts=[new Uint8Array(ftyp),new Uint8Array(moov),new Uint8Array([...u32(8+dataLen),...str('mdat')])];for(const t of tracks)parts.push(...t.data);return new Blob(parts,{type:qt?'video/quicktime':'video/mp4'})}
 function track(kind,o){return Object.assign({kind,sizes:[],durs:[],keys:[],data:[],bytes:0,total:0,desc:null},o)}
 function add(tr,chunk,meta,durTicks){const b=new Uint8Array(chunk.byteLength);chunk.copyTo(b);if(meta&&meta.decoderConfig&&meta.decoderConfig.description&&!tr.desc){const d=meta.decoderConfig.description;tr.desc=new Uint8Array(d.buffer?d.buffer.slice(d.byteOffset||0,(d.byteOffset||0)+d.byteLength):d)}
   if(chunk.type==='key')tr.keys.push(tr.sizes.length);tr.sizes.push(b.length);tr.durs.push(durTicks);tr.data.push(b);tr.bytes+=b.length;tr.total+=durTicks}
@@ -1833,23 +1839,30 @@ function vAnalyze(buf,st,len,fps){const N=2048,sr=buf.sampleRate,frames=Math.rou
 async function vProbeAAC(mime){try{ensureCtx();if(ctx.state!=='running')await ctx.resume();const d=ctx.createMediaStreamDestination(),o=ctx.createConstantSource();o.offset.value=0;o.connect(d);o.start();
   const r=new MediaRecorder(d.stream,{mimeType:mime}),parts=[];r.ondataavailable=e=>{if(e.data&&e.data.size)parts.push(e.data)};const done=new Promise(k=>r.onstop=k);r.start();await new Promise(k=>setTimeout(k,350));r.stop();await done;o.stop();o.disconnect();
   const A=mp4ReadAudio(await new Blob(parts).arrayBuffer());return !!A.asc}catch(e){return false}}
+const APPLEWK=()=>(typeof IOSAPP!=='undefined'&&IOSAPP)||(/AppleWebKit/.test(navigator.userAgent)&&!/Chrome|Chromium|CriOS|FxiOS|EdgiOS|Edg\/|Android|OPR/.test(navigator.userAgent));
 async function vCodecs(w,h,fps,sr){if(!window.VideoEncoder||!window.VideoFrame)return null;
   const br=Math.max(w,h)>=1900?10e6:6e6;let video=null,audio=null;
   for(const codec of['avc1.640028','avc1.4d0028','avc1.42001f','vp09.00.40.08','vp09.00.10.08','av01.0.08M.08']){try{const cfg={codec,width:w,height:h,bitrate:br,framerate:fps,latencyMode:'realtime'};if(codec.startsWith('avc1'))cfg.avc={format:'avc'};const s=await VideoEncoder.isConfigSupported(cfg);if(s.supported){video=cfg;break}}catch(e){}}
   try{const cfg={codec:'mp4a.40.2',sampleRate:sr,numberOfChannels:2,bitrate:192000};if((await AudioEncoder.isConfigSupported(cfg)).supported)audio=cfg}catch(e){}
+  if(!audio&&APPLEWK()&&video&&video.codec.startsWith('avc1'))audio={codec:'sowt',pcm:true};
   if(!audio&&window.MediaRecorder){const m=['audio/mp4;codecs=mp4a.40.2','audio/mp4;codecs=mp4a','audio/mp4'].find(x=>{try{return MediaRecorder.isTypeSupported(x)}catch(e){return false}});if(m&&await vProbeAAC(m))audio={codec:'mp4a.40.2',mr:m}}
   if(!audio){try{const cfg={codec:'opus',sampleRate:48000,numberOfChannels:2,bitrate:192000};if((await AudioEncoder.isConfigSupported(cfg)).supported)audio=cfg}catch(e){}}
+  if(!audio&&video&&video.codec.startsWith('avc1'))audio={codec:'sowt',pcm:true};
   return video&&audio?{video,audio}:null}
 async function vRenderExact(o){// o: {t,st,len,w,h,fps,onProgress}
   ensureCtx();const ab=await o.t.blob.arrayBuffer();let buf=await new Promise((ok,no)=>ctx.decodeAudioData(ab,ok,no));
   const cod=await vCodecs(o.w,o.h,o.fps,buf.sampleRate);if(!cod)throw new Error('no-webcodecs');
-  if(!cod.audio.mr&&cod.audio.sampleRate!==buf.sampleRate){const oc=new OfflineAudioContext(2,Math.ceil(buf.duration*cod.audio.sampleRate),cod.audio.sampleRate),src=oc.createBufferSource();src.buffer=buf;src.connect(oc.destination);src.start();buf=await oc.startRendering()}
+  if(!cod.audio.mr&&!cod.audio.pcm&&cod.audio.sampleRate!==buf.sampleRate){const oc=new OfflineAudioContext(2,Math.ceil(buf.duration*cod.audio.sampleRate),cod.audio.sampleRate),src=oc.createBufferSource();src.buffer=buf;src.connect(oc.destination);src.start();buf=await oc.startRendering()}
   const sr=buf.sampleRate,A=vAnalyze(buf,o.st,o.len,o.fps);
   // MediaRecorder AAC path: the song section plays silently into a recorder in real time while frames render
   const mrJob=cod.audio.mr?vRecordAAC(buf,o.st,o.len,cod.audio.mr):null;
   const vt=Mp4.track('video',{codec:cod.video.codec,w:o.w,h:o.h,ts:o.fps*1000}),at=Mp4.track('audio',{codec:cod.audio.codec,sr,ch:2,ts:sr,inSr:sr});let err=null;
   const venc=new VideoEncoder({output:(c,m)=>Mp4.add(vt,c,m,1000),error:e=>err=e});venc.configure(cod.video);
-  if(!cod.audio.mr){const aenc=new AudioEncoder({output:(c,m)=>Mp4.add(at,c,m,Math.round((c.duration||0)*sr/1e6)||1024),error:e=>err=e});aenc.configure(cod.audio);
+  if(cod.audio.pcm){// 16-bit stereo PCM straight from the decoded song, short fade at both ends
+    const s0=Math.floor(o.st*sr),n=Math.min(buf.length-s0,Math.round(o.len*sr)),L=buf.getChannelData(0),R=buf.numberOfChannels>1?buf.getChannelData(1):L,fade=Math.round(sr*.04),pcm=new Int16Array(n*2);
+    for(let p=0;p<n;p++){const g=Math.min(1,p/fade,(n-p)/fade),a=Math.max(-1,Math.min(1,L[s0+p]*g)),b=Math.max(-1,Math.min(1,R[s0+p]*g));pcm[p*2]=Math.round(a*32767);pcm[p*2+1]=Math.round(b*32767)}
+    const by=new Uint8Array(pcm.buffer);at.data.push(by);at.bytes=by.length;at.total=n;at.segment=n}
+  else if(!cod.audio.mr){const aenc=new AudioEncoder({output:(c,m)=>Mp4.add(at,c,m,Math.round((c.duration||0)*sr/1e6)||1024),error:e=>err=e});aenc.configure(cod.audio);
   // audio: the exact song section, with a short fade at both ends
   const s0=Math.floor(o.st*sr),n=Math.min(buf.length-s0,Math.round(o.len*sr)),L=buf.getChannelData(0),R=buf.numberOfChannels>1?buf.getChannelData(1):L,F=1024,fade=Math.round(sr*.04);
   for(let i=0;i<n;i+=F){const m=Math.min(F,n-i),pl=new Float32Array(m*2);for(let j=0;j<m;j++){const p=i+j,g=Math.min(1,p/fade,(n-p)/fade);pl[j]=L[s0+p]*g;pl[m+j]=R[s0+p]*g}
@@ -1864,7 +1877,7 @@ async function vRenderExact(o){// o: {t,st,len,w,h,fps,onProgress}
     await venc.flush();if(err)throw err;
     if(mrJob){const r=await mrJob;at.sr=r.sr;at.ts=r.sr;at.inSr=r.sr;at.desc=r.asc;at.mediaTime=r.offset;at.segment=Math.round(o.len*r.sr);r.samples.forEach((x,i)=>Mp4.addRaw(at,x,r.durs[i]||1024))}}
   finally{OFF=null;window.__crLive=false;last=performance.now();requestAnimationFrame(frame)}
-  return{blob:Mp4.build([vt,at]),codec:cod.video.codec.split('.')[0]+'+'+(cod.audio.codec==='opus'?'opus':'aac'),opus:cod.audio.codec==='opus'}}
+  return{blob:Mp4.build([vt,at]),codec:cod.video.codec.split('.')[0]+'+'+(cod.audio.pcm?'pcm':cod.audio.codec==='opus'?'opus':'aac'),opus:cod.audio.codec==='opus'}}
 async function vRecordAAC(buf,st,len,mime){ensureCtx();if(ctx.state!=='running')try{await ctx.resume()}catch(e){}
   const dest=ctx.createMediaStreamDestination();dest.channelCount=2;const src=ctx.createBufferSource();src.buffer=buf;src.connect(dest);
   const rec=new MediaRecorder(dest.stream,{mimeType:mime,audioBitsPerSecond:192000}),parts=[];rec.ondataavailable=e=>{if(e.data&&e.data.size)parts.push(e.data)};
@@ -1876,8 +1889,9 @@ async function vRecordAAC(buf,st,len,mime){ensureCtx();if(ctx.state!=='running')
   return{asc:A.asc,sr:A.sr,samples:A.samples,durs:A.durs,offset}}
 
 // ---------- video export: records the speaker, lights, lyrics and the music, in 9:16, 16:9 or 1:1
-const VKEY='kebbek-zeri-video';const VID={m:'exact',f:'9x16',l:15,s:'start',title:true,lyr:true,badge:true,prog:false,q:/Mobi|iP(hone|ad)|Android/.test(navigator.userAgent)?720:1080};
+const VKEY='kebbek-zeri-video';const VID={m:'exact',f:'9x16',l:15,s:'start',title:true,lyr:false,badge:true,prog:false,q:/Mobi|iP(hone|ad)|Android/.test(navigator.userAgent)?720:1080};
 try{Object.assign(VID,JSON.parse(localStorage.getItem(VKEY)||'{}'))}catch(e){}
+if((VID.vv||0)<2){VID.m='exact';VID.vv=2}VID.lyr=false;// 4.9: every saved setup moves to the exact renderer (sound written straight from the song); lyrics never on videos
 const vSaveCfg=()=>{try{localStorage.setItem(VKEY,JSON.stringify(VID))}catch(e){}};
 const vEl=id=>document.getElementById(id),vStat=m=>{vEl('vStat').textContent=m};
 function vPaint(){[['vMode','m','m'],['vFmt','f','f'],['vLen','l','l'],['vFrom','s','s'],['vQ','q','q']].forEach(([id,k,d])=>vEl(id).querySelectorAll('.chip').forEach(b=>b.setAttribute('aria-pressed',String(String(VID[k])===b.dataset[d]))));
@@ -1907,7 +1921,7 @@ async function vStart(){if(REC)return;const t=curTrack();if(!t||!audioEl||!audio
     const T0=performance.now();let res=null,fail=null;
     try{res=await vRenderExact({t,st,len,w,h,fps:30,onProgress:p=>{const el=(performance.now()-T0)/1000;vEl('vRecT').textContent=`Rendering ${Math.round(p*100)}% · ${(p*len/Math.max(.1,el)).toFixed(1)}× real time`}})}catch(e){fail=e}
     const R=REC;REC=null;EXP=null;renderer.setPixelRatio(PR0);resize();updateLag();vEl('vRecStop').hidden=false;
-    if(!fail){vFinish(res.blob,R,'MP4 · '+res.codec+' · exact frames');if(res.opus)vStat('Video ready. The sound is Opus: it plays in browsers, Android, YouTube and Instagram, but iPhone Photos and QuickTime may play it silent. Use Safari or Chrome on Mac/Windows for AAC sound.');return}
+    if(!fail){vFinish(res.blob,R,(/quicktime/.test(res.blob.type)?'MOV · ':'MP4 · ')+res.codec+' · exact frames');if(res.opus)vStat('Video ready. The sound is Opus: it plays in browsers, Android, YouTube and Instagram, but iPhone Photos and QuickTime may play it silent. Use Safari or Chrome on Mac/Windows for AAC sound.');return}
     if(String(fail&&fail.message)!=='no-webcodecs'){vEl('vrec').hidden=true;vStat(R.cancel?'Rendering cancelled.':'Couldn’t render the video: '+String(fail&&fail.message||fail).slice(0,140));return}
     vStat('This browser can’t render frame by frame, so the video is recorded in real time.')}
   showPanel(null);PR0=PR;EXP={w,h};renderer.setPixelRatio(1);resize();updateLag();
@@ -1928,7 +1942,7 @@ function vDraw(){const R=REC;if(!R||R.stopping)return;const g=R.g,W=R.w,H=R.h,u=
   const full=String(R.track.name||''),sp=full.split(/\s+[–-]\s+/),title=sp.length>1?sp.slice(1).join(' – '):full,artist=sp.length>1?sp[0]:(R.track.artist||'');
   if(VID.title){g.textBaseline='alphabetic';if(port){g.textAlign='center';g.fillStyle='#fff';g.font=`700 ${50*u}px ${FONT}`;g.fillText(title.slice(0,42),W/2,H*.875);if(artist){g.fillStyle='rgba(220,235,245,.7)';g.font=`500 ${30*u}px ${FONT}`;g.fillText(artist.slice(0,48),W/2,H*.875+48*u)}}
     else{g.textAlign='right';g.fillStyle='#fff';g.font=`700 ${40*u}px ${FONT}`;g.fillText(title.slice(0,40),W-52*u,100*u);if(artist){g.fillStyle='rgba(220,235,245,.7)';g.font=`500 ${26*u}px ${FONT}`;g.fillText(artist.slice(0,48),W-52*u,140*u)}}}
-  if(VID.lyr){const ln=vLine();if(ln){const y0=port?H*.735:H-118*u,fs=(port?52:46)*u;g.textAlign='center';g.textBaseline='middle';g.font=`700 ${fs}px ${FONT}`;
+  if(LYRICS&&VID.lyr){const ln=vLine();if(ln){const y0=port?H*.735:H-118*u,fs=(port?52:46)*u;g.textAlign='center';g.textBaseline='middle';g.font=`700 ${fs}px ${FONT}`;
     if(ln.text){const rows=vWrap(g,ln.text,W*.86),tot=rows.reduce((a,r)=>a+g.measureText(r).width,0);let done=ln.p*tot;
       rows.forEach((r,i)=>{const y=y0+(i-(rows.length-1)/2)*fs*1.18,wd=g.measureText(r).width,x0=W/2-wd/2;g.shadowColor='rgba(0,0,0,.85)';g.shadowBlur=14*u;g.fillStyle='rgba(235,245,250,.42)';g.fillText(r,W/2,y);
         const f=Math.max(0,Math.min(wd,done));done-=wd;if(f>0){g.save();g.beginPath();g.rect(x0,y-fs,f,fs*2);g.clip();g.shadowColor=R.acc;g.shadowBlur=22*u;g.fillStyle='#fff';g.fillText(r,W/2,y);g.restore()}});g.shadowBlur=0}
@@ -1944,7 +1958,7 @@ async function vStop(){const R=REC;if(!R||R.stopping)return;if(R.offline){R.canc
   if(R.bs)try{R.bs.stop()}catch(e){}try{R.src.disconnect(R.dest)}catch(e){}REC=null;EXP=null;renderer.setPixelRatio(PR0);resize();updateLag();
   if(R.cancel||!R.chunks.length){vEl('vrec').hidden=true;vStat(R.cancel?'Recording cancelled.':'Nothing was recorded. Try again.');return}
   const type=(R.mime||'video/webm').split(';')[0]||'video/webm',blob=new Blob(R.chunks,{type});vFinish(blob,R,null)}
-function vFinish(blob,R,label){const ext=/mp4/.test(blob.type)?'mp4':'webm';
+function vFinish(blob,R,label){const ext=/quicktime/.test(blob.type)?'mov':/mp4/.test(blob.type)?'mp4':'webm';
   const name=(String(R.track.name||'KEBBEK').replace(/[\\/:*?"<>|]+/g,' ').trim().slice(0,60)||'KEBBEK')+' · KEBBEK '+VID.f.replace('x','x')+'.'+ext;
   vLast={blob,name};const v=vEl('vOut');if(v._u)URL.revokeObjectURL(v._u);v._u=URL.createObjectURL(blob);v.src=v._u;v.hidden=false;vEl('vComp').hidden=true;
   vEl('vRecBar').hidden=true;vEl('vDoneBar').hidden=false;vEl('vInfo').textContent=`${R.w}×${R.h} · ${fmt(R.len)} · ${(blob.size/1e6).toFixed(1)} MB · ${label||ext.toUpperCase()+' · live'}`;vStat('Video ready · '+name)}
