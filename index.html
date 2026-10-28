@@ -90,6 +90,8 @@ h1{font-family:var(--display);font-weight:700;font-size:clamp(18px,3.2vw,26px);l
 #tracks li.on .pick i{color:var(--accent)}
 #tracks .pick span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #tracks .del{background:none;border:0;color:var(--muted);font-size:18px;width:36px;height:36px;cursor:pointer;border-radius:8px}
+.del.armed{width:auto;padding:0 10px;font-size:12px;font-weight:600;color:#ff9a9a;border:.5px solid rgba(255,140,140,.5)}
+.libuse{margin-left:auto;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #tracks .del:hover{color:#ff8a8a}
 .ic.sm{width:38px;height:38px}
 #logoBtn[aria-pressed="false"]{color:var(--muted);opacity:.6}.ic.sm svg{width:17px;height:17px}
@@ -379,7 +381,7 @@ body.bare,body.bare canvas{cursor:none}
 
 <div class="list" id="list" hidden>
   <div class="lhead">
-    <span class="ltitle">My music</span>
+    <span class="ltitle">My music</span><span class="note libuse" id="libUse"></span>
   </div>
   <div class="pltabs" id="plTabs" role="tablist" aria-label="Playlists"></div>
   <form class="plnew" id="plNew" hidden autocomplete="off">
@@ -455,7 +457,7 @@ body.bare,body.bare canvas{cursor:none}
       <label class="rng"><span>Fine</span><input type="range" id="sBloom" min="0" max="2" step="0.05"><b id="vBloom"></b></label>
     </div>
     <label class="rng"><span>Sensitivity</span><input type="range" id="sSens" min="0.5" max="2" step="0.05"><b id="vSens"></b></label>
-    <div class="legal"><a href="https://berishabesim3-svg.github.io/kebbek/privacy.html" target="_blank" rel="noopener">Privacy</a><a href="https://berishabesim3-svg.github.io/kebbek/terms.html" target="_blank" rel="noopener">Terms</a><span class="note">KEBBEK 4.17</span></div>
+    <div class="legal"><a href="https://berishabesim3-svg.github.io/kebbek/privacy.html" target="_blank" rel="noopener">Privacy</a><a href="https://berishabesim3-svg.github.io/kebbek/terms.html" target="_blank" rel="noopener">Terms</a><span class="note">KEBBEK 4.19</span></div>
   </div>
 </div>
 
@@ -998,7 +1000,13 @@ document.getElementById('plAdd').addEventListener('click',()=>{plPick.hidden?ope
 document.getElementById('plPickDone').addEventListener('click',()=>{plPick.hidden=true});
 document.getElementById('plUpload').addEventListener('click',()=>document.getElementById('file').click());
 function addTo(p,id){if(p.ids.includes(id)){toast('This song is already in '+p.name);return}p.ids.push(id);savePL();toast('Added to '+p.name)}
-function renderList(){if(view!=='all'&&!plById(view))view='all';countEl.textContent=lib.length;
+// songs stay in the library until the user deletes them: ask the browser for persistent storage, show what is stored
+let persistAsked=false,useT=0;
+function libStorage(){const el=document.getElementById('libUse');if(!el)return;
+  if(!persistAsked&&lib.length&&navigator.storage&&navigator.storage.persist){persistAsked=true;navigator.storage.persisted().then(p=>p||navigator.storage.persist()).catch(()=>{})}
+  clearTimeout(useT);useT=setTimeout(async()=>{let t=lib.length+(lib.length===1?' song':' songs');try{if(navigator.storage&&navigator.storage.estimate){const e=await navigator.storage.estimate(),p=navigator.storage.persisted?await navigator.storage.persisted():false;
+    const mb=(e.usage||0)/1048576,free=Math.max(0,(e.quota||0)-(e.usage||0))/1073741824;t+=` · ${mb<1024?Math.round(mb)+' MB':(mb/1024).toFixed(1)+' GB'} · ${free>=1?free.toFixed(0):free.toFixed(1)} GB free`+(p||IOSAPP?' · kept until you delete them':'')}}catch(err){}el.textContent=t},250)}
+function renderList(){libStorage();if(view!=='all'&&!plById(view))view='all';countEl.textContent=lib.length;
   plTabs.textContent='';const tab=(label,n,v,cls)=>{const b=document.createElement('button');b.type='button';b.className='pltab'+(cls?' '+cls:'');b.setAttribute('role','tab');
     b.setAttribute('aria-selected',String(view===v));b.textContent=label;if(n!=null){const x=document.createElement('b');x.textContent=n;b.append(x)}
     b.addEventListener('click',()=>{if(v==='+'){newPlaylist();return}view=v;popFor=null;plPick.hidden=true;plNew.hidden=true;savePL();renderList()});plTabs.append(b)};
@@ -1014,7 +1022,7 @@ function renderList(){if(view!=='all'&&!plById(view))view='all';countEl.textCont
     if(pl){li.append(mk('↑','Move up',()=>{[pl.ids[k-1],pl.ids[k]]=[pl.ids[k],pl.ids[k-1]];savePL();renderList()},k===0),
                      mk('↓','Move down',()=>{[pl.ids[k+1],pl.ids[k]]=[pl.ids[k],pl.ids[k+1]];savePL();renderList()},k===order.length-1),
                      mk('×','Remove from playlist',()=>{pl.ids=pl.ids.filter(x=>x!==t.id);savePL();renderList()}))}
-    else{li.append(mk('+','Add to a playlist',()=>{popFor=popFor===t.id?null:t.id;renderList()}));const d=document.createElement('button');d.className='del';d.type='button';d.textContent='×';d.setAttribute('aria-label','Delete '+t.name);d.title='Delete song';d.addEventListener('click',()=>removeTrack(i));li.append(d)}
+    else{li.append(mk('+','Add to a playlist',()=>{popFor=popFor===t.id?null:t.id;renderList()}));const d=document.createElement('button');d.className='del';d.type='button';d.textContent='×';d.setAttribute('aria-label','Delete '+t.name);d.title='Delete song';d.addEventListener('click',()=>{if(d.dataset.arm!=='1'){d.dataset.arm='1';d.textContent='Delete?';d.classList.add('armed');d.setAttribute('aria-label','Tap again to delete '+t.name);setTimeout(()=>{if(d.isConnected&&d.dataset.arm==='1'){d.dataset.arm='';d.textContent='×';d.classList.remove('armed');d.setAttribute('aria-label','Delete '+t.name)}},3500);return}removeTrack(i);toast('Deleted · '+t.name)});li.append(d)}
     tracksEl.append(li);
     if(!pl&&popFor===t.id){const pop=document.createElement('li');pop.className='pop';const h=document.createElement('p');h.textContent='Add to';pop.append(h);
       PL.forEach(q=>{const b=document.createElement('button');b.type='button';b.className='chip';b.textContent=q.name;b.addEventListener('click',()=>{addTo(q,t.id);popFor=null;renderList()});pop.append(b)});
