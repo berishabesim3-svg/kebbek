@@ -455,7 +455,7 @@ body.bare,body.bare canvas{cursor:none}
       <label class="rng"><span>Fine</span><input type="range" id="sBloom" min="0" max="2" step="0.05"><b id="vBloom"></b></label>
     </div>
     <label class="rng"><span>Sensitivity</span><input type="range" id="sSens" min="0.5" max="2" step="0.05"><b id="vSens"></b></label>
-    <div class="legal"><a href="https://berishabesim3-svg.github.io/kebbek/privacy.html" target="_blank" rel="noopener">Privacy</a><a href="https://berishabesim3-svg.github.io/kebbek/terms.html" target="_blank" rel="noopener">Terms</a><span class="note">KEBBEK 4.16</span></div>
+    <div class="legal"><a href="https://berishabesim3-svg.github.io/kebbek/privacy.html" target="_blank" rel="noopener">Privacy</a><a href="https://berishabesim3-svg.github.io/kebbek/terms.html" target="_blank" rel="noopener">Terms</a><span class="note">KEBBEK 4.17</span></div>
   </div>
 </div>
 
@@ -926,6 +926,7 @@ c*=1.-scan+scan*sin(vUv.y*res.y*1.4);
 c*=1.-r2*1.05;
 c+=(h(dot(vUv*res,vec2(12.9898,78.233))+T)-.5)*grain;
 c=pow(clamp(c,0.,1.),vec3(1./2.2));
+vec2 q=vUv*res;c+=(h(dot(q,vec2(12.9898,78.233))+fract(T*7.))+h(dot(q,vec2(39.346,11.135))+fract(T*3.))-1.)*(1.5/255.);
 gl_FragColor=vec4(c,1.);}`});
 function pass(mat,target){quad.material=mat;renderer.setRenderTarget(target);renderer.render(qScene,qCam)}
 
@@ -1776,7 +1777,7 @@ function frame(now){if(OFF&&!OFF.step)return;
     blMat.uniforms.t.value=A.texture;blMat.uniforms.d.value.set(1/A.width,0);pass(blMat,B);
     blMat.uniforms.t.value=B.texture;blMat.uniforms.d.value.set(0,1/A.height);pass(blMat,A)}
   const cu=coMat.uniforms;cu.b0.value=lv[0][0].texture;cu.b1.value=lv[1][0].texture;cu.b2.value=lv[2][0].texture;cu.b3.value=lv[3][0].texture;
-  expo+=((.92-sb*.22-kickEnv*.06)-expo)*.08;cu.ex.value=expo;cu.str.value=(.5+sb*.38+kickEnv*.12)*S.bloom;cu.ab.value=.0015+sb*.006*K+kickEnv*.004*K;cu.gl.value=glitch;cu.T.value=t;cu.scan.value=S.clean?0:.04;cu.grain.value=S.clean?0:.03;if(S.clean){cu.gl.value=0;cu.ab.value=.0008+sb*.0015*K}
+  expo+=((.92-sb*.22-kickEnv*.06)-expo)*.08;cu.ex.value=expo;cu.str.value=(.5+sb*.38+kickEnv*.12)*S.bloom;cu.ab.value=.0015+sb*.006*K+kickEnv*.004*K;cu.gl.value=glitch;cu.T.value=t;cu.scan.value=S.clean?0:.04;cu.grain.value=S.clean?0:.03;if(S.clean){cu.gl.value=0;cu.ab.value=0}
   pass(coMat,null);
   if(S.crisp&&logo.visible){const bg=scene.background,fg=scene.fog;scene.background=null;scene.fog=null;renderer.autoClear=false;cam.layers.set(1);
     renderer.setRenderTarget(null);renderer.clearDepth();renderer.render(scene,cam);cam.layers.set(0);renderer.autoClear=true;scene.background=bg;scene.fog=fg}
