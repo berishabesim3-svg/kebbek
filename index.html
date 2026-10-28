@@ -442,7 +442,6 @@ body.bare,body.bare canvas{cursor:none}
       <div class="lopts" id="fx">
         <button class="chip" type="button" data-fx="lasers">Lasers</button>
         <button class="chip" type="button" data-fx="stars">Stars</button>
-        <button class="chip" type="button" data-fx="grid">Floor</button>
         <button class="chip" type="button" data-fx="glitch">Glitch</button>
         <button class="chip" type="button" data-fx="shell">Sphere</button>
         <button class="chip" type="button" data-fx="hud">HUD arcs</button>
@@ -456,7 +455,7 @@ body.bare,body.bare canvas{cursor:none}
       <label class="rng"><span>Fine</span><input type="range" id="sBloom" min="0" max="2" step="0.05"><b id="vBloom"></b></label>
     </div>
     <label class="rng"><span>Sensitivity</span><input type="range" id="sSens" min="0.5" max="2" step="0.05"><b id="vSens"></b></label>
-    <div class="legal"><a href="https://berishabesim3-svg.github.io/kebbek/privacy.html" target="_blank" rel="noopener">Privacy</a><a href="https://berishabesim3-svg.github.io/kebbek/terms.html" target="_blank" rel="noopener">Terms</a><span class="note">KEBBEK 4.12</span></div>
+    <div class="legal"><a href="https://berishabesim3-svg.github.io/kebbek/privacy.html" target="_blank" rel="noopener">Privacy</a><a href="https://berishabesim3-svg.github.io/kebbek/terms.html" target="_blank" rel="noopener">Terms</a><span class="note">KEBBEK 4.13</span></div>
   </div>
 </div>
 
@@ -1094,7 +1093,7 @@ addEventListener('drop',e=>{e.preventDefault();dragN=0;dropEl.hidden=true;addFil
 document.getElementById('seek').addEventListener('click',e=>{if(!audioEl||!audioEl.duration)return;const r=e.currentTarget.getBoundingClientRect();audioEl.currentTime=(e.clientX-r.left)/r.width*audioEl.duration});
 
 // ---------- settings (saved on this device)
-const DEF={name:'KEBBEK',c1:'#2fe0ff',c2:'#5a7bff',logo:'default',logoSize:1,bloom:.6,bloomV:2,sens:1,removeBg:true,crisp:true,logoStraight:true,logoPos:'corner',logoHidden:false,clean:true,tele:true,logoGlow:.35,logoBack:.55,cycle:false,lyStyle:'karaoke',lyZ:1,lyPos:'side',lyClean:true,autoSync:true,lyV:2,snd:{preset:'Natural',eq:[0,0,0,0,0,0,0,0,0,0],bass:0,clar:0,warm:0,rev:0,width:1,loud:false,lim:true,vol:1,rate:1,fade:2,one:false,off:false,avms:0},fx:{lasers:true,stars:true,grid:true,glitch:true,shell:true,hud:true,dust:true,shake:true,field:true}};
+const DEF={name:'KEBBEK',c1:'#2fe0ff',c2:'#5a7bff',logo:'default',logoSize:1,bloom:.6,bloomV:2,sens:1,removeBg:true,crisp:true,logoStraight:true,logoPos:'corner',logoHidden:false,clean:true,tele:true,logoGlow:.35,logoBack:.55,cycle:false,lyStyle:'karaoke',lyZ:1,lyPos:'side',lyClean:true,autoSync:true,lyV:2,snd:{preset:'Natural',eq:[0,0,0,0,0,0,0,0,0,0],bass:0,clar:0,warm:0,rev:0,width:1,loud:false,lim:true,vol:1,rate:1,fade:2,one:false,off:false,avms:0},fx:{lasers:true,stars:true,grid:false,glitch:true,shell:true,hud:true,dust:true,shake:true,field:true}};
 let S=JSON.parse(JSON.stringify(DEF));
 try{const raw=localStorage.getItem('kebbek-zeri-cfg');if(raw){const o=JSON.parse(raw);S=Object.assign(S,o);S.fx=Object.assign({},DEF.fx,o.fx||{});S.snd=Object.assign({},DEF.snd,o.snd||{});if((o.bloomV||0)<2){S.bloom=Math.min(S.bloom,.6);S.bloomV=2}S.logoPos='corner';if((o.lyV||0)<2){S.lyPos='side';S.lyV=2}if(o.thV===3){if(String(o.c1).toLowerCase()==='#e5e4e2'){S.c1=DEF.c1;S.c2=DEF.c2;S.bloom=DEF.bloom}S.thV=4}if(!Array.isArray(S.snd.eq)||S.snd.eq.length!==10)S.snd.eq=DEF.snd.eq.slice()}}catch(e){}
 const saveS=()=>{try{localStorage.setItem('kebbek-zeri-cfg',JSON.stringify(S))}catch(e){}};
@@ -1150,7 +1149,7 @@ function applyName(){brandEl.textContent=S.name||' ';sName.value=S.name}
 sName.addEventListener('input',()=>{S.name=sName.value.trim()||'';applyName();saveS()});
 // effects
 const fxBtns=[...document.querySelectorAll('[data-fx]')];
-function applyFx(){fxBtns.forEach(b=>b.setAttribute('aria-pressed',String(!!S.fx[b.dataset.fx])));stars.visible=S.fx.stars;grid.visible=S.fx.grid;shell.visible=S.fx.shell;
+function applyFx(){fxBtns.forEach(b=>b.setAttribute('aria-pressed',String(!!S.fx[b.dataset.fx])));stars.visible=S.fx.stars;grid.visible=false;// 4.13: the grid floor is removed (owner decision)shell.visible=S.fx.shell;
   [arc1,arc2,arc3,arc4,ticks].forEach(o=>o.visible=S.fx.hud);dust.visible=S.fx.dust;field.visible=S.fx.field!==false;if(!S.fx.lasers)lasers.forEach(l=>l.userData.t=1)}
 fxBtns.forEach(b=>b.addEventListener('click',()=>{S.fx[b.dataset.fx]=!S.fx[b.dataset.fx];applyFx();saveS()}));
 // sliders
