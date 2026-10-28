@@ -451,7 +451,7 @@ body.bare,body.bare canvas{cursor:none}
       <label class="rng"><span>Fine</span><input type="range" id="sBloom" min="0" max="2" step="0.05"><b id="vBloom"></b></label>
     </div>
     <label class="rng"><span>Sensitivity</span><input type="range" id="sSens" min="0.5" max="2" step="0.05"><b id="vSens"></b></label>
-    <div class="legal"><a href="https://berishabesim3-svg.github.io/kebbek/privacy.html" target="_blank" rel="noopener">Privacy</a><a href="https://berishabesim3-svg.github.io/kebbek/terms.html" target="_blank" rel="noopener">Terms</a><span class="note">KEBBEK 4.9</span></div>
+    <div class="legal"><a href="https://berishabesim3-svg.github.io/kebbek/privacy.html" target="_blank" rel="noopener">Privacy</a><a href="https://berishabesim3-svg.github.io/kebbek/terms.html" target="_blank" rel="noopener">Terms</a><span class="note">KEBBEK 4.10</span></div>
   </div>
 </div>
 
@@ -1816,6 +1816,49 @@ function mp4ReadAudio(ab){const b=new Uint8Array(ab),dv=new DataView(ab),T=o=>St
     let si=0;for(let c=0;c<co.length;c++){let per=sc[0][1];for(const [fc,spc] of sc)if(c+1>=fc)per=spc;let off=co[c];for(let j=0;j<per&&si<n;j++,si++){samples.push(b.slice(off,off+sizes[si]));off+=sizes[si]}}
     const ne=dv.getUint32(stts.s+4);for(let i=0;i<ne;i++){const c=dv.getUint32(stts.s+8+i*8),d=dv.getUint32(stts.s+12+i*8);for(let j=0;j<c;j++)durs.push(d)}}
   return{asc,sr:sr||ts,ch,ts,samples,durs:durs.slice(0,samples.length),mediaTime}}
+// ---- KEBBEK sound guarantee: every exported video is checked; a video without sound gets the song written in as PCM
+// H.264 video samples out of an MP4 (regular or fragmented, as Safari's MediaRecorder writes it), to re-mux with a new sound track
+function mp4ReadVideo(ab){const b=new Uint8Array(ab),dv=new DataView(ab),T=o=>String.fromCharCode(b[o],b[o+1],b[o+2],b[o+3]);
+  const kids=(s,e)=>{const out=[];for(let o=s;o+8<=e;){let sz=dv.getUint32(o),h=8;if(sz===1){sz=Number(dv.getBigUint64(o+8));h=16}else if(sz===0)sz=e-o;if(sz<8)break;out.push({t:T(o+4),o,s:o+h,e:o+sz});o+=sz}return out};
+  const find=(list,t)=>list.find(x=>x.t===t),path=(s,e,names)=>{let cur={s,e};for(const n of names){const k=find(kids(cur.s,cur.e),n);if(!k)return null;cur=k}return cur};
+  const top=kids(0,b.length),moov=find(top,'moov');if(!moov)throw new Error('no moov');
+  const trak=kids(moov.s,moov.e).filter(x=>x.t==='trak').find(t=>{const h=path(t.s,t.e,['mdia','hdlr']);return h&&T(h.s+8)==='vide'});if(!trak)throw new Error('no video track');
+  const mdhd=path(trak.s,trak.e,['mdia','mdhd']),ts=b[mdhd.s]===1?dv.getUint32(mdhd.s+20):dv.getUint32(mdhd.s+12);
+  const stbl=path(trak.s,trak.e,['mdia','minf','stbl']),sk=kids(stbl.s,stbl.e),stsd=find(sk,'stsd'),ent=stsd.s+8,etype=T(ent+4);if(etype!=='avc1'&&etype!=='avc3')throw new Error('video is '+etype);
+  const w=dv.getUint16(ent+32),h=dv.getUint16(ent+34),avcC=find(kids(ent+86,ent+dv.getUint32(ent)),'avcC');if(!avcC)throw new Error('no avcC');
+  const desc=b.slice(avcC.s,avcC.e),hx=v=>v.toString(16).padStart(2,'0'),codec='avc1.'+hx(desc[1])+hx(desc[2])+hx(desc[3]);
+  const tkhd=find(kids(trak.s,trak.e),'tkhd'),tid=dv.getUint32(tkhd.s+(b[tkhd.s]===1?20:12));
+  const samples=[],durs=[],keys=[];let reorder=false;const moofs=top.filter(x=>x.t==='moof');
+  if(moofs.length){let defD=0,defS=0,defF=0;const mvex=path(moov.s,moov.e,['mvex']);if(mvex)kids(mvex.s,mvex.e).filter(x=>x.t==='trex').forEach(x=>{if(dv.getUint32(x.s+4)===tid){defD=dv.getUint32(x.s+12);defS=dv.getUint32(x.s+16);defF=dv.getUint32(x.s+20)}});
+    for(const mf of moofs)for(const tf of kids(mf.s,mf.e).filter(x=>x.t==='traf')){const k=kids(tf.s,tf.e),th=find(k,'tfhd'),fl=dv.getUint32(th.s)&0xffffff;if(dv.getUint32(th.s+4)!==tid)continue;let o=th.s+8,base=mf.o;
+      if(fl&1){base=Number(dv.getBigUint64(o));o+=8}if(fl&2)o+=4;let dd=defD,ds=defS,df=defF;if(fl&8){dd=dv.getUint32(o);o+=4}if(fl&0x10){ds=dv.getUint32(o);o+=4}if(fl&0x20){df=dv.getUint32(o);o+=4}
+      for(const tr of k.filter(x=>x.t==='trun')){const f=dv.getUint32(tr.s)&0xffffff,n=dv.getUint32(tr.s+4);let p=tr.s+8,off=base,first=null;if(f&1){off=base+dv.getInt32(p);p+=4}if(f&4){first=dv.getUint32(p);p+=4}
+        for(let i=0;i<n;i++){let d=dd,s=ds,sf=i===0&&first!=null?first:df;if(f&0x100){d=dv.getUint32(p);p+=4}if(f&0x200){s=dv.getUint32(p);p+=4}if(f&0x400){sf=dv.getUint32(p);p+=4}if(f&0x800){if(dv.getInt32(p)!==0)reorder=true;p+=4}
+          if(!(sf&0x10000))keys.push(samples.length);samples.push(b.slice(off,off+s));durs.push(d);off+=s}}}}
+  else{const stsz=find(sk,'stsz'),stsc=find(sk,'stsc'),stco=find(sk,'stco')||find(sk,'co64'),stts=find(sk,'stts'),stss=find(sk,'stss'),ctts=find(sk,'ctts');
+    const fixed=dv.getUint32(stsz.s+4),n=dv.getUint32(stsz.s+8),sizes=[];for(let i=0;i<n;i++)sizes.push(fixed||dv.getUint32(stsz.s+12+i*4));
+    const co=[],big=stco.t==='co64',nc=dv.getUint32(stco.s+4);for(let i=0;i<nc;i++)co.push(big?Number(dv.getBigUint64(stco.s+8+i*8)):dv.getUint32(stco.s+8+i*4));
+    const sc=[],ns=dv.getUint32(stsc.s+4);for(let i=0;i<ns;i++)sc.push([dv.getUint32(stsc.s+8+i*12),dv.getUint32(stsc.s+12+i*12)]);
+    let si=0;for(let c=0;c<co.length;c++){let per=sc[0][1];for(const [fc,spc] of sc)if(c+1>=fc)per=spc;let off=co[c];for(let j=0;j<per&&si<n;j++,si++){samples.push(b.slice(off,off+sizes[si]));off+=sizes[si]}}
+    const ne=dv.getUint32(stts.s+4);for(let i=0;i<ne;i++){const c=dv.getUint32(stts.s+8+i*8),d=dv.getUint32(stts.s+12+i*8);for(let j=0;j<c;j++)durs.push(d)}
+    if(stss){const m=dv.getUint32(stss.s+4);for(let i=0;i<m;i++)keys.push(dv.getUint32(stss.s+8+i*4)-1)}else for(let i=0;i<n;i++)keys.push(i);
+    if(ctts){const m=dv.getUint32(ctts.s+4);for(let i=0;i<m;i++)if(dv.getInt32(ctts.s+12+i*8)!==0)reorder=true}}
+  if(reorder)throw new Error('reordered frames');if(!samples.length)throw new Error('no video samples');
+  return{codec,w,h,ts,desc,samples,durs:durs.slice(0,samples.length),keys}}
+// the song section as a 16-bit PCM ('sowt') sound track
+function vPcmTrack(buf,st,n){const sr=buf.sampleRate,s0=Math.max(0,Math.floor(st*sr));n=Math.max(1,Math.min(n,buf.length-s0));const L=buf.getChannelData(0),R=buf.numberOfChannels>1?buf.getChannelData(1):L,fade=Math.round(sr*.04),pcm=new Int16Array(n*2);
+  for(let p=0;p<n;p++){const g=Math.min(1,p/fade,(n-p)/fade);pcm[p*2]=Math.round(Math.max(-1,Math.min(1,(L[s0+p]||0)*g))*32767);pcm[p*2+1]=Math.round(Math.max(-1,Math.min(1,(R[s0+p]||0)*g))*32767)}
+  const at=Mp4.track('audio',{codec:'sowt',sr,ch:2,ts:sr,inSr:sr}),by=new Uint8Array(pcm.buffer);at.data.push(by);at.bytes=by.length;at.total=n;at.segment=n;return at}
+const vRms=(x,a=0,n=x.length)=>{let e=0,c=0;for(let i=a;i<a+n&&i<x.length;i+=5){e+=x[i]*x[i];c++}return Math.sqrt(e/Math.max(1,c))};
+// does the finished video really carry the song? 'ok' | 'silent' | 'fail' (this browser could not read it back)
+async function vSoundCheck(blob,buf,st,len){const sr=buf.sampleRate,ref=vRms(buf.getChannelData(0),Math.floor(st*sr),Math.round(len*sr));if(ref<1e-4)return'ok';
+  try{ensureCtx();const ab=await blob.arrayBuffer(),d=await Promise.race([new Promise((ok,no)=>{const q=ctx.decodeAudioData(ab,ok,no);if(q&&q.catch)q.catch(()=>{})}),new Promise((_,no)=>setTimeout(()=>no(new Error('timeout')),20000))]);
+    return d.duration>len*.6&&vRms(d.getChannelData(0))>ref*.15?'ok':'silent'}catch(e){return'fail'}}
+async function vSongBuffer(t){ensureCtx();const ab=await t.blob.arrayBuffer();return await new Promise((ok,no)=>ctx.decodeAudioData(ab,ok,no))}
+// live recordings: keep the recorded picture, put the song in as PCM (QuickTime .mov)
+async function vRemuxPCM(blob,buf,st){const V=mp4ReadVideo(await blob.arrayBuffer()),vt=Mp4.track('video',{codec:V.codec,w:V.w,h:V.h,ts:V.ts});vt.desc=V.desc;
+  const ks=new Set(V.keys);V.samples.forEach((x,i)=>{if(ks.has(i))vt.keys.push(i);Mp4.addRaw(vt,x,V.durs[i]||Math.round(V.ts/30))});
+  return Mp4.build([vt,vPcmTrack(buf,st,Math.round(vt.total/V.ts*buf.sampleRate))])}
 // delay (in samples) of `rec` against `ref`: coarse search on an 8x decimated signal, then refined at full rate
 function alignOffset(ref,rec,maxLag){const D=8,dec=x=>{const n=Math.floor(x.length/D),y=new Float32Array(n);for(let i=0;i<n;i++){let s=0;for(let j=0;j<D;j++)s+=x[i*D+j];y[i]=s/D}return y};
   let st=0;const thr=1e-3;while(st<ref.length-4800&&Math.abs(ref[st])<thr)st++;st=Math.max(0,st-480);
@@ -1842,9 +1885,9 @@ async function vProbeAAC(mime){try{ensureCtx();if(ctx.state!=='running')await ct
 const APPLEWK=()=>(typeof IOSAPP!=='undefined'&&IOSAPP)||(/AppleWebKit/.test(navigator.userAgent)&&!/Chrome|Chromium|CriOS|FxiOS|EdgiOS|Edg\/|Android|OPR/.test(navigator.userAgent));
 async function vCodecs(w,h,fps,sr){if(!window.VideoEncoder||!window.VideoFrame)return null;
   const br=Math.max(w,h)>=1900?10e6:6e6;let video=null,audio=null;
-  for(const codec of['avc1.640028','avc1.4d0028','avc1.42001f','vp09.00.40.08','vp09.00.10.08','av01.0.08M.08']){try{const cfg={codec,width:w,height:h,bitrate:br,framerate:fps,latencyMode:'realtime'};if(codec.startsWith('avc1'))cfg.avc={format:'avc'};const s=await VideoEncoder.isConfigSupported(cfg);if(s.supported){video=cfg;break}}catch(e){}}
-  try{const cfg={codec:'mp4a.40.2',sampleRate:sr,numberOfChannels:2,bitrate:192000};if((await AudioEncoder.isConfigSupported(cfg)).supported)audio=cfg}catch(e){}
-  if(!audio&&APPLEWK()&&video&&video.codec.startsWith('avc1'))audio={codec:'sowt',pcm:true};
+  for(const codec of['avc1.640028','avc1.4d0028','avc1.42001f','vp09.00.40.08','vp09.00.10.08','av01.0.08M.08']){for(const lm of['realtime',null]){try{const cfg={codec,width:w,height:h,bitrate:br,framerate:fps};if(lm)cfg.latencyMode=lm;if(codec.startsWith('avc1'))cfg.avc={format:'avc'};const s=await VideoEncoder.isConfigSupported(cfg);if(s.supported){video=cfg;break}}catch(e){}}if(video)break;}
+  if(APPLEWK()&&video&&video.codec.startsWith('avc1'))audio={codec:'sowt',pcm:true};// iPhone/iPad/Mac Safari: sound written straight from the song, no encoder
+  if(!audio)try{const cfg={codec:'mp4a.40.2',sampleRate:sr,numberOfChannels:2,bitrate:192000};if((await AudioEncoder.isConfigSupported(cfg)).supported)audio=cfg}catch(e){}
   if(!audio&&window.MediaRecorder){const m=['audio/mp4;codecs=mp4a.40.2','audio/mp4;codecs=mp4a','audio/mp4'].find(x=>{try{return MediaRecorder.isTypeSupported(x)}catch(e){return false}});if(m&&await vProbeAAC(m))audio={codec:'mp4a.40.2',mr:m}}
   if(!audio){try{const cfg={codec:'opus',sampleRate:48000,numberOfChannels:2,bitrate:192000};if((await AudioEncoder.isConfigSupported(cfg)).supported)audio=cfg}catch(e){}}
   if(!audio&&video&&video.codec.startsWith('avc1'))audio={codec:'sowt',pcm:true};
@@ -1877,7 +1920,10 @@ async function vRenderExact(o){// o: {t,st,len,w,h,fps,onProgress}
     await venc.flush();if(err)throw err;
     if(mrJob){const r=await mrJob;at.sr=r.sr;at.ts=r.sr;at.inSr=r.sr;at.desc=r.asc;at.mediaTime=r.offset;at.segment=Math.round(o.len*r.sr);r.samples.forEach((x,i)=>Mp4.addRaw(at,x,r.durs[i]||1024))}}
   finally{OFF=null;window.__crLive=false;last=performance.now();requestAnimationFrame(frame)}
-  return{blob:Mp4.build([vt,at]),codec:cod.video.codec.split('.')[0]+'+'+(cod.audio.pcm?'pcm':cod.audio.codec==='opus'?'opus':'aac'),opus:cod.audio.codec==='opus'}}
+  let blob=Mp4.build([vt,at]),pcm=!!cod.audio.pcm,fixed=false;
+  if(o.onProgress)o.onProgress(1);
+  if(!pcm){const chk=await vSoundCheck(blob,buf,o.st,o.len);if(chk==='silent'||(chk==='fail'&&APPLEWK())){blob=Mp4.build([vt,vPcmTrack(buf,o.st,Math.round(o.len*buf.sampleRate))]);pcm=true;fixed=true}}
+  return{blob,codec:cod.video.codec.split('.')[0]+'+'+(pcm?'pcm':cod.audio.codec==='opus'?'opus':'aac'),opus:!pcm&&cod.audio.codec==='opus',fixed}}
 async function vRecordAAC(buf,st,len,mime){ensureCtx();if(ctx.state!=='running')try{await ctx.resume()}catch(e){}
   const dest=ctx.createMediaStreamDestination();dest.channelCount=2;const src=ctx.createBufferSource();src.buffer=buf;src.connect(dest);
   const rec=new MediaRecorder(dest.stream,{mimeType:mime,audioBitsPerSecond:192000}),parts=[];rec.ondataavailable=e=>{if(e.data&&e.data.size)parts.push(e.data)};
@@ -1957,7 +2003,11 @@ async function vStop(){const R=REC;if(!R||R.stopping)return;if(R.offline){R.canc
   await new Promise(r=>{R.rec.onstop=r;try{R.rec.stop()}catch(e){r()}setTimeout(r,4000)});
   if(R.bs)try{R.bs.stop()}catch(e){}try{R.src.disconnect(R.dest)}catch(e){}REC=null;EXP=null;renderer.setPixelRatio(PR0);resize();updateLag();
   if(R.cancel||!R.chunks.length){vEl('vrec').hidden=true;vStat(R.cancel?'Recording cancelled.':'Nothing was recorded. Try again.');return}
-  const type=(R.mime||'video/webm').split(';')[0]||'video/webm',blob=new Blob(R.chunks,{type});vFinish(blob,R,null)}
+  const type=(R.mime||'video/webm').split(';')[0]||'video/webm';let blob=new Blob(R.chunks,{type}),label=null,warn=false;
+  vEl('vRecT').textContent='Checking the sound…';
+  try{const buf=R.bs&&R.bs.buffer||await vSongBuffer(R.track),chk=await vSoundCheck(blob,buf,R.st,R.len);
+    if(chk==='silent'||(chk==='fail'&&APPLEWK())){try{blob=await vRemuxPCM(blob,buf,R.st);label='MOV · avc1+pcm · live'}catch(e){warn=true}}}catch(e){}
+  vFinish(blob,R,label);if(warn)vStat('Warning: this recording may have no sound. Choose Render → Exact and record again.')}
 function vFinish(blob,R,label){const ext=/quicktime/.test(blob.type)?'mov':/mp4/.test(blob.type)?'mp4':'webm';
   const name=(String(R.track.name||'KEBBEK').replace(/[\\/:*?"<>|]+/g,' ').trim().slice(0,60)||'KEBBEK')+' · KEBBEK '+VID.f.replace('x','x')+'.'+ext;
   vLast={blob,name};const v=vEl('vOut');if(v._u)URL.revokeObjectURL(v._u);v._u=URL.createObjectURL(blob);v.src=v._u;v.hidden=false;vEl('vComp').hidden=true;
