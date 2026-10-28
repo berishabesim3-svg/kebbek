@@ -341,6 +341,10 @@ body.notele .tele{display:none}
 .vrec-bar .dotrec{width:8px;height:8px;border-radius:50%;background:#ff4d4d;box-shadow:0 0 10px #ff4d4d;animation:recb 1s steps(2,end) infinite}
 @keyframes recb{50%{opacity:.25}}
 .legal{display:flex;gap:14px;font-size:11.5px}.legal a{color:var(--muted)}.legal a:hover{color:var(--accent)}
+/* screen-recording mode: only the speaker, effects and the logo stay */
+body.bare .rail,body.bare #toast,body.bare .lmenu,body.bare .list,body.bare .tapBox{display:none!important}
+body.bare,body.bare canvas{cursor:none}
+#bareBtn svg{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 </style>
 
 </head>
@@ -447,7 +451,7 @@ body.notele .tele{display:none}
       <label class="rng"><span>Fine</span><input type="range" id="sBloom" min="0" max="2" step="0.05"><b id="vBloom"></b></label>
     </div>
     <label class="rng"><span>Sensitivity</span><input type="range" id="sSens" min="0.5" max="2" step="0.05"><b id="vSens"></b></label>
-    <div class="legal"><a href="https://berishabesim3-svg.github.io/kebbek/privacy.html" target="_blank" rel="noopener">Privacy</a><a href="https://berishabesim3-svg.github.io/kebbek/terms.html" target="_blank" rel="noopener">Terms</a><span class="note">KEBBEK 4.7</span></div>
+    <div class="legal"><a href="https://berishabesim3-svg.github.io/kebbek/privacy.html" target="_blank" rel="noopener">Privacy</a><a href="https://berishabesim3-svg.github.io/kebbek/terms.html" target="_blank" rel="noopener">Terms</a><span class="note">KEBBEK 4.8</span></div>
   </div>
 </div>
 
@@ -466,6 +470,7 @@ body.notele .tele{display:none}
     <button class="ic sm" id="vidBtn" type="button" aria-expanded="false" aria-label="Make a video" title="Make a video"><svg viewBox="0 0 24 24"><path d="M3 6.5A1.5 1.5 0 0 1 4.5 5h10A1.5 1.5 0 0 1 16 6.5v2.2l4.2-2.6c.4-.2.8 0 .8.4v11c0 .4-.4.6-.8.4L16 15.3v2.2a1.5 1.5 0 0 1-1.5 1.5h-10A1.5 1.5 0 0 1 3 17.5zm2 .5v10h9V7z"/></svg></button>
     <button class="ic sm" id="crBtn" type="button" aria-expanded="false" aria-label="Create music" title="Create music"><svg viewBox="0 0 24 24"><path d="M12 2.5l1.9 5.6 5.6 1.9-5.6 1.9L12 17.5l-1.9-5.6L4.5 10l5.6-1.9zM18.5 15l.9 2.6 2.6.9-2.6.9-.9 2.6-.9-2.6-2.6-.9 2.6-.9z"/></svg></button>
     <button class="ic sm" id="cfgBtn" type="button" aria-expanded="false" aria-label="Customize"><svg viewBox="0 0 24 24"><path d="M19.4 13a7.5 7.5 0 0 0 0-2l2.1-1.6-2-3.5-2.5 1a7.6 7.6 0 0 0-1.7-1L15 3h-4l-.4 2.6a7.6 7.6 0 0 0-1.7 1l-2.5-1-2 3.5L6.6 11a7.5 7.5 0 0 0 0 2l-2.1 1.6 2 3.5 2.5-1c.5.4 1.1.7 1.7 1L11 21h4l.4-2.6c.6-.3 1.2-.6 1.7-1l2.5 1 2-3.5zM13 15.5A3.5 3.5 0 1 1 13 8.5a3.5 3.5 0 0 1 0 7z"/></svg></button>
+    <button class="ic sm" id="bareBtn" type="button" aria-label="Hide the controls for screen recording" title="Hide the controls · tap the screen to bring them back"><svg viewBox="0 0 24 24"><path d="M4 8V4h4M20 8V4h-4M4 16v4h4M20 16v4h-4"/><circle cx="12" cy="12" r="3.2"/></svg></button>
   </div>
   <div class="ctrls">
     <span class="cl" aria-hidden="true"></span>
@@ -1197,6 +1202,10 @@ const cfgEl=document.getElementById('cfg'),cfgBtn=document.getElementById('cfgBt
 function showPanel(which){const P={list:[listEl,listBtn],cfg:[cfgEl,cfgBtn],ly:[document.getElementById('lyp'),document.getElementById('lyBtn')],snd:[document.getElementById('snd'),document.getElementById('sndBtn')],cr:[document.getElementById('crp'),document.getElementById('crBtn')],vid:[document.getElementById('vidp'),document.getElementById('vidBtn')]};
   const open=which&&P[which][0].hidden;for(const k in P){const on=open&&k===which;P[k][0].hidden=!on;P[k][1].setAttribute('aria-expanded',String(on))}if(open&&which==='ly')renderLy();if(open&&which==='cr'&&window.crOpen)crOpen();if(open&&which==='vid'&&window.vidOpen)vidOpen()}
 cfgBtn.addEventListener('click',()=>showPanel('cfg'));
+// screen-recording mode: hide every control; the next tap or key anywhere brings them back
+document.getElementById('bareBtn').addEventListener('click',e=>{e.stopPropagation();showPanel(null);setTimeout(()=>document.body.classList.add('bare'),60)});
+const unBare=e=>{if(!document.body.classList.contains('bare'))return;document.body.classList.remove('bare');e.stopPropagation();if(e.cancelable)e.preventDefault()};
+addEventListener('pointerdown',unBare,true);addEventListener('keydown',e=>{if(e.key!=='Shift')unBare(e)},true);
 function applyAll(){applyColors();applyName();applyFx();applyLogo();showers.forEach(f=>f())}
 applyAll();
 
