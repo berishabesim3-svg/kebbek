@@ -350,6 +350,8 @@ body.bare,body.bare canvas{cursor:none}
 #listBtn .kb-li{width:16px;height:16px;fill:currentColor;vertical-align:-3px;margin-right:4px}
 @media (max-width:520px){.rail{padding:12px 10px}.rail .row{gap:4px}.rail .ic.sm{flex:1 1 0;min-width:28px;max-width:38px;width:auto;height:auto;aspect-ratio:1}
   #fileLbl .kb-lf,#listBtn .kb-lt{display:none}#fileLbl .kb-ls{display:inline}#listBtn .kb-li{display:inline-block}.rail .btn{padding:8px 9px;white-space:nowrap;flex:none}}
+/* the sound-analysis panel can be dragged anywhere */
+#tele{pointer-events:auto;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}#tele.dragging{cursor:grabbing}
 </style>
 
 </head>
@@ -455,7 +457,7 @@ body.bare,body.bare canvas{cursor:none}
       <label class="rng"><span>Fine</span><input type="range" id="sBloom" min="0" max="2" step="0.05"><b id="vBloom"></b></label>
     </div>
     <label class="rng"><span>Sensitivity</span><input type="range" id="sSens" min="0.5" max="2" step="0.05"><b id="vSens"></b></label>
-    <div class="legal"><a href="https://berishabesim3-svg.github.io/kebbek/privacy.html" target="_blank" rel="noopener">Privacy</a><a href="https://berishabesim3-svg.github.io/kebbek/terms.html" target="_blank" rel="noopener">Terms</a><span class="note">KEBBEK 4.13</span></div>
+    <div class="legal"><a href="https://berishabesim3-svg.github.io/kebbek/privacy.html" target="_blank" rel="noopener">Privacy</a><a href="https://berishabesim3-svg.github.io/kebbek/terms.html" target="_blank" rel="noopener">Terms</a><span class="note">KEBBEK 4.15</span></div>
   </div>
 </div>
 
@@ -1574,6 +1576,21 @@ if(location.hash==='#debug')window.__kebbek={lib,alignLines,readTags,ask,toPCM16
 
 // ---------- camera drag
 let yaw=0,pitch=0,ty=0,tp=0,drag=null;
+// sound-analysis panel: drag it anywhere on screen (kept on screen, remembered); double-click / double-tap puts it back
+(()=>{const T=document.getElementById('tele');if(!T)return;let off={x:0,y:0},d=null,lastTap=0;
+  try{const o=JSON.parse(localStorage.getItem('kebbek-zeri-tele')||'{}');if(isFinite(o.x)&&isFinite(o.y))off={x:o.x*innerWidth,y:o.y*innerHeight}}catch(e){}
+  const clamp=()=>{T.style.transform='';const r=T.getBoundingClientRect();off.x=Math.max(-r.left+4,Math.min(innerWidth-r.right-4,off.x));off.y=Math.max(-r.top+4,Math.min(innerHeight-r.bottom-4,off.y));T.style.transform=`translate(${off.x}px,${off.y}px)`};
+  const save=()=>{try{localStorage.setItem('kebbek-zeri-tele',JSON.stringify({x:+(off.x/innerWidth).toFixed(4),y:+(off.y/innerHeight).toFixed(4)}))}catch(e){}};
+  T.addEventListener('pointerdown',e=>{e.stopPropagation();d={x:e.clientX,y:e.clientY,ox:off.x,oy:off.y,moved:false};T.classList.add('dragging');try{T.setPointerCapture(e.pointerId)}catch(_){}});
+  T.addEventListener('pointermove',e=>{if(!d)return;const dx=e.clientX-d.x,dy=e.clientY-d.y;if(Math.hypot(dx,dy)>3)d.moved=true;off.x=d.ox+dx;off.y=d.oy+dy;clamp()});
+  const end=e=>{if(!d)return;const m=d.moved;d=null;T.classList.remove('dragging');if(m){save();return}const n=Date.now();if(n-lastTap<450){off={x:0,y:0};clamp();save();lastTap=0}else lastTap=n};
+  T.addEventListener('pointerup',end);T.addEventListener('pointercancel',end);addEventListener('resize',()=>requestAnimationFrame(clamp));requestAnimationFrame(clamp)})();
+// move the speaker anywhere on screen: drag it (mouse or finger); drag on empty space still turns it; double-click / double-tap the speaker puts it back
+const PAN={x:0,y:0},panV={x:0,y:0};try{const p=JSON.parse(localStorage.getItem('kebbek-zeri-pan')||'{}');if(isFinite(p.x)&&isFinite(p.y)){PAN.x=panV.x=p.x;PAN.y=panV.y=p.y}}catch(e){}
+const savePan=()=>{try{localStorage.setItem('kebbek-zeri-pan',JSON.stringify({x:+PAN.x.toFixed(4),y:+PAN.y.toFixed(4)}))}catch(e){}};
+function spkScreen(){const r=canvas.getBoundingClientRect(),c=rig.position.clone().project(cam),e=rig.position.clone().add(new THREE.Vector3(4.3,0,0)).project(cam),
+  x=r.left+(c.x+1)/2*r.width,y=r.top+(1-c.y)/2*r.height,ex=r.left+(e.x+1)/2*r.width;return{x,y,rad:Math.max(40,Math.abs(ex-x))}}
+const onSpk=(cx,cy)=>{const s=spkScreen();return Math.hypot(cx-s.x,cy-s.y)<s.rad};
 // elastic zoom: mouse wheel / trackpad pinch / two-finger pinch; springs back with a bounce past the limits
 const ZMIN=.5,ZMAX=2.2,zPtrs=new Map();let zT=1,zV=1,zVel=0,pinch=null,pinchEnd=0;try{zT=zV=Math.min(ZMAX,Math.max(ZMIN,+localStorage.getItem('kebbek-zeri-zoom')||1))}catch(e){}
 const saveZ=()=>{try{localStorage.setItem('kebbek-zeri-zoom',String(Math.min(ZMAX,Math.max(ZMIN,zT)).toFixed(3)))}catch(e){}};
@@ -1582,13 +1599,15 @@ let zSettle=0;canvas.addEventListener('wheel',e=>{e.preventDefault();const k=e.c
   clearTimeout(zSettle);zSettle=setTimeout(()=>{if(zT>ZMAX||zT<ZMIN){zT=Math.min(ZMAX,Math.max(ZMIN,zT))}saveZ()},140)},{passive:false});
 const pdist=()=>{const a=[...zPtrs.values()];return Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y)};
 canvas.addEventListener('pointerdown',e=>{zPtrs.set(e.pointerId,{x:e.clientX,y:e.clientY});if(zPtrs.size===2){pinch={d0:Math.max(20,pdist()),z0:Math.min(ZMAX,Math.max(ZMIN,zT))};drag=null;return}if(zPtrs.size>2)return;
-  drag={x:e.clientX,y:e.clientY,ty,tp};canvas.setPointerCapture(e.pointerId)});
+  drag={x:e.clientX,y:e.clientY,ty,tp,move:onSpk(e.clientX,e.clientY),px:PAN.x,py:PAN.y};if(drag.move)canvas.style.cursor='grabbing';canvas.setPointerCapture(e.pointerId)});
 canvas.addEventListener('pointermove',e=>{if(zPtrs.has(e.pointerId))zPtrs.set(e.pointerId,{x:e.clientX,y:e.clientY});if(pinch&&zPtrs.size>=2){zT=rubber(pinch.z0*pdist()/pinch.d0);return}});
 const endPtr=e=>{zPtrs.delete(e.pointerId);if(pinch&&zPtrs.size<2){pinch=null;pinchEnd=Date.now();zT=Math.min(ZMAX,Math.max(ZMIN,zT));saveZ()}};
 canvas.addEventListener('pointerup',endPtr);canvas.addEventListener('pointercancel',endPtr);canvas.addEventListener('pointerleave',e=>{if(e.pointerType==='mouse')zPtrs.delete(e.pointerId)});
 canvas.addEventListener('dblclick',e=>{const r=canvas.getBoundingClientRect();if(Math.hypot(e.clientX-r.left-r.width/2,e.clientY-r.top-r.height/2)<Math.min(r.width,r.height)*.22)return;zT=1;zVel-=1.2;saveZ()});
 addEventListener('keydown',e=>{if(e.target.matches('input,textarea,select')||e.altKey||e.metaKey||e.ctrlKey)return;if(e.key==='+'||e.key==='='){zT=Math.min(ZMAX,zT*1.15);saveZ()}else if(e.key==='-'||e.key==='_'){zT=Math.max(ZMIN,zT/1.15);saveZ()}else if(e.key==='0'){zT=1;saveZ()}});
-canvas.addEventListener('pointermove',e=>{if(!drag||pinch)return;ty=drag.ty+(e.clientX-drag.x)*.005;tp=Math.max(-.8,Math.min(.8,drag.tp+(e.clientY-drag.y)*.004))});
+canvas.addEventListener('pointermove',e=>{if(!drag){if(e.pointerType==='mouse')canvas.style.cursor=onSpk(e.clientX,e.clientY)?'grab':'';return}if(pinch)return;
+  if(drag.move){const r=canvas.getBoundingClientRect();PAN.x=Math.max(-.5,Math.min(.5,drag.px+(e.clientX-drag.x)/r.width));PAN.y=Math.max(-.5,Math.min(.5,drag.py-(e.clientY-drag.y)/r.height));return}
+  ty=drag.ty+(e.clientX-drag.x)*.005;tp=Math.max(-.8,Math.min(.8,drag.tp+(e.clientY-drag.y)*.004))});
 let tapT=0,tapX=0,tapY=0;
 const lmenu=document.getElementById('lmenu');
 document.getElementById('brandLogo').addEventListener('dblclick',e=>openLogoMenu(e.clientX,e.clientY));
@@ -1601,9 +1620,9 @@ document.getElementById('lmDefault').addEventListener('click',()=>{closeLM();S.l
 document.getElementById('lmRemove').addEventListener('click',()=>{closeLM();S.logoHidden=true;applyLogo();saveS();toast('Logo removed · the logo button on the bar brings it back')});
 addEventListener('pointerdown',e=>{if(!lmenu.hidden&&!e.target.closest('#lmenu'))closeLM()},true);
 addEventListener('keydown',e=>{if(e.key==='Escape')closeLM()});
-canvas.addEventListener('pointerup',e=>{const moved=drag&&Math.hypot(e.clientX-drag.x,e.clientY-drag.y)>8;drag=null;if(moved||Date.now()-pinchEnd<350)return;
+canvas.addEventListener('pointerup',e=>{const wasMove=drag&&drag.move,moved=drag&&Math.hypot(e.clientX-drag.x,e.clientY-drag.y)>8;drag=null;canvas.style.cursor=e.pointerType==='mouse'&&onSpk(e.clientX,e.clientY)?'grab':'';if(wasMove&&moved)savePan();if(moved||Date.now()-pinchEnd<350)return;
   const r=canvas.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,near=Math.hypot(e.clientX-cx,e.clientY-cy)<Math.min(r.width,r.height)*.22;
-  const n=Date.now();if(false){}else{tapT=n;tapX=e.clientX;tapY=e.clientY}});
+  const n=Date.now();if(n-tapT<450&&Math.hypot(e.clientX-tapX,e.clientY-tapY)<40&&onSpk(e.clientX,e.clientY)){tapT=0;PAN.x=PAN.y=0;ty=tp=0;savePan()}else{tapT=n;tapX=e.clientX;tapY=e.clientY}});
 canvas.addEventListener('pointercancel',()=>drag=null);
 
 let baseZ=12,baseY=0,stageBot=0;
@@ -1721,7 +1740,8 @@ function frame(now){if(OFF&&!OFF.step)return;
   // camera
   yaw+=(ty+(reduce?0:Math.sin(t*.15)*.28)-yaw)*.06;pitch+=(tp+(reduce?0:Math.sin(t*.11)*.14)-pitch)*.06;
   rig.rotation.set(pitch,yaw,0);if(S.logoStraight){rig.updateMatrixWorld();logo.quaternion.copy(rig.quaternion).invert();logoBack.quaternion.copy(logo.quaternion)}else{logo.quaternion.identity();logoBack.quaternion.identity()}
-  const shake=reduce||!S.fx.shake?0:sb*sb*.05;rig.position.set((Math.random()-.5)*shake,baseY+(Math.random()-.5)*shake,0);
+  const shake=reduce||!S.fx.shake?0:sb*sb*.05;panV.x+=(PAN.x-panV.x)*.22;panV.y+=(PAN.y-panV.y)*.22;const vh=2*Math.tan(cam.fov*Math.PI/360)*Math.max(1,cam.position.z),vw=vh*cam.aspect;
+  rig.position.set(panV.x*vw+(Math.random()-.5)*shake,baseY+panV.y*vh+(Math.random()-.5)*shake,0);
   zVel+=((zT-zV)*170-zVel*13)*dt;zV+=zVel*dt;if(zV<.3){zV=.3;zVel=0}scene.fog.density=.36*zV/baseZ;cam.position.set(0,0,baseZ/zV-kickEnv*.9*K*(S.fx.shake?1:0));cam.lookAt(0,0,0);
 
   // render
