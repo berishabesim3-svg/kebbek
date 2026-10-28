@@ -758,14 +758,21 @@ for(let i=0;i<NL;i++){const a=i/NL*Math.PI*2;dummy.position.set(Math.cos(a)*3.05
 // ---------- holographic cone (shader)
 const conePts=[];for(let i=0;i<=48;i++){const t=i/48;conePts.push(new THREE.Vector2(0.5+t*1.65,-0.9*(1-t)))}
 const coneG=new THREE.LatheGeometry(conePts,180);coneG.rotateX(Math.PI/2);
-const U={uT:{value:0},uB:{value:0},uM:{value:0},uH:{value:0},uA:{value:colA},uC:{value:colB}};
+const U={uT:{value:0},uB:{value:0},uM:{value:0},uH:{value:0},uX:{value:0},uV:{value:0},uA:{value:colA},uC:{value:colB}};
 const cone=add(new THREE.Mesh(coneG,new THREE.ShaderMaterial({uniforms:U,side:THREE.DoubleSide,
-vertexShader:`uniform float uT,uB,uM,uH;varying float vR;varying float vAng;varying vec3 vN;varying vec3 vV;
+vertexShader:`uniform float uT,uB,uM,uH,uX,uV;varying float vR;varying float vAng;varying vec3 vN;varying vec3 vV;
 void main(){vec3 p=position;float r=length(p.xy);float a=atan(p.y,p.x);
-float exc=uB*uB*.95;
-p.z+=exc*(1.-(r-.5)/1.65*.65)+sin(r*7.-uT*9.)*uM*.09+sin(a*6.+uT*2.)*uH*.05;
+/* real driver: the cone moves as one rigid piston (uX comes from the mass-spring model on the CPU);
+   at large excursion the paper flexes a little at the rim; mids/highs excite small break-up ripples that travel out
+   from the voice coil and die before the surround, which clamps the edge */
+float rimT=clamp((r-.5)/1.65,0.,1.);
+float clampEdge=1.-smoothstep(.72,1.,rimT);
+p.z+=uX*(1.-.1*rimT*rimT*abs(uX))
+  +sin(r*15.-uT*24.)*uM*.022*exp(-rimT*2.2)*clampEdge
+  +sin(r*31.-uT*41.+a*2.)*uH*.009*exp(-rimT*3.)*clampEdge
+  +sin(a*6.+uT*2.)*uH*.012*clampEdge;
 vR=r;vAng=a;vec4 mv=modelViewMatrix*vec4(p,1.);vV=-mv.xyz;vN=normalMatrix*normal;gl_Position=projectionMatrix*mv;}`,
-fragmentShader:`uniform float uT,uB,uM,uH;uniform vec3 uA,uC;varying float vR;varying float vAng;varying vec3 vN;varying vec3 vV;
+fragmentShader:`uniform float uT,uB,uM,uH,uX,uV;uniform vec3 uA,uC;varying float vR;varying float vAng;varying vec3 vN;varying vec3 vV;
 void main(){
 float rings=smoothstep(.9,1.,abs(sin(vR*26.-uT*(2.+uB*10.))));
 float spokes=smoothstep(.985,1.,abs(sin(vAng*18.)));
@@ -776,7 +783,10 @@ vec3 c=vec3(.012,.016,.028);
 c+=uC*rings*(.12+uM*.9);
 c+=uA*spokes*(.08+uH*1.8);
 c+=mix(uC,uA,.5)*hexish*(.05+uH*1.2);
-c+=mix(uC,uA,clamp((vR-.5)/1.65,0.,1.))*f*.45;
+c+=mix(uC,uA,clamp((vR-.5)/1.65,0.,1.))*f*.45*(1.+min(abs(uV),2.)*.3);
+/* studio-light reflection that slides up and down the cone as it travels */
+float spec=smoothstep(.16,0.,abs(vR-1.3+uX*.55))*(.05+min(abs(uV),2.)*.06);
+c+=mix(vec3(1.),uA,.35)*spec;
 c+=uA*pulse*.9;
 gl_FragColor=vec4(c,1.);}`})));
 
@@ -1669,6 +1679,27 @@ let sb=0,sm=0,sh=0,avgB=.2,cool=0,kickEnv=0,glitch=0,last=performance.now(),t0=l
 const ca=new THREE.Color(),cb=new THREE.Color(),cc=new THREE.Color();
 function band(a,b){let s=0;for(let i=a;i<b;i++)s+=data[i];return s/((b-a)*255)}
 function onKick(strength){spawnWave(1+strength);if(S.fx.lasers&&strength>.35)spawnLaser();kickEnv=1;glitch=reduce||!S.fx.glitch?0:Math.min(1,strength*2.5);
+  DRV.v+=(2.2+strength*5.5)*K;/* the voice coil punches the cone forward on every kick */
+}
+/* ---------- real woofer motion (mass-spring-damper, like a loudspeaker's Thiele-Small model)
+   The cone is a mass on a spring (spider + surround) pushed by the voice coil. Under-damped, so a kick
+   overshoots, swings back and rings out in a few cycles instead of just following the volume.
+   The cabinet is a second, stiff spring: it recoils opposite to the cone (Newton's third law).
+   Sub-stepped at 480 Hz, so it behaves the same at 30, 60 or 120 fps and in exported videos. */
+const DRV={x:0,v:0,a:0,cab:0,cabV:0,flut:0};
+const DRV_F0=6.2,DRV_Z=.28,CAB_F0=17,CAB_Z=.2,XMAX=1.15;
+function driverTick(dt,live,b,low){
+  const w=2*Math.PI*DRV_F0,wc=2*Math.PI*CAB_F0;
+  const drive=(live?b*b*1.05:b*b*.8)+low*.32;
+  const n=Math.max(1,Math.ceil(dt*480)),h=dt/n;
+  for(let i=0;i<n;i++){
+    const k=w*w*(1+1.6*(DRV.x/XMAX)**2);/* progressive suspension: stiffer near the limit */
+    const a=k*(drive-DRV.x)-2*DRV_Z*w*DRV.v;
+    DRV.v+=a*h;DRV.x+=DRV.v*h;DRV.a=a;
+    if(DRV.x>XMAX){DRV.x=XMAX;if(DRV.v>0)DRV.v*=-.25}
+    if(DRV.x<-.45){DRV.x=-.45;if(DRV.v<0)DRV.v*=-.25}
+    const ac=-a*.25-wc*wc*DRV.cab-2*CAB_Z*wc*DRV.cabV;
+    DRV.cabV+=ac*h;DRV.cab=Math.max(-.08,Math.min(.08,DRV.cab+DRV.cabV*h))}
 }
 // tempo: onset envelope + autocorrelation (independent of frame rate)
 const envT=[],envV=[];let tempoAt=0;
@@ -1705,9 +1736,14 @@ function frame(now){if(OFF&&!OFF.step)return;
   kickEnv=Math.max(0,kickEnv-dt*3.2);glitch=Math.max(0,glitch-dt*5);
 
   U.uT.value=t;U.uB.value=sb*K;U.uM.value=sm*K;U.uH.value=sh*K;
-  const exc=sb*sb*.95*K;
-  for(const f of FR)if(f.piv.children[0].material===surroundM)f.bz=exc*.35;
-  logo.position.z=.08+exc*.9;const ls=S.logoSize*(1+kickEnv*.035*K);logo.scale.set(ls*logoAsp[0],ls*logoAsp[1],1);logoU.uG.value=S.logoGlow;logo.layers.set(S.crisp?1:0);
+  /* signed sub-bass waveform: mean of the newest ~8 ms of samples follows the real low-frequency swing */
+  let low=0;if(live){const n0=wave.length-384;for(let i=n0;i<wave.length;i++)low+=wave[i]-128;low=Math.max(-1,Math.min(1,low/384/48))}
+  DRV.flut+=(low-DRV.flut)*Math.min(1,dt*30);
+  driverTick(dt,live,b,DRV.flut);
+  const exc=DRV.x*.95*K;U.uX.value=exc;U.uV.value=DRV.v*.95*K;
+  /* surround: half-roll rubber ring; its crest travels about half the cone's excursion and the roll stretches */
+  for(const f of FR)if(f.piv.children[0].material===surroundM){f.bz=exc*.5;f.piv.scale.z=1+Math.min(1.2,Math.abs(exc)*.9)}
+  logo.position.z=.08+exc;const ls=S.logoSize*(1+kickEnv*.035*K);logo.scale.set(ls*logoAsp[0],ls*logoAsp[1],1);logoU.uG.value=S.logoGlow;logo.layers.set(S.crisp?1:0);
   logoBack.visible=logo.visible&&S.logoBack>0.01;logoBack.material.opacity=S.logoBack*.9;logoBack.position.z=logo.position.z-.03;logoBack.scale.setScalar(ls*Math.max(logoAsp[0],logoAsp[1]));
   dotGlow.position.set(DOT.x*ls,DOT.y*ls,logo.position.z+.05);
   const dg=.25+sb*1.1+kickEnv*.8;dotGlow.scale.set(dg,dg,1);dotGlow.material.opacity=(.55+sb*.45)*(.2+.8*S.logoGlow);
@@ -1766,7 +1802,7 @@ function frame(now){if(OFF&&!OFF.step)return;
   yaw+=(ty+(reduce?0:Math.sin(t*.15)*.28)-yaw)*.06;pitch+=(tp+(reduce?0:Math.sin(t*.11)*.14)-pitch)*.06;
   rig.rotation.set(pitch,yaw,0);if(S.logoStraight){rig.updateMatrixWorld();logo.quaternion.copy(rig.quaternion).invert();logoBack.quaternion.copy(logo.quaternion)}else{logo.quaternion.identity();logoBack.quaternion.identity()}
   const shake=reduce||!S.fx.shake?0:sb*sb*.05;panV.x+=(PAN.x-panV.x)*.22;panV.y+=(PAN.y-panV.y)*.22;const vh=2*Math.tan(cam.fov*Math.PI/360)*Math.max(1,cam.position.z),vw=vh*cam.aspect;
-  rig.position.set(panV.x*vw+(Math.random()-.5)*shake,baseY+panV.y*vh+(Math.random()-.5)*shake,0);
+  const recoil=reduce?0:(S.fx.shake?1:.35)*K;/* cabinet recoil: pushed back when the cone fires, then settles (no random jitter) */rig.position.set(panV.x*vw+DRV.cab*.18*recoil,baseY+panV.y*vh+DRV.cab*.3*recoil,-DRV.cab*recoil);
   zVel+=((zT-zV)*170-zVel*13)*dt;zV+=zVel*dt;if(zV<.3){zV=.3;zVel=0}scene.fog.density=.36*zV/baseZ;cam.position.set(0,0,baseZ/zV-kickEnv*.9*K*(S.fx.shake?1:0));cam.lookAt(0,0,0);
 
   // render
