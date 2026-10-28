@@ -439,6 +439,7 @@ body.notele .tele{display:none}
         <button class="chip" type="button" data-fx="shell">Sphere</button>
         <button class="chip" type="button" data-fx="hud">HUD arcs</button>
         <button class="chip" type="button" data-fx="dust">Particles</button>
+        <button class="chip" type="button" data-fx="field">Star field</button>
         <button class="chip" type="button" data-fx="shake">Shake</button>
       </div>
     </div>
@@ -447,7 +448,7 @@ body.notele .tele{display:none}
       <label class="rng"><span>Fine</span><input type="range" id="sBloom" min="0" max="2" step="0.05"><b id="vBloom"></b></label>
     </div>
     <label class="rng"><span>Sensitivity</span><input type="range" id="sSens" min="0.5" max="2" step="0.05"><b id="vSens"></b></label>
-    <div class="legal"><a href="https://berishabesim3-svg.github.io/kebbek/privacy.html" target="_blank" rel="noopener">Privacy</a><a href="https://berishabesim3-svg.github.io/kebbek/terms.html" target="_blank" rel="noopener">Terms</a><span class="note">KEBBEK 4.3</span></div>
+    <div class="legal"><a href="https://berishabesim3-svg.github.io/kebbek/privacy.html" target="_blank" rel="noopener">Privacy</a><a href="https://berishabesim3-svg.github.io/kebbek/terms.html" target="_blank" rel="noopener">Terms</a><span class="note">KEBBEK 4.4</span></div>
   </div>
 </div>
 
@@ -515,8 +516,8 @@ body.notele .tele{display:none}
     <p class="empty" id="lyFor">Play a song from the list, then create its lyrics here.</p>
     <div class="fld" id="lyAutoBox"><span>Automatic lyrics</span>
       <div class="lopts">
-        <select id="lyLang" aria-label="Song language"><option value="albanian">Albanian</option><option value="english">English</option><option value="german">German</option><option value="">Auto-detect</option></select>
-        <select id="lyModel" aria-label="Accuracy"><option value="onnx-community/whisper-base_timestamped">Fast</option><option value="onnx-community/whisper-small_timestamped">Accurate (heavier)</option></select>
+        <select id="lyLang" aria-label="Song language"><option value="albanian">Albanian</option><option value="english" selected>English</option><option value="german">German</option><option value="">Auto-detect</option></select>
+        <select id="lyModel" aria-label="Accuracy"><option value="onnx-community/whisper-base_timestamped">Fast</option><option value="onnx-community/whisper-small_timestamped" selected>Accurate (heavier)</option></select>
         <button class="chip on" id="lyAuto" type="button">Generate lyrics</button>
       </div>
       <div class="pbar" id="lyBar" hidden><i id="lyBarI"></i></div>
@@ -821,6 +822,20 @@ pg.setAttribute('position',new THREE.BufferAttribute(pp,3));
 const pMat=new THREE.PointsMaterial({size:.05,map:dotGlowTex,color:colB,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending});
 const dust=add(new THREE.Points(pg,pMat));
 
+// ---------- star field (scene space): ~1600 dots in a deep cloud behind the speaker, drifting slowly, twinkling with the music
+const NF=2200,fg=new THREE.BufferGeometry(),fPos=new Float32Array(NF*3),fSz=new Float32Array(NF),fCol=new Float32Array(NF*3),fPh=new Float32Array(NF*2);
+{const pal=[[.42,.86,.80],[.45,.80,.88],[.35,.62,1],[.55,.70,1],[1,1,1]];for(let i=0;i<NF;i++){const u=Math.random()*2-1,a=Math.random()*Math.PI*2,r=Math.pow(Math.random(),.6)*24+3,q=Math.sqrt(1-u*u);
+  fPos.set([Math.cos(a)*q*r,Math.sin(a)*q*r*.92,-16+u*r*.55],i*3);const big=Math.random()<.015;fSz[i]=big?2.6:.7+Math.pow(Math.random(),3)*1.9;
+  const c=big?pal[4]:pal[Math.floor(Math.random()*4)];fCol.set(c,i*3);fPh.set([Math.random()*6.283,.6+Math.random()*2.2],i*2)}}
+fg.setAttribute('position',new THREE.BufferAttribute(fPos,3));fg.setAttribute('aSz',new THREE.BufferAttribute(fSz,1));fg.setAttribute('aCol',new THREE.BufferAttribute(fCol,3));fg.setAttribute('aPh',new THREE.BufferAttribute(fPh,2));
+const fMat=new THREE.ShaderMaterial({transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,
+  uniforms:{uT:{value:0},uB:{value:0},uH:{value:0},uK:{value:0},uPR:{value:1},uTex:{value:dotGlowTex},uTint:{value:colB}},
+  vertexShader:'attribute float aSz;attribute vec3 aCol;attribute vec2 aPh;uniform float uT,uB,uH,uK,uPR;varying vec3 vC;varying float vA;void main(){vec4 mv=modelViewMatrix*vec4(position,1.);float tw=.5+.5*sin(uT*aPh.y+aPh.x);float beat=uK*step(.55,fract(aPh.x*7.13))+uH*.6*tw;vA=(.45+.45*tw+beat*.9)*clamp(1.-(-mv.z-8.)/60.,.15,1.);vC=aCol;gl_PointSize=aSz*uPR*(1.+uB*.35+beat*.5)*(150./-mv.z);gl_Position=projectionMatrix*mv;}',
+  fragmentShader:'uniform sampler2D uTex;uniform vec3 uTint;varying vec3 vC;varying float vA;void main(){vec4 t=texture2D(uTex,gl_PointCoord);gl_FragColor=vec4(mix(vC,uTint,.18)*t.rgb*1.25,t.a*vA);}'});
+const field=new THREE.Points(fg,fMat);field.frustumCulled=false;field.renderOrder=-2;scene.add(field);
+// soft blue core glow behind the speaker
+const fCore=new THREE.Sprite(new THREE.SpriteMaterial({map:dotGlowTex,color:0x2a7fd0,transparent:true,opacity:.16,depthWrite:false,blending:THREE.AdditiveBlending}));fCore.position.set(0,0,-18);fCore.scale.setScalar(16);fCore.renderOrder=-3;scene.add(fCore);
+
 // ---------- warp stars (scene space)
 const NS=320;const sg=new THREE.BufferGeometry();const sp=new Float32Array(NS*3);
 for(let i=0;i<NS;i++){const a=Math.random()*Math.PI*2,r=6+Math.random()*30;sp.set([Math.cos(a)*r,Math.sin(a)*r,-80+Math.random()*90],i*3)}
@@ -1062,7 +1077,7 @@ addEventListener('drop',e=>{e.preventDefault();dragN=0;dropEl.hidden=true;addFil
 document.getElementById('seek').addEventListener('click',e=>{if(!audioEl||!audioEl.duration)return;const r=e.currentTarget.getBoundingClientRect();audioEl.currentTime=(e.clientX-r.left)/r.width*audioEl.duration});
 
 // ---------- settings (saved on this device)
-const DEF={name:'KEBBEK',c1:'#2fe0ff',c2:'#5a7bff',logo:'default',logoSize:1,bloom:.6,bloomV:2,sens:1,removeBg:true,crisp:true,logoStraight:true,logoPos:'both',logoHidden:false,clean:true,tele:true,logoGlow:.35,logoBack:.55,cycle:false,lyStyle:'karaoke',lyZ:1,lyPos:'side',lyClean:true,autoSync:true,lyV:2,snd:{preset:'Natural',eq:[0,0,0,0,0,0,0,0,0,0],bass:0,clar:0,warm:0,rev:0,width:1,loud:false,lim:true,vol:1,rate:1,fade:2,one:false,off:false,avms:0},fx:{lasers:true,stars:true,grid:true,glitch:true,shell:true,hud:true,dust:true,shake:true}};
+const DEF={name:'KEBBEK',c1:'#2fe0ff',c2:'#5a7bff',logo:'default',logoSize:1,bloom:.6,bloomV:2,sens:1,removeBg:true,crisp:true,logoStraight:true,logoPos:'both',logoHidden:false,clean:true,tele:true,logoGlow:.35,logoBack:.55,cycle:false,lyStyle:'karaoke',lyZ:1,lyPos:'side',lyClean:true,autoSync:true,lyV:2,snd:{preset:'Natural',eq:[0,0,0,0,0,0,0,0,0,0],bass:0,clar:0,warm:0,rev:0,width:1,loud:false,lim:true,vol:1,rate:1,fade:2,one:false,off:false,avms:0},fx:{lasers:true,stars:true,grid:true,glitch:true,shell:true,hud:true,dust:true,shake:true,field:true}};
 let S=JSON.parse(JSON.stringify(DEF));
 try{const raw=localStorage.getItem('kebbek-zeri-cfg');if(raw){const o=JSON.parse(raw);S=Object.assign(S,o);S.fx=Object.assign({},DEF.fx,o.fx||{});S.snd=Object.assign({},DEF.snd,o.snd||{});if((o.bloomV||0)<2){S.bloom=Math.min(S.bloom,.6);S.bloomV=2}if((o.lyV||0)<2){S.lyPos='side';S.lyV=2}if(o.thV===3){if(String(o.c1).toLowerCase()==='#e5e4e2'){S.c1=DEF.c1;S.c2=DEF.c2;S.bloom=DEF.bloom}S.thV=4}if(!Array.isArray(S.snd.eq)||S.snd.eq.length!==10)S.snd.eq=DEF.snd.eq.slice()}}catch(e){}
 const saveS=()=>{try{localStorage.setItem('kebbek-zeri-cfg',JSON.stringify(S))}catch(e){}};
@@ -1119,7 +1134,7 @@ sName.addEventListener('input',()=>{S.name=sName.value.trim()||'';applyName();sa
 // effects
 const fxBtns=[...document.querySelectorAll('[data-fx]')];
 function applyFx(){fxBtns.forEach(b=>b.setAttribute('aria-pressed',String(!!S.fx[b.dataset.fx])));stars.visible=S.fx.stars;grid.visible=S.fx.grid;shell.visible=S.fx.shell;
-  [arc1,arc2,arc3,arc4,ticks].forEach(o=>o.visible=S.fx.hud);dust.visible=S.fx.dust;if(!S.fx.lasers)lasers.forEach(l=>l.userData.t=1)}
+  [arc1,arc2,arc3,arc4,ticks].forEach(o=>o.visible=S.fx.hud);dust.visible=S.fx.dust;field.visible=S.fx.field!==false;if(!S.fx.lasers)lasers.forEach(l=>l.userData.t=1)}
 fxBtns.forEach(b=>b.addEventListener('click',()=>{S.fx[b.dataset.fx]=!S.fx[b.dataset.fx];applyFx();saveS()}));
 // sliders
 function slider(id,key,fmt){const el=document.getElementById(id),v=document.getElementById('v'+id.slice(1));const show=()=>{el.value=S[key];v.textContent=fmt(S[key])};
@@ -1665,6 +1680,8 @@ function frame(now){if(OFF&&!OFF.step)return;
   for(let i=0;i<NP;i++){const a=pBase[i*4]+t*.05*(1+pBase[i*4+3])*K,r=pBase[i*4+1]+sb*1.4*pBase[i*4+3]*K,z=pBase[i*4+2]+Math.sin(t+i)*.1;pp[i*3]=Math.cos(a)*r;pp[i*3+1]=Math.sin(a)*r;pp[i*3+2]=z}
   pg.attributes.position.needsUpdate=true;pMat.size=.04+sh*.09;
 
+  // star field: slow drift, rhythm drives size and twinkle
+  if(field.visible){fMat.uniforms.uT.value=t;fMat.uniforms.uB.value=sb*K;fMat.uniforms.uH.value=sh*K;fMat.uniforms.uK.value=kickEnv*K;fMat.uniforms.uPR.value=renderer.getPixelRatio();field.rotation.z+=dt*.012*(1+sb*1.5)*K;field.rotation.y=Math.sin(t*.05)*.06;fCore.visible=true;fCore.material.opacity=.12+sb*.12*K+kickEnv*.06*K}else fCore.visible=false;
   // warp
   const ws=(6+sb*90+kickEnv*40)*dt*K;
   for(let i=0;i<NS;i++){sp[i*3+2]+=ws;if(sp[i*3+2]>baseZ+2){sp[i*3+2]=-80}}
