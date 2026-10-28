@@ -451,7 +451,7 @@ body.bare,body.bare canvas{cursor:none}
       <label class="rng"><span>Fine</span><input type="range" id="sBloom" min="0" max="2" step="0.05"><b id="vBloom"></b></label>
     </div>
     <label class="rng"><span>Sensitivity</span><input type="range" id="sSens" min="0.5" max="2" step="0.05"><b id="vSens"></b></label>
-    <div class="legal"><a href="https://berishabesim3-svg.github.io/kebbek/privacy.html" target="_blank" rel="noopener">Privacy</a><a href="https://berishabesim3-svg.github.io/kebbek/terms.html" target="_blank" rel="noopener">Terms</a><span class="note">KEBBEK 4.10</span></div>
+    <div class="legal"><a href="https://berishabesim3-svg.github.io/kebbek/privacy.html" target="_blank" rel="noopener">Privacy</a><a href="https://berishabesim3-svg.github.io/kebbek/terms.html" target="_blank" rel="noopener">Terms</a><span class="note">KEBBEK 4.11</span></div>
   </div>
 </div>
 
@@ -648,7 +648,10 @@ body.bare,body.bare canvas{cursor:none}
   <div class="cfgBody">
     <div class="fld"><span>Format</span><div class="lopts" id="vFmt"><button class="chip" type="button" data-f="9x16">9:16 · Reels, TikTok, Shorts</button><button class="chip" type="button" data-f="16x9">16:9 · YouTube</button><button class="chip" type="button" data-f="1x1">1:1 · Post</button></div></div>
     <div class="fld"><span>Length</span><div class="lopts" id="vLen"><button class="chip" type="button" data-l="15">15 s</button><button class="chip" type="button" data-l="30">30 s</button><button class="chip" type="button" data-l="60">60 s</button><button class="chip" type="button" data-l="0">Full song</button></div></div>
-    <div class="fld"><span>Start</span><div class="lopts" id="vFrom"><button class="chip" type="button" data-s="start">From the start</button><button class="chip" type="button" data-s="here">From the playhead</button><button class="chip" type="button" data-s="lyrics">First lyric line</button></div></div>
+    <div class="fld"><span>Start</span><div class="lopts" id="vFrom"><button class="chip" type="button" data-s="start">From the start</button><button class="chip" type="button" data-s="at">Choose the moment</button></div>
+      <div id="vAtBox" hidden><label class="rng"><span id="vAtT">0:00</span><input type="range" id="vAt" min="0" max="1" step="0.1" value="0" aria-label="Video start time"><b id="vAtE"></b></label>
+      <div class="lopts"><button class="chip" type="button" id="vAtHere">Use the playhead</button><button class="chip" type="button" id="vAtHear">Listen from here</button></div>
+      <p class="note">Drag to any moment of the song. The video starts exactly there.</p></div></div>
     <div class="fld"><span>On the video</span>
       <label class="chk"><input type="checkbox" id="vTitle"> Song title and artist</label>
       <label class="chk" hidden><input type="checkbox" id="vLyr"> Lyrics, karaoke style</label>
@@ -1937,14 +1940,23 @@ async function vRecordAAC(buf,st,len,mime){ensureCtx();if(ctx.state!=='running')
 // ---------- video export: records the speaker, lights, lyrics and the music, in 9:16, 16:9 or 1:1
 const VKEY='kebbek-zeri-video';const VID={m:'exact',f:'9x16',l:15,s:'start',title:true,lyr:false,badge:true,prog:false,q:/Mobi|iP(hone|ad)|Android/.test(navigator.userAgent)?720:1080};
 try{Object.assign(VID,JSON.parse(localStorage.getItem(VKEY)||'{}'))}catch(e){}
-if((VID.vv||0)<2){VID.m='exact';VID.vv=2}VID.lyr=false;// 4.9: every saved setup moves to the exact renderer (sound written straight from the song); lyrics never on videos
+if((VID.vv||0)<2){VID.m='exact';VID.vv=2}if(VID.s==='here'||VID.s==='lyrics')VID.s='at';VID.lyr=false;// 4.9: every saved setup moves to the exact renderer (sound written straight from the song); lyrics never on videos
 const vSaveCfg=()=>{try{localStorage.setItem(VKEY,JSON.stringify(VID))}catch(e){}};
 const vEl=id=>document.getElementById(id),vStat=m=>{vEl('vStat').textContent=m};
-function vPaint(){[['vMode','m','m'],['vFmt','f','f'],['vLen','l','l'],['vFrom','s','s'],['vQ','q','q']].forEach(([id,k,d])=>vEl(id).querySelectorAll('.chip').forEach(b=>b.setAttribute('aria-pressed',String(String(VID[k])===b.dataset[d]))));
+// start moment: a slider over the whole song (remembered per song)
+const vAtKey=()=>{const t=curTrack();return t?String(t.id):''};VID.ats=VID.ats||{};
+function vAtGet(){const v=VID.ats[vAtKey()];return isFinite(v)?+v:0}
+function vAtPaint(){const box=vEl('vAtBox');box.hidden=VID.s!=='at';if(box.hidden)return;const dur=(audioEl&&audioEl.duration)||((curTrack()||{}).dur)||0,r=vEl('vAt');r.max=String(Math.max(1,dur-1));const v=Math.min(vAtGet(),Math.max(0,dur-1));r.value=String(v);
+  vEl('vAtT').textContent='From '+fmt(v);const len=VID.l>0?Math.min(VID.l,Math.max(1,dur-v)):Math.max(1,dur-v);vEl('vAtE').textContent=fmt(v+len)}
+function vAtSet(v){const k=vAtKey();if(!k)return;VID.ats[k]=Math.round(v*10)/10;const ks=Object.keys(VID.ats);if(ks.length>60)delete VID.ats[ks[0]];vSaveCfg();vAtPaint()}
+vEl('vAt').addEventListener('input',e=>vAtSet(+e.target.value));
+vEl('vAtHere').addEventListener('click',()=>vAtSet((audioEl&&audioEl.currentTime)||0));
+vEl('vAtHear').addEventListener('click',()=>{if(!audioEl){toast('Play the song first');return}try{audioEl.currentTime=vAtGet();const p=audioEl.play();if(p&&p.catch)p.catch(()=>{})}catch(e){}});
+function vPaint(){vAtPaint();[['vMode','m','m'],['vFmt','f','f'],['vLen','l','l'],['vFrom','s','s'],['vQ','q','q']].forEach(([id,k,d])=>vEl(id).querySelectorAll('.chip').forEach(b=>b.setAttribute('aria-pressed',String(String(VID[k])===b.dataset[d]))));
   vEl('vTitle').checked=VID.title;vEl('vLyr').checked=VID.lyr;vEl('vBadge').checked=VID.badge;vEl('vProg').checked=VID.prog;
   const t=curTrack();vEl('vidFor').textContent=t?t.name:'';if(!t)vStat('Play a song from your library first, then record its video here.')}
 window.vidOpen=vPaint;
-[['vMode','m','m',0],['vFmt','f','f',0],['vLen','l','l',1],['vFrom','s','s',0],['vQ','q','q',1]].forEach(([id,k,d,num])=>vEl(id).addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;VID[k]=num?+b.dataset[d]:b.dataset[d];vSaveCfg();vPaint()}));
+[['vMode','m','m',0],['vFmt','f','f',0],['vLen','l','l',1],['vFrom','s','s',0],['vQ','q','q',1]].forEach(([id,k,d,num])=>vEl(id).addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;VID[k]=num?+b.dataset[d]:b.dataset[d];if(k==='s'&&VID.s==='at'&&!(vAtKey() in VID.ats))VID.ats[vAtKey()]=Math.round(((audioEl&&audioEl.currentTime)||0)*10)/10;vSaveCfg();vPaint()}));
 [['vTitle','title'],['vLyr','lyr'],['vBadge','badge'],['vProg','prog']].forEach(([id,k])=>vEl(id).addEventListener('change',e=>{VID[k]=e.target.checked;vSaveCfg()}));
 vEl('vidBtn').addEventListener('click',()=>showPanel('vid'));
 function vDims(){const q=VID.q===1080?1080:720,L=Math.round(q*16/9/2)*2;return VID.f==='16x9'?{w:L,h:q}:VID.f==='1x1'?{w:q,h:q}:{w:q,h:L}}
@@ -1958,7 +1970,7 @@ async function vStart(){if(REC)return;const t=curTrack();if(!t||!audioEl||!audio
   if(!window.MediaRecorder||!HTMLCanvasElement.prototype.captureStream){vStat('This browser can’t record video. Try Safari 15+, Chrome or Edge.');return}
   ensureCtx();if(ctx.state!=='running')try{await ctx.resume()}catch(e){}
   if(!isFinite(audioEl.duration)||!audioEl.duration)await new Promise(r=>{audioEl.addEventListener('loadedmetadata',r,{once:true});setTimeout(r,3000)});
-  const dur=audioEl.duration||0,st=Math.min(Math.max(0,VID.s==='here'?audioEl.currentTime:VID.s==='lyrics'?vFirstLyric():0),Math.max(0,dur-1));let len=VID.l>0?VID.l:dur-st;len=Math.max(1,Math.min(len,dur-st));
+  const dur=audioEl.duration||0,st=Math.min(Math.max(0,VID.s==='at'?vAtGet():VID.s==='here'?audioEl.currentTime:0),Math.max(0,dur-1));let len=VID.l>0?VID.l:dur-st;len=Math.max(1,Math.min(len,dur-st));
   const {w,h}=vDims(),mime=vMime();
   if(VID.m!=='live'){const acc=getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()||'#2fe0ff';
     showPanel(null);audioEl.pause();PR0=PR;EXP={w,h};renderer.setPixelRatio(1);resize();updateLag();
