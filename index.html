@@ -458,7 +458,7 @@ body.bare,body.bare canvas{cursor:none}
       <label class="rng"><span>Fine</span><input type="range" id="sBloom" min="0" max="2" step="0.05"><b id="vBloom"></b></label>
     </div>
     <label class="rng"><span>Sensitivity</span><input type="range" id="sSens" min="0.5" max="2" step="0.05"><b id="vSens"></b></label>
-    <div class="legal"><a href="https://berishabesim3-svg.github.io/kebbek/privacy.html" target="_blank" rel="noopener">Privacy</a><a href="https://berishabesim3-svg.github.io/kebbek/terms.html" target="_blank" rel="noopener">Terms</a><span class="note">KEBBEK 4.20</span></div>
+    <div class="legal"><a href="https://berishabesim3-svg.github.io/kebbek/privacy.html" target="_blank" rel="noopener">Privacy</a><a href="https://berishabesim3-svg.github.io/kebbek/terms.html" target="_blank" rel="noopener">Terms</a><span class="note">KEBBEK 4.21</span></div>
   </div>
 </div>
 
@@ -1787,6 +1787,47 @@ function dzBuild(d){let s=7;for(const ch of d.id)s=s*31+ch.charCodeAt(0)|0;const
   if(X.fit){const bx=X.box||dzBox(X.G);if(!bx.isEmpty()){const sz=bx.getSize(new THREE.Vector3()),ce=bx.getCenter(new THREE.Vector3());const k=Math.min(7.4/Math.max(.01,sz.x),6.9/Math.max(.01,sz.y),10/Math.max(.01,sz.z));X.G.position.sub(ce);W.scale.setScalar(k)}}
   return{W,X,up,sway:X.sway}}
 const dzW1=new THREE.Color(1,1,1);const dzAt=(o,x,y,z)=>(o.position.set(x,y,z),o);
+/* ★ Light Wave (4.21): the owner's reference image rebuilt from up to a million points on the GPU.
+   Two crossing families of strands (cyan → blue → violet → magenta), rings flowing out of a light source on the right.
+   Bass lifts the swell, mids twist the strands, highs make points sparkle, every kick sends a pulse from the source along the wave. */
+DZF.wav=(p,X)=>{X.fit=false;X.sway=.55;X.nosky=true;const L=DZ_MOB?40:64,P=DZ_MOB?3750:7800,RN=14,RP=DZ_MOB?1800:2800,NW=2*L*P,N=NW+RN*RP;
+  const pos=new Float32Array(N*3),R=X.rnd;let k=0;
+  for(let f=0;f<2;f++)for(let l=0;l<L;l++){const s=(l+.5)/L;for(let i=0;i<P;i++){pos[k++]=(i+R()*.9)/P;pos[k++]=s+(R()-.5)*.35/L;pos[k++]=f+R()*.9}}
+  for(let r=0;r<RN;r++)for(let i=0;i<RP;i++){pos[k++]=i/RP;pos[k++]=r/RN;pos[k++]=2+R()*.9}
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.boundingSphere=new THREE.Sphere(new THREE.Vector3(),40);
+  const spec=new THREE.DataTexture(new Uint8Array(256),256,1,THREE.LuminanceFormat);spec.magFilter=spec.minFilter=THREE.LinearFilter;
+  const u={uT:{value:0},uB:{value:0},uM:{value:0},uH:{value:0},uK:{value:0},uSX:{value:1},uPS:{value:2},uA:{value:.1},uKa:{value:new THREE.Vector4(9,9,9,9)},uTap:{value:new THREE.Vector2(.5,9)},uSpec:{value:spec}};
+  const vs=`uniform float uT,uB,uM,uH,uK,uSX,uPS,uA;uniform vec4 uKa;uniform vec2 uTap;uniform sampler2D uSpec;varying vec3 vC;varying float vA;
+vec3 grad(float u){vec3 c1=vec3(.04,.82,.92),c2=vec3(.1,.32,1.),c3=vec3(.48,.14,1.),c4=vec3(1.,.16,.74);return u<.38?mix(c1,c2,u/.38):u<.7?mix(c2,c3,(u-.38)/.32):mix(c3,c4,(u-.7)/.3);}
+float kp(float u,float a){float d=(1.-u)-a*.5;return exp(-d*d*22.)*exp(-a*.8)*smoothstep(0.,.25,a);}
+void main(){float u=position.x,s=position.y,f=floor(position.z),r=fract(position.z)/.9;vec3 p;float br;
+ if(f<1.5){float sg=f<.5?1.:-1.;float sp=texture2D(uSpec,vec2(1.-u,.5)).r;float env=.32+1.55*smoothstep(0.,1.,u);
+  float ph=sg*(s-.5)*(1.9+uM*1.4);float amp=env*(1.+sp*1.25+uB*.3);
+  float y=amp*(sin(u*10.5-uT*.7+ph)*.8+sin(u*4.1+uT*.45+ph*.6)*.45)+(s-.5)*(.35+1.9*u);
+  float kk=kp(u,uKa.x)+kp(u,uKa.y)+kp(u,uKa.z)+kp(u,uKa.w);y+=kk*.85*(1.+sp);
+  float dt=u-uTap.x;y+=sin(dt*45.-uTap.y*18.)*exp(-abs(dt)*7.)*exp(-uTap.y*1.3)*.6*step(abs(dt),uTap.y*.6+.02);
+  float z=cos(u*6.8+ph*.8+uT*.5)*(.5+u*1.1)+(s-.5)*1.6*sg;
+  p=vec3((u*2.-1.)*14.*uSX,y+.35,z);
+  float edge=pow(abs(s-.5)*2.,8.)*2.4;
+  br=(.22+edge+sp*.5+kk*1.1)*smoothstep(0.,.1,u)*smoothstep(1.,.9,u)*(.5+.5*u);
+  br*=1.+uH*5.*step(.988,fract(r*91.7+uT*.9));
+  vC=grad(u);vA=br*uA;}
+ else{float a=u*6.28318;float rr=fract(s+uT*.07)*8.;p=vec3(10.4*uSX+cos(a)*rr,2.3+sin(a)*rr,-.6);
+  br=(1.-smoothstep(.6,8.,rr))*smoothstep(.0,.4,rr)*(.5+uK*1.6*exp(-rr*.45));vC=grad(.9);vA=br*.4;}
+ vec4 mv=modelViewMatrix*vec4(p,1.);gl_Position=projectionMatrix*mv;gl_PointSize=uPS*(12.5/-mv.z);}`;
+  const m=new THREE.ShaderMaterial({uniforms:u,vertexShader:vs,fragmentShader:'varying vec3 vC;varying float vA;void main(){gl_FragColor=vec4(vC*vA,1.);}',transparent:true,depthWrite:false,blending:THREE.AdditiveBlending});
+  const pts=new THREE.Points(g,m);pts.frustumCulled=false;X.add(pts);
+  const src=new THREE.Mesh(new THREE.PlaneGeometry(2.6,2.6),new THREE.MeshBasicMaterial({map:dzRadTex(),color:0xdd55ff,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false}));X.add(src);
+  const fl=new THREE.Mesh(new THREE.PlaneGeometry(4.5,.05),new THREE.MeshBasicMaterial({map:dzRadTex(),color:0xffaaff,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false}));X.add(fl);
+  const hz=new THREE.Mesh(new THREE.PlaneGeometry(22,7),new THREE.MeshBasicMaterial({map:dzRadTex(),color:0x0a3a48,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,opacity:.55}));hz.position.set(-4,-1.2,-2.5);hz.material.opacity=.35;X.add(hz);
+  const ka=[9,9,9,9];let pk=0,lp=0;const sd=spec.image.data,raw=new Float32Array(256),sm=new Float32Array(256);
+  return A=>{const asp=(typeof cam!=='undefined'&&cam.aspect)||1.78,sx=Math.max(.42,Math.min(1,asp/1.78));u.uSX.value=sx;
+    u.uT.value=A.t;u.uB.value=A.b;u.uM.value=A.m;u.uH.value=A.h;u.uK.value=A.k;u.uPS.value=1.7*Math.min(2,renderer.getPixelRatio())*(DZ_MOB?1.25:1);u.uA.value=.055*(7800/P);
+    for(let i=0;i<256;i++)raw[i]=dzBin(i/255);for(let i=0;i<256;i++){let a=0,n=0;for(let j=Math.max(0,i-10);j<=Math.min(255,i+10);j++){a+=raw[j];n++}const v=a/n;sm[i]+=(v-sm[i])*.35;sd[i]=Math.min(255,sm[i]*255)}spec.needsUpdate=true;
+    for(let i=0;i<4;i++)ka[i]+=A.dt;if(A.k>.9&&pk<=.9){ka.unshift(0);ka.pop()}pk=A.k;u.uKa.value.set(ka[0],ka[1],ka[2],ka[3]);
+    if(A.p>lp+.5)u.uTap.value.set((A.tx+1)/2,0);lp=A.p;u.uTap.value.y+=A.dt;
+    src.position.set(10.4*sx,2.3,-.55);const sc=.55+A.b*.35+A.k*.4;src.scale.setScalar(sc);fl.position.copy(src.position);fl.scale.set(1+A.h,1,1)}};
+dzReg('wav','Motion',[{name:'Light Wave'}]);
 /* 1 · studio monitors */
 DZF.mon=(p,X)=>{const cab=dzMat(p.mat),face=dzMat(p.face||'matte'),n=p.n||2,cols=p.cols||n,rows=Math.ceil(n/cols),W=[],T=[];
   for(let i=0;i<n;i++){const cx=i%cols,cy=(i/cols)|0,sx=cols>1?cx-(cols-1)/2:0,c=new THREE.Group();c.position.set(sx*2.55,((rows-1)/2-cy)*3.85,-Math.abs(sx)*.3);c.rotation.y=-sx*.24;X.add(c);
@@ -2067,16 +2108,6 @@ DZF.bar=(p,X)=>{const md=p.mode||'line',n=md==='stairs'?96:48,I=dzInst(new THREE
     I.instanceMatrix.needsUpdate=true;C.instanceMatrix.needsUpdate=true;C.instanceColor.needsUpdate=true;if(md==='circle')X.G.rotation.y+=A.dt*.15}};
 dzReg('bar','Neon',[{name:'Bar Spectrum',mode:'line'},{name:'Arc Spectrum',mode:'arc',mat:'silver'},{name:'Circle Bars',mode:'circle',mat:'chrome'},{name:'Mirror Bars',mode:'mirror'},{name:'Stair Bars',mode:'stairs',mat:'gold'}]);
 
-/* 18 · lattice (wire forms with glowing nodes) */
-DZF.lat=(p,X)=>{const gg=p.geo||'ico',S=[];const mk=(geo,sc)=>{const e=new THREE.EdgesGeometry(geo),l=new THREE.LineSegments(e,X.line(0,.35,.9,'b'));l.scale.setScalar(sc);X.add(l);
-    const vp=e.attributes.position,seen=new Set(),pts=[];for(let i=0;i<vp.count;i++){const k=vp.getX(i).toFixed(3)+vp.getY(i).toFixed(3)+vp.getZ(i).toFixed(3);if(!seen.has(k)){seen.add(k);pts.push(vp.getX(i),vp.getY(i),vp.getZ(i))}}
-    const ng=new THREE.BufferGeometry();ng.setAttribute('position',new THREE.Float32BufferAttribute(pts,3));const nm=new THREE.PointsMaterial({size:DZ_MOB?.14:.12,color:0xffffff,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false});X.acc.push({m:nm,w:1,base:.4,gain:1.2,band:'h'});const P=new THREE.Points(ng,nm);P.scale.setScalar(sc);X.add(P);S.push({l,P,sc})};
-  if(gg==='nested'){mk(new THREE.IcosahedronGeometry(1,1),1.2);mk(new THREE.IcosahedronGeometry(1,1),2.1);mk(new THREE.IcosahedronGeometry(1,2),3)}
-  else mk(gg==='dodeca'?new THREE.DodecahedronGeometry(1,0):gg==='torus'?new THREE.TorusGeometry(1,.4,10,24):gg==='cube'?new THREE.BoxGeometry(1.4,1.4,1.4,3,3,3):new THREE.IcosahedronGeometry(1,2),2.7);
-  X.box=new THREE.Box3(new THREE.Vector3(-3.2,-3.2,-3.2),new THREE.Vector3(3.2,3.2,3.2));
-  return A=>{S.forEach((s,i)=>{const k=s.sc*(1+A.b*.12+A.k*.06+A.p*.25);s.l.scale.setScalar(k);s.P.scale.setScalar(k);const r=A.t*(.12+i*.07)*(i%2?-1:1);s.l.rotation.set(r*.6,r,0);s.P.rotation.copy(s.l.rotation)})}};
-dzReg('lat','Neon',[{name:'Geodesic',geo:'ico'},{name:'Dodeca Frame',geo:'dodeca'},{name:'Wire Torus',geo:'torus'},{name:'Cube Lattice',geo:'cube'},{name:'Nested Spheres',geo:'nested'}]);
-
 /* 19 · 3D oscilloscope */
 DZF.osc=(p,X)=>{const md=p.mode||'liss',N=512,L=[],cnt=md==='grid'?5:md==='double'?2:1;
   for(let c=0;c<cnt;c++){const g=new THREE.BufferGeometry(),a=new Float32Array(N*3);g.setAttribute('position',new THREE.BufferAttribute(a,3));const l=new THREE.Line(g,X.line(c/(cnt||1),.6,1,'m'));l.frustumCulled=false;X.add(l);L.push({g,a})}
@@ -2111,7 +2142,7 @@ function dzTick(dt,t,live){
   if(!pinch&&Math.abs(DZ.rv)>.001){DZ.roll+=DZ.rv*dt;DZ.rv*=Math.exp(-dt*1.6)}
   DZA.p=Math.max(0,DZA.p-dt*1.6);
   const c=DZ.cur;if(!c)return;DZA.b=sb;DZA.m=sm;DZA.h=sh;DZA.k=kickEnv;DZA.t=t;DZA.dt=dt;DZA.live=live;if(live){let pk=0;for(let i=0;i<1024;i+=4){const v=Math.abs(wave[i]-128)/128;if(v>pk)pk=v}DZA.wg+=(Math.max(.06,pk)-DZA.wg)*(pk>DZA.wg?.3:.02)}
-  dzHold.position.copy(rig.position);dzHold.rotation.set(rig.rotation.x*c.sway,rig.rotation.y*c.sway,DZ.roll*c.sway);dzAcc(c.X,DZA);c.up(DZA)}
+  if(c.X.nosky)sky.visible=false;dzHold.position.copy(rig.position);dzHold.rotation.set(rig.rotation.x*c.sway,rig.rotation.y*c.sway,DZ.roll*c.sway);dzAcc(c.X,DZA);c.up(DZA)}
 function dzTap(cx,cy){const r=canvas.getBoundingClientRect();DZA.tx=(cx-r.left)/r.width*2-1;DZA.ty=1-(cy-r.top)/r.height*2;DZA.p=1;if(DZ.id==='speaker'&&typeof spawnWave==='function')spawnWave(1.8)}
 
 /* ---- gallery ---- */
