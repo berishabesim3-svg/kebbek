@@ -492,7 +492,7 @@ body.bare,body.bare canvas{cursor:none}
       <label class="rng"><span>Fine</span><input type="range" id="sBloom" min="0" max="2" step="0.05"><b id="vBloom"></b></label>
     </div>
     <label class="rng"><span>Sensitivity</span><input type="range" id="sSens" min="0.5" max="2" step="0.05"><b id="vSens"></b></label>
-    <div class="legal"><a href="https://berishabesim3-svg.github.io/kebbek/privacy.html" target="_blank" rel="noopener">Privacy</a><a href="https://berishabesim3-svg.github.io/kebbek/terms.html" target="_blank" rel="noopener">Terms</a><span class="note">KEBBEK 4.21</span></div>
+    <div class="legal"><a href="https://berishabesim3-svg.github.io/kebbek/privacy.html" target="_blank" rel="noopener">Privacy</a><a href="https://berishabesim3-svg.github.io/kebbek/terms.html" target="_blank" rel="noopener">Terms</a><span class="note">KEBBEK 4.22</span></div>
   </div>
 </div>
 
@@ -1984,15 +1984,16 @@ const dzW1=new THREE.Color(1,1,1);const dzAt=(o,x,y,z)=>(o.position.set(x,y,z),o
 /* ★ Light Wave (4.21): the owner's reference image rebuilt from up to a million points on the GPU.
    Two crossing families of strands (cyan → blue → violet → magenta), rings flowing out of a light source on the right.
    Bass lifts the swell, mids twist the strands, highs make points sparkle, every kick sends a pulse from the source along the wave. */
-DZF.wav=(p,X)=>{X.fit=false;X.sway=.55;X.nosky=true;const L=DZ_MOB?40:64,P=DZ_MOB?3750:7800,RN=14,RP=DZ_MOB?1800:2800,NW=2*L*P,N=NW+RN*RP;
+DZF.wav=(p,X)=>{X.fit=false;X.sway=.55;X.nosky=true;X.black=!!p.black;const L=DZ_MOB?40:64,P=DZ_MOB?3750:7800,RN=14,RP=DZ_MOB?1800:2800,NW=2*L*P,N=NW+RN*RP;
   const pos=new Float32Array(N*3),R=X.rnd;let k=0;
   for(let f=0;f<2;f++)for(let l=0;l<L;l++){const s=(l+.5)/L;for(let i=0;i<P;i++){pos[k++]=(i+R()*.9)/P;pos[k++]=s+(R()-.5)*.35/L;pos[k++]=f+R()*.9}}
   for(let r=0;r<RN;r++)for(let i=0;i<RP;i++){pos[k++]=i/RP;pos[k++]=r/RN;pos[k++]=2+R()*.9}
   const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.boundingSphere=new THREE.Sphere(new THREE.Vector3(),40);
   const spec=new THREE.DataTexture(new Uint8Array(256),256,1,THREE.LuminanceFormat);spec.magFilter=spec.minFilter=THREE.LinearFilter;
-  const u={uT:{value:0},uB:{value:0},uM:{value:0},uH:{value:0},uK:{value:0},uSX:{value:1},uPS:{value:2},uA:{value:.1},uKa:{value:new THREE.Vector4(9,9,9,9)},uTap:{value:new THREE.Vector2(.5,9)},uSpec:{value:spec}};
+  const u={uT:{value:0},uB:{value:0},uM:{value:0},uH:{value:0},uK:{value:0},uSX:{value:1},uPS:{value:2},uA:{value:.1},uKa:{value:new THREE.Vector4(9,9,9,9)},uTap:{value:new THREE.Vector2(.5,9)},uSpec:{value:spec},uXr:{value:p.xr||0}};const PAL=p.pal||[[.04,.82,.92],[.1,.32,1],[.48,.14,1],[1,.16,.74]];['c1','c2','c3','c4'].forEach((k,i)=>u[k]={value:new THREE.Vector3(...PAL[i])});u.cX={value:new THREE.Vector3(...(p.cx||[0,0,0]))};
   const vs=`uniform float uT,uB,uM,uH,uK,uSX,uPS,uA;uniform vec4 uKa;uniform vec2 uTap;uniform sampler2D uSpec;varying vec3 vC;varying float vA;
-vec3 grad(float u){vec3 c1=vec3(.04,.82,.92),c2=vec3(.1,.32,1.),c3=vec3(.48,.14,1.),c4=vec3(1.,.16,.74);return u<.38?mix(c1,c2,u/.38):u<.7?mix(c2,c3,(u-.38)/.32):mix(c3,c4,(u-.7)/.3);}
+uniform vec3 c1,c2,c3,c4,cX;uniform float uXr;
+vec3 grad(float u){return u<.38?mix(c1,c2,u/.38):u<.7?mix(c2,c3,(u-.38)/.32):mix(c3,c4,(u-.7)/.3);}
 float kp(float u,float a){float d=(1.-u)-a*.5;return exp(-d*d*22.)*exp(-a*.8)*smoothstep(0.,.25,a);}
 void main(){float u=position.x,s=position.y,f=floor(position.z),r=fract(position.z)/.9;vec3 p;float br;
  if(f<1.5){float sg=f<.5?1.:-1.;float sp=texture2D(uSpec,vec2(1.-u,.5)).r;float env=.32+1.55*smoothstep(0.,1.,u);
@@ -2005,15 +2006,15 @@ void main(){float u=position.x,s=position.y,f=floor(position.z),r=fract(position
   float edge=pow(abs(s-.5)*2.,8.)*2.4;
   br=(.22+edge+sp*.5+kk*1.1)*smoothstep(0.,.1,u)*smoothstep(1.,.9,u)*(.5+.5*u);
   br*=1.+uH*5.*step(.988,fract(r*91.7+uT*.9));
-  vC=grad(u);vA=br*uA;}
+  vC=grad(u);if(uXr>0.&&fract(s*7.31+f*.37)<uXr){vC=cX;br*=1.6;}vA=br*uA;}
  else{float a=u*6.28318;float rr=fract(s+uT*.07)*8.;p=vec3(10.4*uSX+cos(a)*rr,2.3+sin(a)*rr,-.6);
-  br=(1.-smoothstep(.6,8.,rr))*smoothstep(.0,.4,rr)*(.5+uK*1.6*exp(-rr*.45));vC=grad(.9);vA=br*.4;}
+  br=(1.-smoothstep(.6,8.,rr))*smoothstep(.0,.4,rr)*(.5+uK*1.6*exp(-rr*.45));vC=grad(.92);vA=br*.4;}
  vec4 mv=modelViewMatrix*vec4(p,1.);gl_Position=projectionMatrix*mv;gl_PointSize=uPS*(12.5/-mv.z);}`;
   const m=new THREE.ShaderMaterial({uniforms:u,vertexShader:vs,fragmentShader:'varying vec3 vC;varying float vA;void main(){gl_FragColor=vec4(vC*vA,1.);}',transparent:true,depthWrite:false,blending:THREE.AdditiveBlending});
   const pts=new THREE.Points(g,m);pts.frustumCulled=false;X.add(pts);
-  const src=new THREE.Mesh(new THREE.PlaneGeometry(2.6,2.6),new THREE.MeshBasicMaterial({map:dzRadTex(),color:0xdd55ff,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false}));X.add(src);
-  const fl=new THREE.Mesh(new THREE.PlaneGeometry(4.5,.05),new THREE.MeshBasicMaterial({map:dzRadTex(),color:0xffaaff,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false}));X.add(fl);
-  const hz=new THREE.Mesh(new THREE.PlaneGeometry(22,7),new THREE.MeshBasicMaterial({map:dzRadTex(),color:0x0a3a48,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,opacity:.55}));hz.position.set(-4,-1.2,-2.5);hz.material.opacity=.35;X.add(hz);
+  const src=new THREE.Mesh(new THREE.PlaneGeometry(2.6,2.6),new THREE.MeshBasicMaterial({map:dzRadTex(),color:p.src||0xdd55ff,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false}));X.add(src);
+  const fl=new THREE.Mesh(new THREE.PlaneGeometry(4.5,.05),new THREE.MeshBasicMaterial({map:dzRadTex(),color:p.fl||0xffaaff,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false}));X.add(fl);
+  const hz=new THREE.Mesh(new THREE.PlaneGeometry(22,7),new THREE.MeshBasicMaterial({map:dzRadTex(),color:p.hz||0x0a3a48,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,opacity:.55}));hz.position.set(-4,-1.2,-2.5);hz.material.opacity=.35;X.add(hz);
   const ka=[9,9,9,9];let pk=0,lp=0;const sd=spec.image.data,raw=new Float32Array(256),sm=new Float32Array(256);
   return A=>{const asp=(typeof cam!=='undefined'&&cam.aspect)||1.78,sx=Math.max(.42,Math.min(1,asp/1.78));u.uSX.value=sx;
     u.uT.value=A.t;u.uB.value=A.b;u.uM.value=A.m;u.uH.value=A.h;u.uK.value=A.k;u.uPS.value=1.7*Math.min(2,renderer.getPixelRatio())*(DZ_MOB?1.25:1);u.uA.value=.055*(7800/P);
@@ -2021,7 +2022,7 @@ void main(){float u=position.x,s=position.y,f=floor(position.z),r=fract(position
     for(let i=0;i<4;i++)ka[i]+=A.dt;if(A.k>.9&&pk<=.9){ka.unshift(0);ka.pop()}pk=A.k;u.uKa.value.set(ka[0],ka[1],ka[2],ka[3]);
     if(A.p>lp+.5)u.uTap.value.set((A.tx+1)/2,0);lp=A.p;u.uTap.value.y+=A.dt;
     src.position.set(10.4*sx,2.3,-.55);const sc=.55+A.b*.35+A.k*.4;src.scale.setScalar(sc);fl.position.copy(src.position);fl.scale.set(1+A.h,1,1)}};
-dzReg('wav','Motion',[{name:'Light Wave'}]);
+dzReg('wav','Motion',[{name:'Light Wave'},{name:'Gold Wave',black:1,pal:[[.6,.36,.06],[1,.66,.18],[1,.76,.3],[1,.86,.5]],src:0xffc060,fl:0xffe0a0,hz:0x3a2808},{name:'Silver Wave',black:1,pal:[[.42,.45,.5],[.72,.75,.8],[.9,.92,.95],[1,1,1]],xr:.05,cx:[.15,1.6,1.6],src:0xe8f4ff,fl:0xffffff,hz:0x1a2228}]);
 /* 1 · studio monitors */
 DZF.mon=(p,X)=>{const cab=dzMat(p.mat),face=dzMat(p.face||'matte'),n=p.n||2,cols=p.cols||n,rows=Math.ceil(n/cols),W=[],T=[];
   for(let i=0;i<n;i++){const cx=i%cols,cy=(i/cols)|0,sx=cols>1?cx-(cols-1)/2:0,c=new THREE.Group();c.position.set(sx*2.55,((rows-1)/2-cy)*3.85,-Math.abs(sx)*.3);c.rotation.y=-sx*.24;X.add(c);
@@ -2327,7 +2328,7 @@ dzReg('gyr','Abstract',[{name:'Chrome Gyro',mode:'chrome'},{name:'Neon Gyro',mod
 const dzHold=new THREE.Group();scene.add(dzHold);
 const DZ={id:'speaker',cur:null,sx:0,sy:0,roll:0,rv:0};
 function dzDispose(o){o.traverse(n=>{if(n.geometry)n.geometry.dispose();const ms=n.material?(Array.isArray(n.material)?n.material:[n.material]):[];ms.forEach(m=>{for(const k in m){const v=m[k];if(v&&v.isTexture&&v!==dzEnvT)v.dispose()}m.dispose()})})}
-function dzSet(id,quiet){const d=DESIGNS.find(x=>x.id===id)||DESIGNS[0];if(DZ.cur){dzHold.remove(DZ.cur.W);dzDispose(DZ.cur.W);DZ.cur=null}DZ.id=d.id;
+const DZ_BLK=new THREE.Color(0x020203);function dzSet(id,quiet){if(scene.background===DZ_BLK&&DZ.bg0)scene.background=DZ.bg0;const d=DESIGNS.find(x=>x.id===id)||DESIGNS[0];if(DZ.cur){dzHold.remove(DZ.cur.W);dzDispose(DZ.cur.W);DZ.cur=null}DZ.id=d.id;
   if(d.fam){try{DZ.cur=dzBuild(d);dzHold.add(DZ.cur.W)}catch(e){console.error('design',d.id,e);DZ.cur=null;DZ.id='speaker'}}
   rig.visible=DZ.id==='speaker';DZ.roll=0;DZ.rv=0;if(!quiet){S.design=DZ.id;saveS()}dzMark()}
 function dzTick(dt,t,live){
@@ -2336,7 +2337,7 @@ function dzTick(dt,t,live){
   if(!pinch&&Math.abs(DZ.rv)>.001){DZ.roll+=DZ.rv*dt;DZ.rv*=Math.exp(-dt*1.6)}
   DZA.p=Math.max(0,DZA.p-dt*1.6);
   const c=DZ.cur;if(!c)return;DZA.b=sb;DZA.m=sm;DZA.h=sh;DZA.k=kickEnv;DZA.t=t;DZA.dt=dt;DZA.live=live;if(live){let pk=0;for(let i=0;i<1024;i+=4){const v=Math.abs(wave[i]-128)/128;if(v>pk)pk=v}DZA.wg+=(Math.max(.06,pk)-DZA.wg)*(pk>DZA.wg?.3:.02)}
-  if(c.X.nosky)sky.visible=false;dzHold.position.copy(rig.position);dzHold.rotation.set(rig.rotation.x*c.sway,rig.rotation.y*c.sway,DZ.roll*c.sway);dzAcc(c.X,DZA);c.up(DZA)}
+  if(c.X.nosky)sky.visible=false;if(c.X.black&&scene.background!==DZ_BLK){DZ.bg0=scene.background;scene.background=DZ_BLK}dzHold.position.copy(rig.position);dzHold.rotation.set(rig.rotation.x*c.sway,rig.rotation.y*c.sway,DZ.roll*c.sway);dzAcc(c.X,DZA);c.up(DZA)}
 function dzTap(cx,cy){const r=canvas.getBoundingClientRect();DZA.tx=(cx-r.left)/r.width*2-1;DZA.ty=1-(cy-r.top)/r.height*2;DZA.p=1;if(DZ.id==='speaker'&&typeof spawnWave==='function')spawnWave(1.8)}
 
 /* ---- gallery ---- */
