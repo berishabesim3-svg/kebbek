@@ -374,6 +374,22 @@ body.bare,body.bare canvas{cursor:none}
 #urlImportBtn{padding:9px 10px;font-size:12px}
 
 </style>
+<style>#onlineLibrary{border-top:1px solid var(--line);margin-top:20px;padding-top:18px}
+#onlineLibrary h3{font-size:16px;margin:0 0 12px}
+#onlineTracks{list-style:none;margin:0;padding:0}
+#onlineTracks li{display:flex;gap:8px;align-items:center;flex-wrap:wrap;border-bottom:1px solid var(--line);padding:12px 0}
+#onlineTracks li>div{flex:1;min-width:140px;overflow-wrap:anywhere}
+#onlineTracks strong,#onlineTracks small{display:block}
+#onlineTracks small{color:var(--muted);font-size:11px;margin-top:5px}
+#onlinePlayerDialog{width:min(760px,calc(100vw - 24px));max-height:calc(100dvh - 24px);overflow:auto;background:#0b101a;color:var(--ink);border:1px solid var(--line);border-radius:16px;padding:20px;font:14px var(--body)}
+#onlinePlayerDialog::backdrop{background:#000c;backdrop-filter:blur(6px)}
+.online-player-top{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:15px}
+#onlinePlayerHeading{font-size:19px;margin:6px 0;overflow-wrap:anywhere}
+#onlinePlayerProvider,#onlinePlayerDialog p{color:#a9bacb;line-height:1.6;font-size:12px}
+#onlinePlayerDialog a{color:var(--accent)}
+#onlinePlayerFrame iframe{display:block;border:0;width:100%;border-radius:10px;background:#000}
+#onlinePlayerFrame iframe.kb-youtube{height:auto!important;aspect-ratio:16/9;min-height:200px}
+</style>
 </head>
 <body>
 <canvas id="stage" aria-label="KEBBEK 3D speaker that reacts to music"></canvas>
@@ -425,6 +441,7 @@ body.bare,body.bare canvas{cursor:none}
     <button class="chip" id="demoBtn" type="button">Demo beat</button>
     <button class="chip danger" id="clear" type="button">Delete all</button>
   </div>
+  <section id="onlineLibrary" hidden><h3>Online music <span id="onlineCount">0</span></h3><ol id="onlineTracks"></ol></section>
   <ol id="tracks"></ol>
   <p class="empty" id="empty">No songs yet. Tap <b>+ Add songs</b> and pick one or more MP3s from Files. They stay here for next time.</p>
 </div>
@@ -481,16 +498,23 @@ body.bare,body.bare canvas{cursor:none}
 
 <dialog id="urlImportDialog" aria-labelledby="urlImportHeading" aria-describedby="urlImportHelp">
   <form id="urlImportForm">
-    <h2 id="urlImportHeading">Add music from a URL</h2>
-    <p id="urlImportHelp">Paste a public direct audio link. The file is downloaded into this browser’s library so it works with KEBBEK’s sound effects and visualizer.</p>
+    <h2 id="urlImportHeading">Add music from a link</h2>
+    <p id="urlImportHelp">Paste a YouTube, Spotify or SoundCloud link, or a direct audio URL. Online links stay in Library; direct audio files are downloaded for KEBBEK playback.</p>
     <label for="urlImportInput">Audio URL</label>
     <input id="urlImportInput" type="url" required placeholder="https://example.com/song.mp3" autocomplete="off" spellcheck="false">
     <label for="urlImportTitle">Song title <span>(optional)</span></label>
     <input id="urlImportTitle" type="text" maxlength="160" placeholder="Use the filename" autocomplete="off">
-    <p class="url-note">Up to 100 MB. Use a direct audio file, rather than a song’s webpage. The server must allow browser downloads (CORS).</p>
+    <p class="url-note">YouTube, Spotify and SoundCloud use their official players and need internet. Direct audio downloads support files up to 100 MB when the server allows browser access.</p>
     <p id="urlImportStatus" role="status" aria-live="polite"></p>
     <div class="url-actions"><button id="urlImportClose" class="btn" type="button">Cancel</button><button id="urlImportSubmit" class="btn primary" type="submit">Add to library</button></div>
   </form>
+</dialog>
+
+<dialog id="onlinePlayerDialog" aria-labelledby="onlinePlayerHeading">
+  <div class="online-player-top"><div><small id="onlinePlayerProvider"></small><h2 id="onlinePlayerHeading">Online music</h2></div><button class="btn" type="button" id="onlinePlayerClose">Close</button></div>
+  <div id="onlinePlayerFrame"></div>
+  <p>Use the platform’s player controls. KEBBEK’s equalizer, audio-reactive visuals and recording do not process this player’s audio. Playback availability depends on the platform and your account.</p>
+  <a id="onlinePlayerLink" target="_blank" rel="noopener noreferrer">Open on platform</a>
 </dialog>
 
 <div class="rail" id="rail">
@@ -1046,14 +1070,14 @@ function libStorage(){const el=document.getElementById('libUse');if(!el)return;
   if(!persistAsked&&lib.length&&navigator.storage&&navigator.storage.persist){persistAsked=true;navigator.storage.persisted().then(p=>p||navigator.storage.persist()).catch(()=>{})}
   clearTimeout(useT);useT=setTimeout(async()=>{let t=lib.length+(lib.length===1?' song':' songs');try{if(navigator.storage&&navigator.storage.estimate){const e=await navigator.storage.estimate(),p=navigator.storage.persisted?await navigator.storage.persisted():false;
     const mb=(e.usage||0)/1048576,free=Math.max(0,(e.quota||0)-(e.usage||0))/1073741824;t+=` · ${mb<1024?Math.round(mb)+' MB':(mb/1024).toFixed(1)+' GB'} · ${free>=1?free.toFixed(0):free.toFixed(1)} GB free`+(p||IOSAPP?' · kept until you delete them':'')}}catch(err){}el.textContent=t},250)}
-function renderList(){libStorage();if(view!=='all'&&!plById(view))view='all';countEl.textContent=lib.length;
+function renderList(){libStorage();if(view!=='all'&&!plById(view))view='all';countEl.textContent=lib.length+(Number(countEl.dataset.onlineCount)||0);
   plTabs.textContent='';const tab=(label,n,v,cls)=>{const b=document.createElement('button');b.type='button';b.className='pltab'+(cls?' '+cls:'');b.setAttribute('role','tab');
     b.setAttribute('aria-selected',String(view===v));b.textContent=label;if(n!=null){const x=document.createElement('b');x.textContent=n;b.append(x)}
     b.addEventListener('click',()=>{if(v==='+'){newPlaylist();return}view=v;popFor=null;plPick.hidden=true;plNew.hidden=true;savePL();renderList()});plTabs.append(b)};
-  tab('All songs',lib.length,'all');PL.forEach(p=>tab(p.name,p.ids.filter(id=>idxOf(id)>=0).length,p.id));tab('+ New playlist',null,'+','new');
+  tab('Audio files',lib.length,'all');PL.forEach(p=>tab(p.name,p.ids.filter(id=>idxOf(id)>=0).length,p.id));tab('+ New playlist',null,'+','new');
   const pl=view==='all'?null:plById(view);plHead.hidden=!pl;document.getElementById('clear').hidden=!!pl;if(pl&&document.activeElement!==plName)plName.value=pl.name;
   const order=ctxOrder(view);
-  emptyEl.hidden=order.length>0;emptyEl.innerHTML=pl?'This playlist is empty. In <b>All songs</b>, tap <b>+</b> next to a song to add it here, or add new songs with <b>+ Add songs</b>.':'No songs yet. Tap <b>+ Add songs</b> and pick one or more MP3s from Files. They stay here for next time.';
+  emptyEl.hidden=order.length>0||(view==='all'&&Number(countEl.dataset.onlineCount)>0);emptyEl.innerHTML=pl?'This playlist is empty. In <b>All songs</b>, tap <b>+</b> next to a song to add it here, or add new songs with <b>+ Add songs</b>.':'No songs yet. Tap <b>+ Add songs</b> and pick one or more MP3s from Files. They stay here for next time.';
   tracksEl.innerHTML='';
   order.forEach((i,k)=>{const t=lib[i];const li=document.createElement('li');if(i===cur&&(playCtx===view||view==='all'))li.className='on';
     const p=document.createElement('button');p.className='pick';p.type='button';p.innerHTML='<i>'+(k+1)+'</i><span></span>';p.querySelector('span').textContent=t.name;p.addEventListener('click',()=>playIndex(i,view));
@@ -1153,6 +1177,8 @@ kbUrlForm.addEventListener('submit',async e=>{
   const controller=new AbortController();kbUrlJob=controller;kbUrlSubmit.disabled=true;kbUrlInput.disabled=true;kbUrlTitle.disabled=true;kbUrlForm.setAttribute('aria-busy','true');
   let timedOut=false;const timer=setTimeout(()=>{timedOut=true;controller.abort()},120000);
   try{
+    const platform=kbPlatform(u);
+    if(platform){const added=kbSaveOnline(platform,kbUrlTitle.value);kbUrlDialog.close();kbUrlForm.reset();showPanel('list');toast(added?'Online link saved in Library · choose Listen to open its official player':'This online link is already saved in Library');return;}
     const existing=lib.find(t=>t.sourceUrl===u.href);
     if(existing){playIndex(lib.indexOf(existing),'all');kbUrlDialog.close();toast('Already in your library · press Play if needed');return}
     kbUrlStatus.textContent='Downloading audio…';
@@ -1168,6 +1194,64 @@ kbUrlForm.addEventListener('submit',async e=>{
   }catch(err){if(kbUrlDialog.open){kbUrlStatus.textContent=timedOut?'Download timed out after 2 minutes. Try again or download the file and use Add songs.':controller.signal.aborted?'Import cancelled.':err.message||'Audio import failed.';kbUrlStatus.dataset.error='true';}}
   finally{clearTimeout(timer);kbUrlJob=null;kbUrlSubmit.disabled=false;kbUrlInput.disabled=false;kbUrlTitle.disabled=false;kbUrlForm.removeAttribute('aria-busy');if(!kbUrlDialog.open)kbUrlBtn.focus();}
 });
+
+// Official platform embeds. These are saved links, never downloaded or converted audio.
+function kbPlatform(u){
+  const h=u.hostname.toLowerCase(),seg=u.pathname.split('/').filter(Boolean);
+  if(['youtube.com','www.youtube.com','m.youtube.com','music.youtube.com','youtube-nocookie.com','www.youtube-nocookie.com','youtu.be','www.youtu.be'].includes(h)){
+    const id=h.endsWith('youtu.be')?seg[0]:['embed','shorts','live'].includes(seg[0])?seg[1]:u.searchParams.get('v');
+    const list=u.searchParams.get('list');let embed,canonical;
+    if(id&&/^[A-Za-z0-9_-]{11}$/.test(id)){canonical='https://www.youtube.com/watch?v='+id;embed='https://www.youtube-nocookie.com/embed/'+id+'?playsinline=1';}
+    else if(list&&/^[A-Za-z0-9_-]{10,100}$/.test(list)){canonical='https://www.youtube.com/playlist?list='+list;embed='https://www.youtube-nocookie.com/embed/videoseries?list='+list;}
+    else throw new Error('Paste a YouTube video or playlist link, rather than a channel or homepage.');
+    return {provider:'YouTube',url:canonical,embed,height:420,title:'YouTube '+(id?'video':'playlist')};
+  }
+  if(['open.spotify.com','spotify.com','www.spotify.com'].includes(h)){
+    if(/^intl-[a-z-]+$/i.test(seg[0]||''))seg.shift();if(seg[0]==='embed')seg.shift();
+    const [kind,id]=seg;if(!['track','album','playlist','artist','episode','show'].includes(kind)||!/^[A-Za-z0-9]{22}$/.test(id||''))throw new Error('Paste the Spotify share link for a track, album, playlist, artist, show or episode.');
+    const canonical='https://open.spotify.com/'+kind+'/'+id;return {provider:'Spotify',url:canonical,embed:'https://open.spotify.com/embed/'+kind+'/'+id+'?utm_source=generator&theme=0',height:352,title:'Spotify '+kind};
+  }
+  if(['soundcloud.com','www.soundcloud.com','m.soundcloud.com'].includes(h)){
+    if(seg.length<2||['discover','search','you','stream','stations','upload'].includes(seg[0]))throw new Error('Paste a SoundCloud track or playlist link.');
+    const canonical='https://soundcloud.com/'+seg.map(encodeURIComponent).join('/');const token=u.searchParams.get('secret_token');const target=new URL(canonical);if(token&&/^s-[\w-]+$/.test(token))target.searchParams.set('secret_token',token);
+    return {provider:'SoundCloud',url:target.href,embed:'https://w.soundcloud.com/player/?url='+encodeURIComponent(target.href)+'&auto_play=false&hide_related=true&show_comments=false&visual=false',height:166,title:'SoundCloud '+seg[seg.length-1].replace(/-/g,' ')};
+  }
+  if(['spoti.fi','on.soundcloud.com'].includes(h))throw new Error('Open this short link first, then copy the full Spotify or SoundCloud track URL.');
+  return null;
+}
+const KB_ONLINE_KEY='kebbek-online-library-v1';let kbOnline=[];
+try{const a=JSON.parse(localStorage.getItem(KB_ONLINE_KEY)||'[]');if(Array.isArray(a))for(const item of a.slice(0,500)){try{const p=kbPlatform(kbAudioURL(String(item.url||'')));if(p&&!kbOnline.some(x=>x.url===p.url))kbOnline.push({url:p.url,title:String(item.title||p.title).slice(0,160)})}catch(e){}}}catch(e){}
+function kbSaveOnline(p,title){
+  const found=kbOnline.find(x=>x.url===p.url);if(found)return false;
+  if(kbOnline.length>=500)throw new Error('Your online library has reached 500 links. Remove a link before adding another.');
+  const next=kbOnline.concat({url:p.url,title:title.trim().slice(0,160)||p.title});
+  try{localStorage.setItem(KB_ONLINE_KEY,JSON.stringify(next))}catch(e){throw new Error('Browser storage is unavailable or full. The online link could not be saved.');}
+  kbOnline=next;kbRenderOnline();return true;
+}
+const kbOnlinePlayer=document.getElementById('onlinePlayerDialog'),kbOnlineFrame=document.getElementById('onlinePlayerFrame');
+function kbCloseOnline(){kbOnlineFrame.replaceChildren();kbOnlinePlayer.close()}
+function kbPlayOnline(item){
+  const p=kbPlatform(kbAudioURL(item.url));if(!p)return;
+  if(audioEl&&!audioEl.paused)audioEl.pause();stopDemo();setPlaying(false);
+  document.getElementById('onlinePlayerHeading').textContent=item.title;
+  document.getElementById('onlinePlayerProvider').textContent=p.provider+' · official player';
+  const link=document.getElementById('onlinePlayerLink');link.href=p.url;link.textContent='Open in '+p.provider;
+  const frame=document.createElement('iframe');frame.src=p.embed;frame.title=p.provider+' player: '+item.title;frame.allow='autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture';frame.allowFullscreen=true;frame.referrerPolicy='strict-origin-when-cross-origin';frame.style.height=p.height+'px';
+  if(p.provider==='YouTube')frame.className='kb-youtube';kbOnlineFrame.replaceChildren(frame);kbOnlinePlayer.showModal();
+}
+document.getElementById('onlinePlayerClose').addEventListener('click',kbCloseOnline);
+kbOnlinePlayer.addEventListener('cancel',e=>{e.preventDefault();kbCloseOnline()});
+kbOnlinePlayer.addEventListener('keydown',e=>e.stopPropagation());
+function kbRenderOnline(){
+  const panel=document.getElementById('onlineLibrary'),list=document.getElementById('onlineTracks');panel.hidden=!kbOnline.length;list.replaceChildren();document.getElementById('onlineCount').textContent=String(kbOnline.length);
+  countEl.dataset.onlineCount=String(kbOnline.length);countEl.textContent=String(lib.length+kbOnline.length);if(view==='all'&&!lib.length)emptyEl.hidden=!!kbOnline.length;
+  kbOnline.forEach(item=>{let p;try{p=kbPlatform(kbAudioURL(item.url))}catch(e){return}if(!p)return;
+    const row=document.createElement('li'),text=document.createElement('div'),title=document.createElement('strong'),meta=document.createElement('small'),play=document.createElement('button'),remove=document.createElement('button');
+    title.textContent=item.title;meta.textContent=p.provider+' · saved link · internet required';text.append(title,meta);play.type=remove.type='button';play.className=remove.className='chip';play.textContent='Listen';play.setAttribute('aria-label','Listen to '+item.title);play.addEventListener('click',()=>kbPlayOnline(item));remove.textContent='Remove';remove.setAttribute('aria-label','Remove '+item.title);
+    remove.addEventListener('click',()=>{const next=kbOnline.filter(x=>x!==item);try{localStorage.setItem(KB_ONLINE_KEY,JSON.stringify(next));kbOnline=next;kbRenderOnline()}catch(e){toast('Could not update browser storage.')}});row.append(text,play,remove);list.append(row);
+  });
+}
+kbRenderOnline();
 
 // ---- read tags (ID3 for MP3, atoms for M4A, Vorbis comments for FLAC/OGG)
 function decTxt(b,enc){try{if(enc===1){if(b[0]===0xFF&&b[1]===0xFE)return new TextDecoder('utf-16le').decode(b.subarray(2));if(b[0]===0xFE&&b[1]===0xFF)return new TextDecoder('utf-16be').decode(b.subarray(2));return new TextDecoder('utf-16le').decode(b)}
@@ -1206,7 +1290,7 @@ function removeTrack(i){const t=lib[i];dbDo(st=>st.delete(t.id));lib.splice(i,1)
 function playIndex(i,ctxv){if(!lib.length)return;if(ctxv)playCtx=ctxv;cur=((i%lib.length)+lib.length)%lib.length;ensureCtx();stopDemo();
   if(!audioEl){audioEl=new Audio();audioEl.preload='auto';audioEl.setAttribute('playsinline','');audioEl.addEventListener('playing',()=>{if(ctx&&ctx.state!=='running')ctx.resume().catch(()=>{})});if(IOSWEB){['play','playing','seeked','ratechange'].forEach(e=>audioEl.addEventListener(e,()=>iosVis.sync(true)));['pause','ended','emptied'].forEach(e=>audioEl.addEventListener(e,()=>iosVis.stop()))}else{src=ctx.createMediaElementSource(audioEl);src.connect(trackGain);}
     audioEl.addEventListener('ended',()=>{if(REC){vStop();return}if(sleepEnd){sleepEnd=false;setSleep('0');setPlaying(false);return}if(S.snd.one){audioEl.currentTime=0;audioEl.play();onTrackStart();return}{const o=ctxOrder();if(!repeat&&!shuffle&&o.indexOf(cur)===o.length-1){setPlaying(false);return}}next()});
-    audioEl.addEventListener('play',()=>setPlaying(true));audioEl.addEventListener('pause',()=>setPlaying(false))}
+    audioEl.addEventListener('play',()=>{if(kbOnlinePlayer.open)kbCloseOnline();setPlaying(true)});audioEl.addEventListener('pause',()=>setPlaying(false))}
   if(audioEl._url)URL.revokeObjectURL(audioEl._url);audioEl._url=URL.createObjectURL(mimeFor(lib[cur].blob));audioEl.src=audioEl._url;audioEl._tid=lib[cur].id;if(IOSWEB){applySnd();iosVis.load(lib[cur])}
   audioEl.play().catch(()=>{});kicks.length=0;bpm=0;trackEl.textContent=lib[cur].name;renderList();setSession();wake();lyTrackChanged();onTrackStart()}
 function next(){const o=ctxOrder();if(!o.length)return;const p=o.indexOf(cur);if(shuffle&&o.length>1){let j;do j=o[Math.floor(Math.random()*o.length)];while(j===cur);playIndex(j)}else playIndex(o[(p+1)%o.length])}
