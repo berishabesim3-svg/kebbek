@@ -357,39 +357,6 @@ body.bare,body.bare canvas{cursor:none}
 #tele{pointer-events:auto;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}#tele.dragging{cursor:grabbing}
 </style>
 
-<style>
-#urlImportDialog{color:var(--ink);background:#0b101a;border:1px solid var(--line);border-radius:16px;width:min(520px,calc(100vw - 28px));max-height:calc(100dvh - 32px);padding:26px;overflow:auto;box-shadow:0 24px 100px #000b;font-family:var(--body)}
-#urlImportDialog::backdrop{background:#000a;backdrop-filter:blur(8px)}
-#urlImportDialog h2{font-size:22px;margin:0 0 12px;letter-spacing:0}
-#urlImportDialog p{font-size:13px;line-height:1.6;color:#9eafc2;margin:10px 0 18px}
-#urlImportDialog label{display:block;font-size:13px;margin:16px 0 7px;color:var(--ink)}
-#urlImportDialog label span{color:var(--muted)}
-#urlImportDialog input{width:100%;min-width:0;padding:13px;border:1px solid var(--line);border-radius:9px;background:#141c28;color:var(--ink);font:16px var(--body);user-select:text;-webkit-user-select:text}
-#urlImportDialog input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-#urlImportDialog .url-note{font-size:12px;margin-top:14px}
-#urlImportStatus{min-height:22px;overflow-wrap:anywhere}
-#urlImportStatus[data-error]{color:#ffadb6}
-.url-actions{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:10px}
-#urlImportDialog button:disabled{opacity:.5;cursor:wait}
-#urlImportBtn{padding:9px 10px;font-size:12px}
-
-</style>
-<style>#onlineLibrary{border-top:1px solid var(--line);margin-top:20px;padding-top:18px}
-#onlineLibrary h3{font-size:16px;margin:0 0 12px}
-#onlineTracks{list-style:none;margin:0;padding:0}
-#onlineTracks li{display:flex;gap:8px;align-items:center;flex-wrap:wrap;border-bottom:1px solid var(--line);padding:12px 0}
-#onlineTracks li>div{flex:1;min-width:140px;overflow-wrap:anywhere}
-#onlineTracks strong,#onlineTracks small{display:block}
-#onlineTracks small{color:var(--muted);font-size:11px;margin-top:5px}
-#onlinePlayerDialog{width:min(760px,calc(100vw - 24px));max-height:calc(100dvh - 24px);overflow:auto;background:#0b101a;color:var(--ink);border:1px solid var(--line);border-radius:16px;padding:20px;font:14px var(--body)}
-#onlinePlayerDialog::backdrop{background:#000c;backdrop-filter:blur(6px)}
-.online-player-top{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:15px}
-#onlinePlayerHeading{font-size:19px;margin:6px 0;overflow-wrap:anywhere}
-#onlinePlayerProvider,#onlinePlayerDialog p{color:#a9bacb;line-height:1.6;font-size:12px}
-#onlinePlayerDialog a{color:var(--accent)}
-#onlinePlayerFrame iframe{display:block;border:0;width:100%;border-radius:10px;background:#000}
-#onlinePlayerFrame iframe.kb-youtube{height:auto!important;aspect-ratio:16/9;min-height:200px}
-</style>
 </head>
 <body>
 <canvas id="stage" aria-label="KEBBEK 3D speaker that reacts to music"></canvas>
@@ -441,7 +408,6 @@ body.bare,body.bare canvas{cursor:none}
     <button class="chip" id="demoBtn" type="button">Demo beat</button>
     <button class="chip danger" id="clear" type="button">Delete all</button>
   </div>
-  <section id="onlineLibrary" hidden><h3>Online music <span id="onlineCount">0</span></h3><ol id="onlineTracks"></ol></section>
   <ol id="tracks"></ol>
   <p class="empty" id="empty">No songs yet. Tap <b>+ Add songs</b> and pick one or more MP3s from Files. They stay here for next time.</p>
 </div>
@@ -492,30 +458,9 @@ body.bare,body.bare canvas{cursor:none}
       <label class="rng"><span>Fine</span><input type="range" id="sBloom" min="0" max="2" step="0.05"><b id="vBloom"></b></label>
     </div>
     <label class="rng"><span>Sensitivity</span><input type="range" id="sSens" min="0.5" max="2" step="0.05"><b id="vSens"></b></label>
-    <div class="legal"><a href="https://berishabesim3-svg.github.io/kebbek/privacy.html" target="_blank" rel="noopener">Privacy</a><a href="https://berishabesim3-svg.github.io/kebbek/terms.html" target="_blank" rel="noopener">Terms</a><span class="note">KEBBEK 4.22</span></div>
+    <div class="legal"><a href="https://berishabesim3-svg.github.io/kebbek/privacy.html" target="_blank" rel="noopener">Privacy</a><a href="https://berishabesim3-svg.github.io/kebbek/terms.html" target="_blank" rel="noopener">Terms</a><span class="note">KEBBEK 4.23</span></div>
   </div>
 </div>
-
-<dialog id="urlImportDialog" aria-labelledby="urlImportHeading" aria-describedby="urlImportHelp">
-  <form id="urlImportForm">
-    <h2 id="urlImportHeading">Add music from a link</h2>
-    <p id="urlImportHelp">Paste a YouTube, Spotify or SoundCloud link, or a direct audio URL. Online links stay in Library; direct audio files are downloaded for KEBBEK playback.</p>
-    <label for="urlImportInput">Audio URL</label>
-    <input id="urlImportInput" type="url" required placeholder="https://example.com/song.mp3" autocomplete="off" spellcheck="false">
-    <label for="urlImportTitle">Song title <span>(optional)</span></label>
-    <input id="urlImportTitle" type="text" maxlength="160" placeholder="Use the filename" autocomplete="off">
-    <p class="url-note">YouTube, Spotify and SoundCloud use their official players and need internet. Direct audio downloads support files up to 100 MB when the server allows browser access.</p>
-    <p id="urlImportStatus" role="status" aria-live="polite"></p>
-    <div class="url-actions"><button id="urlImportClose" class="btn" type="button">Cancel</button><button id="urlImportSubmit" class="btn primary" type="submit">Add to library</button></div>
-  </form>
-</dialog>
-
-<dialog id="onlinePlayerDialog" aria-labelledby="onlinePlayerHeading">
-  <div class="online-player-top"><div><small id="onlinePlayerProvider"></small><h2 id="onlinePlayerHeading">Online music</h2></div><button class="btn" type="button" id="onlinePlayerClose">Close</button></div>
-  <div id="onlinePlayerFrame"></div>
-  <p>Use the platform’s player controls. KEBBEK’s equalizer, audio-reactive visuals and recording do not process this player’s audio. Playback availability depends on the platform and your account.</p>
-  <a id="onlinePlayerLink" target="_blank" rel="noopener noreferrer">Open on platform</a>
-</dialog>
 
 <div class="rail" id="rail">
   <div class="grip" id="grip" title="Drag to move · double-tap to reset"><i></i></div>
@@ -524,7 +469,6 @@ body.bare,body.bare canvas{cursor:none}
   <div class="row">
     <input type="file" id="file" multiple accept=".mp3,.m4a,.wav,.aac,.flac,.ogg,.opus,.lrc,.srt,audio/mpeg,audio/mp4,audio/wav,audio/*">
     <label for="file" class="btn primary" tabindex="0" id="fileLbl"><span class="kb-lf">+ Add songs</span><span class="kb-ls">+ Add</span></label>
-    <button class="btn" id="urlImportBtn" type="button" aria-haspopup="dialog" aria-controls="urlImportDialog">+ URL</button>
     <span class="track" id="track">No songs · press ▶ for demo</span>
     <button class="btn ghost" id="listBtn" type="button" aria-expanded="false" aria-label="Library"><svg class="kb-li" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h10v2H4z"/></svg><span class="kb-lt">Library </span><span id="count">0</span></button>
     <button class="ic sm" id="logoBtn" type="button" aria-pressed="true" aria-label="Show or hide the logo" title="Hide logo"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M9 7.5v9M9 12l4.5-4.5M9 12l4.5 4.5M13 7.5h1.8a2.2 2.2 0 0 1 0 4.4H13h2.2a2.3 2.3 0 0 1 0 4.6H13" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
@@ -1070,14 +1014,14 @@ function libStorage(){const el=document.getElementById('libUse');if(!el)return;
   if(!persistAsked&&lib.length&&navigator.storage&&navigator.storage.persist){persistAsked=true;navigator.storage.persisted().then(p=>p||navigator.storage.persist()).catch(()=>{})}
   clearTimeout(useT);useT=setTimeout(async()=>{let t=lib.length+(lib.length===1?' song':' songs');try{if(navigator.storage&&navigator.storage.estimate){const e=await navigator.storage.estimate(),p=navigator.storage.persisted?await navigator.storage.persisted():false;
     const mb=(e.usage||0)/1048576,free=Math.max(0,(e.quota||0)-(e.usage||0))/1073741824;t+=` · ${mb<1024?Math.round(mb)+' MB':(mb/1024).toFixed(1)+' GB'} · ${free>=1?free.toFixed(0):free.toFixed(1)} GB free`+(p||IOSAPP?' · kept until you delete them':'')}}catch(err){}el.textContent=t},250)}
-function renderList(){libStorage();if(view!=='all'&&!plById(view))view='all';countEl.textContent=lib.length+(Number(countEl.dataset.onlineCount)||0);
+function renderList(){libStorage();if(view!=='all'&&!plById(view))view='all';countEl.textContent=lib.length;
   plTabs.textContent='';const tab=(label,n,v,cls)=>{const b=document.createElement('button');b.type='button';b.className='pltab'+(cls?' '+cls:'');b.setAttribute('role','tab');
     b.setAttribute('aria-selected',String(view===v));b.textContent=label;if(n!=null){const x=document.createElement('b');x.textContent=n;b.append(x)}
     b.addEventListener('click',()=>{if(v==='+'){newPlaylist();return}view=v;popFor=null;plPick.hidden=true;plNew.hidden=true;savePL();renderList()});plTabs.append(b)};
-  tab('Audio files',lib.length,'all');PL.forEach(p=>tab(p.name,p.ids.filter(id=>idxOf(id)>=0).length,p.id));tab('+ New playlist',null,'+','new');
+  tab('All songs',lib.length,'all');PL.forEach(p=>tab(p.name,p.ids.filter(id=>idxOf(id)>=0).length,p.id));tab('+ New playlist',null,'+','new');
   const pl=view==='all'?null:plById(view);plHead.hidden=!pl;document.getElementById('clear').hidden=!!pl;if(pl&&document.activeElement!==plName)plName.value=pl.name;
   const order=ctxOrder(view);
-  emptyEl.hidden=order.length>0||(view==='all'&&Number(countEl.dataset.onlineCount)>0);emptyEl.innerHTML=pl?'This playlist is empty. In <b>All songs</b>, tap <b>+</b> next to a song to add it here, or add new songs with <b>+ Add songs</b>.':'No songs yet. Tap <b>+ Add songs</b> and pick one or more MP3s from Files. They stay here for next time.';
+  emptyEl.hidden=order.length>0;emptyEl.innerHTML=pl?'This playlist is empty. In <b>All songs</b>, tap <b>+</b> next to a song to add it here, or add new songs with <b>+ Add songs</b>.':'No songs yet. Tap <b>+ Add songs</b> and pick one or more MP3s from Files. They stay here for next time.';
   tracksEl.innerHTML='';
   order.forEach((i,k)=>{const t=lib[i];const li=document.createElement('li');if(i===cur&&(playCtx===view||view==='all'))li.className='on';
     const p=document.createElement('button');p.className='pick';p.type='button';p.innerHTML='<i>'+(k+1)+'</i><span></span>';p.querySelector('span').textContent=t.name;p.addEventListener('click',()=>playIndex(i,view));
@@ -1115,144 +1059,6 @@ function addFiles(files){const all=[...files],ok=all.filter(f=>isAudio(f)&&!isLy
     if(L&&L.length){t.lyrics=normalize(L);found++}
     dbDo(st=>st.put(t));if(t===curTrack()){trackEl.textContent=t.name;lyIdx=-2;setSession();if(!$l('lyp').hidden)renderLy()}
   })).then(()=>{renderList();if(found&&LYRICS)toast(found===1?(synced(made.find(x=>x.lyrics).lyrics)?'Lyrics found inside the song':'Lyrics text found in the song · open Lyrics to sync it'):`Lyrics found in ${found} songs`)})}
-// Direct audio URL import. Uses the existing local-file playback and analysis path.
-const KB_URL_MAX=100*1024*1024;
-function kbAudioURL(value){
-  let u;try{u=new URL(value.trim())}catch(e){throw new Error('Enter a complete direct audio URL, starting with https://.')}
-  if(u.protocol!=='https:'&&u.protocol!=='http:')throw new Error('Only HTTP or HTTPS audio links are supported.');
-  if(location.protocol==='https:'&&u.protocol!=='https:')throw new Error('Use an HTTPS audio link on this secure page.');
-  if(u.username||u.password)throw new Error('Links containing a username or password are not supported.');
-  u.hash='';return u;
-}
-function kbAudioKind(bytes,type){
-  const at=(s,n=0)=>s.split('').every((c,i)=>bytes[n+i]===c.charCodeAt(0));
-  if(at('RIFF')&&at('WAVE',8))return ['wav','audio/wav'];
-  if(at('fLaC'))return ['flac','audio/flac'];
-  if(at('OggS'))return ['ogg','audio/ogg'];
-  if(at('ftyp',4))return ['m4a','audio/mp4'];
-  if(bytes[0]===0x1a&&bytes[1]===0x45&&bytes[2]===0xdf&&bytes[3]===0xa3)return ['webm','audio/webm'];
-  if(at('ID3'))return ['mp3','audio/mpeg'];
-  if(bytes[0]===255&&(bytes[1]&0xf6)===0xf0)return ['aac','audio/aac'];
-  if(bytes[0]===255&&(bytes[1]&0xe0)===0xe0)return ['mp3','audio/mpeg'];
-  return null;
-}
-async function kbDownloadAudio(url,signal,progress){
-  let r;try{r=await fetch(url.href,{mode:'cors',credentials:'omit',referrerPolicy:'no-referrer',signal})}
-  catch(e){if(signal.aborted)throw e;throw new Error('Cannot fetch this audio. The link may be unavailable, or its server may block browser downloads (CORS). Try a direct audio link or use Add songs with a downloaded file.');}
-  if(!r.ok)throw new Error('Audio server returned HTTP '+r.status+'. Check that the link is public and has not expired.');
-  const type=(r.headers.get('content-type')||'').split(';')[0].trim().toLowerCase();
-  const total=Number(r.headers.get('content-length'))||0;
-  if(total>KB_URL_MAX){if(r.body)await r.body.cancel();throw new Error('This file exceeds the 100 MB import limit.');}
-  if(/(?:text\/|html|json|xml|mpegurl|dash\+xml)/.test(type)){if(r.body)await r.body.cancel();throw new Error('This link returns a webpage or playlist, not an audio file. Use a direct MP3, WAV, M4A, FLAC, OGG, AAC or WebM audio link.');}
-  const chunks=[];let size=0;
-  if(r.body&&r.body.getReader){const reader=r.body.getReader();try{while(true){const {done,value}=await reader.read();if(done)break;size+=value.byteLength;if(size>KB_URL_MAX){await reader.cancel();throw new Error('This file exceeds the 100 MB import limit.');}chunks.push(value);progress(size,total);}}finally{reader.releaseLock();}}
-  else{const b=await r.blob();size=b.size;if(size>KB_URL_MAX)throw new Error('This file exceeds the 100 MB import limit.');chunks.push(b);}
-  if(!size)throw new Error('The audio file is empty.');
-  const raw=new Blob(chunks),head=new Uint8Array(await raw.slice(0,512).arrayBuffer());
-  const text=new TextDecoder().decode(head).trimStart();
-  if(/^(?:<!doctype|<html|<\?xml|\{|\[)/i.test(text))throw new Error('This link returns a webpage or data, not playable audio.');
-  const kind=kbAudioKind(head,type);if(!kind)throw new Error('Unrecognized audio file. Use a direct MP3, WAV, M4A, FLAC, OGG, AAC or WebM audio link.');
-  return {blob:new Blob([raw],{type:kind[1]}),ext:kind[0]};
-}
-function kbProbeAudio(blob,signal){return new Promise((resolve,reject)=>{
-  const a=new Audio(),u=URL.createObjectURL(blob);let settled=false;
-  const finish=e=>{if(settled)return;settled=true;clearTimeout(timer);signal.removeEventListener('abort',abort);a.onloadedmetadata=a.onerror=null;a.removeAttribute('src');a.load();URL.revokeObjectURL(u);e?reject(e):resolve()};
-  const abort=()=>finish(new DOMException('Cancelled','AbortError'));
-  const timer=setTimeout(()=>finish(new Error('Audio validation timed out. Try a different audio file.')),15000);
-  a.preload='metadata';a.onloadedmetadata=()=>finish(Number.isFinite(a.duration)&&a.duration>0?null:new Error('This file is not a finite playable audio track. Live streams and playlists are not supported.'));
-  a.onerror=()=>finish(new Error('Your browser cannot play this audio file. Try an MP3 or WAV version.'));
-  signal.addEventListener('abort',abort,{once:true});if(signal.aborted){abort();return}a.src=u;
-});}
-const kbUrlDialog=document.getElementById('urlImportDialog'),kbUrlForm=document.getElementById('urlImportForm'),kbUrlInput=document.getElementById('urlImportInput'),kbUrlTitle=document.getElementById('urlImportTitle'),kbUrlStatus=document.getElementById('urlImportStatus'),kbUrlSubmit=document.getElementById('urlImportSubmit'),kbUrlBtn=document.getElementById('urlImportBtn');
-let kbUrlJob=null;
-function kbCloseURL(){if(kbUrlJob)kbUrlJob.abort();kbUrlDialog.close();kbUrlBtn.focus();}
-kbUrlBtn.addEventListener('click',()=>{showPanel(null);kbUrlStatus.textContent='';kbUrlStatus.removeAttribute('data-error');kbUrlDialog.showModal();kbUrlInput.focus()});
-document.getElementById('urlImportClose').addEventListener('click',kbCloseURL);
-kbUrlDialog.addEventListener('cancel',e=>{e.preventDefault();kbCloseURL()});
-// Keep player keyboard shortcuts out of the modal (space, arrows and Enter).
-kbUrlDialog.addEventListener('keydown',e=>e.stopPropagation());
-kbUrlForm.addEventListener('submit',async e=>{
-  e.preventDefault();if(kbUrlJob)return;kbUrlStatus.removeAttribute('data-error');
-  let u;try{u=kbAudioURL(kbUrlInput.value)}catch(err){kbUrlStatus.textContent=err.message;kbUrlStatus.dataset.error='true';return}
-  const controller=new AbortController();kbUrlJob=controller;kbUrlSubmit.disabled=true;kbUrlInput.disabled=true;kbUrlTitle.disabled=true;kbUrlForm.setAttribute('aria-busy','true');
-  let timedOut=false;const timer=setTimeout(()=>{timedOut=true;controller.abort()},120000);
-  try{
-    const platform=kbPlatform(u);
-    if(platform){const added=kbSaveOnline(platform,kbUrlTitle.value);kbUrlDialog.close();kbUrlForm.reset();showPanel('list');toast(added?'Online link saved in Library · choose Listen to open its official player':'This online link is already saved in Library');return;}
-    const existing=lib.find(t=>t.sourceUrl===u.href);
-    if(existing){playIndex(lib.indexOf(existing),'all');kbUrlDialog.close();toast('Already in your library · press Play if needed');return}
-    kbUrlStatus.textContent='Downloading audio…';
-    const {blob,ext}=await kbDownloadAudio(u,controller.signal,(n,total)=>{kbUrlStatus.textContent='Downloading · '+(n/1048576).toFixed(1)+' MB'+(total?' / '+(total/1048576).toFixed(1)+' MB':'')});
-    kbUrlStatus.textContent='Checking audio…';await kbProbeAudio(blob,controller.signal);
-    if(controller.signal.aborted)throw new DOMException('Cancelled','AbortError');
-    let title=kbUrlTitle.value.trim();if(!title){try{title=decodeURIComponent(u.pathname.split('/').pop()||'')}catch(e){}title=(title||'Online audio').replace(/\.(mp3|wav|m4a|mp4|flac|ogg|opus|aac|webm)$/i,'');}
-    title=title.replace(/[\u0000-\u001f<>:"/\\|?*]/g,' ').trim().slice(0,160)||'Online audio';
-    const f=new File([blob],title+'.'+ext,{type:blob.type});addFiles([f]);
-    const t=lib.find(t=>t.blob===f);if(!t)throw new Error('Could not add the audio to your library.');t.sourceUrl=u.href;
-    let persisted=false;if(db){persisted=await new Promise(resolve=>{try{const tx=db.transaction('tracks','readwrite');tx.objectStore('tracks').put(t);tx.oncomplete=()=>resolve(true);tx.onerror=tx.onabort=()=>resolve(false)}catch(e){resolve(false)}})}
-    kbUrlDialog.close();kbUrlForm.reset();toast(persisted?'Audio added and saved · press Play if needed':'Audio added for this session · browser storage is unavailable or full');
-  }catch(err){if(kbUrlDialog.open){kbUrlStatus.textContent=timedOut?'Download timed out after 2 minutes. Try again or download the file and use Add songs.':controller.signal.aborted?'Import cancelled.':err.message||'Audio import failed.';kbUrlStatus.dataset.error='true';}}
-  finally{clearTimeout(timer);kbUrlJob=null;kbUrlSubmit.disabled=false;kbUrlInput.disabled=false;kbUrlTitle.disabled=false;kbUrlForm.removeAttribute('aria-busy');if(!kbUrlDialog.open)kbUrlBtn.focus();}
-});
-
-// Official platform embeds. These are saved links, never downloaded or converted audio.
-function kbPlatform(u){
-  const h=u.hostname.toLowerCase(),seg=u.pathname.split('/').filter(Boolean);
-  if(['youtube.com','www.youtube.com','m.youtube.com','music.youtube.com','youtube-nocookie.com','www.youtube-nocookie.com','youtu.be','www.youtu.be'].includes(h)){
-    const id=h.endsWith('youtu.be')?seg[0]:['embed','shorts','live'].includes(seg[0])?seg[1]:u.searchParams.get('v');
-    const list=u.searchParams.get('list');let embed,canonical;
-    if(id&&/^[A-Za-z0-9_-]{11}$/.test(id)){canonical='https://www.youtube.com/watch?v='+id;embed='https://www.youtube-nocookie.com/embed/'+id+'?playsinline=1';}
-    else if(list&&/^[A-Za-z0-9_-]{10,100}$/.test(list)){canonical='https://www.youtube.com/playlist?list='+list;embed='https://www.youtube-nocookie.com/embed/videoseries?list='+list;}
-    else throw new Error('Paste a YouTube video or playlist link, rather than a channel or homepage.');
-    return {provider:'YouTube',url:canonical,embed,height:420,title:'YouTube '+(id?'video':'playlist')};
-  }
-  if(['open.spotify.com','spotify.com','www.spotify.com'].includes(h)){
-    if(/^intl-[a-z-]+$/i.test(seg[0]||''))seg.shift();if(seg[0]==='embed')seg.shift();
-    const [kind,id]=seg;if(!['track','album','playlist','artist','episode','show'].includes(kind)||!/^[A-Za-z0-9]{22}$/.test(id||''))throw new Error('Paste the Spotify share link for a track, album, playlist, artist, show or episode.');
-    const canonical='https://open.spotify.com/'+kind+'/'+id;return {provider:'Spotify',url:canonical,embed:'https://open.spotify.com/embed/'+kind+'/'+id+'?utm_source=generator&theme=0',height:352,title:'Spotify '+kind};
-  }
-  if(['soundcloud.com','www.soundcloud.com','m.soundcloud.com'].includes(h)){
-    if(seg.length<2||['discover','search','you','stream','stations','upload'].includes(seg[0]))throw new Error('Paste a SoundCloud track or playlist link.');
-    const canonical='https://soundcloud.com/'+seg.map(encodeURIComponent).join('/');const token=u.searchParams.get('secret_token');const target=new URL(canonical);if(token&&/^s-[\w-]+$/.test(token))target.searchParams.set('secret_token',token);
-    return {provider:'SoundCloud',url:target.href,embed:'https://w.soundcloud.com/player/?url='+encodeURIComponent(target.href)+'&auto_play=false&hide_related=true&show_comments=false&visual=false',height:166,title:'SoundCloud '+seg[seg.length-1].replace(/-/g,' ')};
-  }
-  if(['spoti.fi','on.soundcloud.com'].includes(h))throw new Error('Open this short link first, then copy the full Spotify or SoundCloud track URL.');
-  return null;
-}
-const KB_ONLINE_KEY='kebbek-online-library-v1';let kbOnline=[];
-try{const a=JSON.parse(localStorage.getItem(KB_ONLINE_KEY)||'[]');if(Array.isArray(a))for(const item of a.slice(0,500)){try{const p=kbPlatform(kbAudioURL(String(item.url||'')));if(p&&!kbOnline.some(x=>x.url===p.url))kbOnline.push({url:p.url,title:String(item.title||p.title).slice(0,160)})}catch(e){}}}catch(e){}
-function kbSaveOnline(p,title){
-  const found=kbOnline.find(x=>x.url===p.url);if(found)return false;
-  if(kbOnline.length>=500)throw new Error('Your online library has reached 500 links. Remove a link before adding another.');
-  const next=kbOnline.concat({url:p.url,title:title.trim().slice(0,160)||p.title});
-  try{localStorage.setItem(KB_ONLINE_KEY,JSON.stringify(next))}catch(e){throw new Error('Browser storage is unavailable or full. The online link could not be saved.');}
-  kbOnline=next;kbRenderOnline();return true;
-}
-const kbOnlinePlayer=document.getElementById('onlinePlayerDialog'),kbOnlineFrame=document.getElementById('onlinePlayerFrame');
-function kbCloseOnline(){kbOnlineFrame.replaceChildren();kbOnlinePlayer.close()}
-function kbPlayOnline(item){
-  const p=kbPlatform(kbAudioURL(item.url));if(!p)return;
-  if(audioEl&&!audioEl.paused)audioEl.pause();stopDemo();setPlaying(false);
-  document.getElementById('onlinePlayerHeading').textContent=item.title;
-  document.getElementById('onlinePlayerProvider').textContent=p.provider+' · official player';
-  const link=document.getElementById('onlinePlayerLink');link.href=p.url;link.textContent='Open in '+p.provider;
-  const frame=document.createElement('iframe');frame.src=p.embed;frame.title=p.provider+' player: '+item.title;frame.allow='autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture';frame.allowFullscreen=true;frame.referrerPolicy='strict-origin-when-cross-origin';frame.style.height=p.height+'px';
-  if(p.provider==='YouTube')frame.className='kb-youtube';kbOnlineFrame.replaceChildren(frame);kbOnlinePlayer.showModal();
-}
-document.getElementById('onlinePlayerClose').addEventListener('click',kbCloseOnline);
-kbOnlinePlayer.addEventListener('cancel',e=>{e.preventDefault();kbCloseOnline()});
-kbOnlinePlayer.addEventListener('keydown',e=>e.stopPropagation());
-function kbRenderOnline(){
-  const panel=document.getElementById('onlineLibrary'),list=document.getElementById('onlineTracks');panel.hidden=!kbOnline.length;list.replaceChildren();document.getElementById('onlineCount').textContent=String(kbOnline.length);
-  countEl.dataset.onlineCount=String(kbOnline.length);countEl.textContent=String(lib.length+kbOnline.length);if(view==='all'&&!lib.length)emptyEl.hidden=!!kbOnline.length;
-  kbOnline.forEach(item=>{let p;try{p=kbPlatform(kbAudioURL(item.url))}catch(e){return}if(!p)return;
-    const row=document.createElement('li'),text=document.createElement('div'),title=document.createElement('strong'),meta=document.createElement('small'),play=document.createElement('button'),remove=document.createElement('button');
-    title.textContent=item.title;meta.textContent=p.provider+' · saved link · internet required';text.append(title,meta);play.type=remove.type='button';play.className=remove.className='chip';play.textContent='Listen';play.setAttribute('aria-label','Listen to '+item.title);play.addEventListener('click',()=>kbPlayOnline(item));remove.textContent='Remove';remove.setAttribute('aria-label','Remove '+item.title);
-    remove.addEventListener('click',()=>{const next=kbOnline.filter(x=>x!==item);try{localStorage.setItem(KB_ONLINE_KEY,JSON.stringify(next));kbOnline=next;kbRenderOnline()}catch(e){toast('Could not update browser storage.')}});row.append(text,play,remove);list.append(row);
-  });
-}
-kbRenderOnline();
-
 // ---- read tags (ID3 for MP3, atoms for M4A, Vorbis comments for FLAC/OGG)
 function decTxt(b,enc){try{if(enc===1){if(b[0]===0xFF&&b[1]===0xFE)return new TextDecoder('utf-16le').decode(b.subarray(2));if(b[0]===0xFE&&b[1]===0xFF)return new TextDecoder('utf-16be').decode(b.subarray(2));return new TextDecoder('utf-16le').decode(b)}
   if(enc===2)return new TextDecoder('utf-16be').decode(b);if(enc===3)return new TextDecoder('utf-8').decode(b);return new TextDecoder('windows-1252').decode(b)}catch(e){return''}}
@@ -1290,7 +1096,7 @@ function removeTrack(i){const t=lib[i];dbDo(st=>st.delete(t.id));lib.splice(i,1)
 function playIndex(i,ctxv){if(!lib.length)return;if(ctxv)playCtx=ctxv;cur=((i%lib.length)+lib.length)%lib.length;ensureCtx();stopDemo();
   if(!audioEl){audioEl=new Audio();audioEl.preload='auto';audioEl.setAttribute('playsinline','');audioEl.addEventListener('playing',()=>{if(ctx&&ctx.state!=='running')ctx.resume().catch(()=>{})});if(IOSWEB){['play','playing','seeked','ratechange'].forEach(e=>audioEl.addEventListener(e,()=>iosVis.sync(true)));['pause','ended','emptied'].forEach(e=>audioEl.addEventListener(e,()=>iosVis.stop()))}else{src=ctx.createMediaElementSource(audioEl);src.connect(trackGain);}
     audioEl.addEventListener('ended',()=>{if(REC){vStop();return}if(sleepEnd){sleepEnd=false;setSleep('0');setPlaying(false);return}if(S.snd.one){audioEl.currentTime=0;audioEl.play();onTrackStart();return}{const o=ctxOrder();if(!repeat&&!shuffle&&o.indexOf(cur)===o.length-1){setPlaying(false);return}}next()});
-    audioEl.addEventListener('play',()=>{if(kbOnlinePlayer.open)kbCloseOnline();setPlaying(true)});audioEl.addEventListener('pause',()=>setPlaying(false))}
+    audioEl.addEventListener('play',()=>setPlaying(true));audioEl.addEventListener('pause',()=>setPlaying(false))}
   if(audioEl._url)URL.revokeObjectURL(audioEl._url);audioEl._url=URL.createObjectURL(mimeFor(lib[cur].blob));audioEl.src=audioEl._url;audioEl._tid=lib[cur].id;if(IOSWEB){applySnd();iosVis.load(lib[cur])}
   audioEl.play().catch(()=>{});kicks.length=0;bpm=0;trackEl.textContent=lib[cur].name;renderList();setSession();wake();lyTrackChanged();onTrackStart()}
 function next(){const o=ctxOrder();if(!o.length)return;const p=o.indexOf(cur);if(shuffle&&o.length>1){let j;do j=o[Math.floor(Math.random()*o.length)];while(j===cur);playIndex(j)}else playIndex(o[(p+1)%o.length])}
@@ -1459,7 +1265,7 @@ cfgBtn.addEventListener('click',()=>showPanel('cfg'));
 document.getElementById('bareBtn').addEventListener('click',e=>{e.stopPropagation();showPanel(null);setTimeout(()=>document.body.classList.add('bare'),60)});
 const unBare=e=>{if(!document.body.classList.contains('bare'))return;document.body.classList.remove('bare');e.stopPropagation();if(e.cancelable)e.preventDefault()};
 addEventListener('pointerdown',unBare,true);addEventListener('keydown',e=>{if(e.key!=='Shift')unBare(e)},true);
-function applyAll(){applyColors();applyName();applyFx();applyLogo();showers.forEach(f=>f())}
+function applyAll(){if(window.__dzApply)window.__dzApply();applyColors();applyName();applyFx();applyLogo();showers.forEach(f=>f())}
 applyAll();
 
 // ---------- sound engine: 10-band EQ, bass, clarity, warmth, space, stereo width, loudness, limiter
@@ -1931,10 +1737,10 @@ let wakeLv=0,wakeT=0,darkO='';const darkEl=document.getElementById('dark');
 let ledAmb=0,ledHead=0;const AMB_LO=new THREE.Color(0x5a2a00),AMB_HI=new THREE.Color(0xffb020),ambOut=new THREE.Color();
 /* ---- KEBBEK Designs · 100 selectable 3D scenes (20 families x 5 variants) + the original speaker. Registry based: one dzReg() line adds designs to the gallery ---- */
 const DZ_MOB=/Mobi|iP(hone|od)|Android/.test(navigator.userAgent);
-const DZA={b:0,m:0,h:0,k:0,p:0,t:0,dt:1/60,live:false,tx:0,ty:0,wg:.3};
+const DZA={b:0,m:0,h:0,k:0,p:0,t:0,dt:1/60,live:false,th:false,tx:0,ty:0,wg:.3};
 function dzRng(s){return()=>{s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
-const dzBin=x=>{x=Math.max(0,Math.min(1,x));if(!DZA.live){const t=DZA.t;return Math.max(0,.2+.13*Math.sin(t*2.1+x*9)*Math.sin(t*.7+x*3.3)+.08*Math.sin(t*5+x*21)-x*.1)}return Math.min(1,data[Math.floor(2+Math.pow(x,1.7)*500)]/255*(1+x*1.3))};
-const dzWave=x=>{x=Math.max(0,Math.min(1,x));return DZA.live?(wave[Math.min(1023,Math.floor(x*1023))]-128)/128/DZA.wg:Math.sin(DZA.t*3+x*22)*.75*Math.sin(DZA.t*.9+x*5+.6)};
+const dzBin=x=>{x=Math.max(0,Math.min(1,x));if(!DZA.live||!data){const t=DZA.t;return Math.max(0,.2+.13*Math.sin(t*2.1+x*9)*Math.sin(t*.7+x*3.3)+.08*Math.sin(t*5+x*21)-x*.1)}return Math.min(1,data[Math.floor(2+Math.pow(x,1.7)*500)]/255*(1+x*1.3))};
+const dzWave=x=>{x=Math.max(0,Math.min(1,x));return DZA.live&&wave?(wave[Math.min(1023,Math.floor(x*1023))]-128)/128/DZA.wg:Math.sin(DZA.t*3+x*22)*.75*Math.sin(DZA.t*.9+x*5+.6)};
 let dzEnvT=null;
 /* studio environment as a plain cube map painted on the CPU (PMREM produced NaN pixels on some GPUs) */
 function dzEnv(){if(dzEnvT)return dzEnvT;const N=128,imgs=[];const sm=(a,b,x)=>{const t=Math.max(0,Math.min(1,(x-a)/(b-a)));return t*t*(3-2*t)};
@@ -1976,7 +1782,7 @@ function dzRadTex(){const c=document.createElement('canvas');c.width=c.height=12
 function dzHalo(X,size,w,base,gain,band,z){const m=X.glow(w,base,gain,band,1);m.map=dzRadTex();const o=new THREE.Mesh(new THREE.PlaneGeometry(size,size),m);o.position.z=z||-1.5;o.userData.nofit=true;X.add(o);return o}
 function dzBox(o){const b=new THREE.Box3(),t=new THREE.Box3();o.updateMatrixWorld(true);(function walk(n){if(n.userData.nofit)return;if(n.geometry&&!n.isInstancedMesh&&!n.isPoints){if(!n.geometry.boundingBox)n.geometry.computeBoundingBox();t.copy(n.geometry.boundingBox).applyMatrix4(n.matrixWorld);b.union(t)}n.children.forEach(walk)})(o);return b}
 const DZF={};const DESIGNS=[{id:'speaker',name:'KEBBEK Speaker',tag:'Speakers',fam:null}];
-function dzReg(fam,tag,list){list.forEach((p,i)=>DESIGNS.push({id:fam+'-'+(i+1),name:p.name,tag:p.tag||tag,fam,p}))}
+function dzReg(fam,tag,list){list.forEach((p,i)=>DESIGNS.push({id:p.id||fam+'-'+(i+1),name:p.name,tag:p.tag||tag,fam,p}))}
 function dzBuild(d){let s=7;for(const ch of d.id)s=s*31+ch.charCodeAt(0)|0;const X=dzCtx(s);const up=DZF[d.fam](d.p,X)||(()=>{});const W=new THREE.Group();W.add(X.G);
   if(X.fit){const bx=X.box||dzBox(X.G);if(!bx.isEmpty()){const sz=bx.getSize(new THREE.Vector3()),ce=bx.getCenter(new THREE.Vector3());const k=Math.min(7.4/Math.max(.01,sz.x),6.9/Math.max(.01,sz.y),10/Math.max(.01,sz.z));X.G.position.sub(ce);W.scale.setScalar(k)}}
   return{W,X,up,sway:X.sway}}
@@ -2023,6 +1829,253 @@ void main(){float u=position.x,s=position.y,f=floor(position.z),r=fract(position
     if(A.p>lp+.5)u.uTap.value.set((A.tx+1)/2,0);lp=A.p;u.uTap.value.y+=A.dt;
     src.position.set(10.4*sx,2.3,-.55);const sc=.55+A.b*.35+A.k*.4;src.scale.setScalar(sc);fl.position.copy(src.position);fl.scale.set(1+A.h,1,1)}};
 dzReg('wav','Motion',[{name:'Light Wave'},{name:'Gold Wave',black:1,pal:[[.6,.36,.06],[1,.66,.18],[1,.76,.3],[1,.86,.5]],src:0xffc060,fl:0xffe0a0,hz:0x3a2808},{name:'Silver Wave',black:1,pal:[[.42,.45,.5],[.72,.75,.8],[.9,.92,.95],[1,1,1]],xr:.05,cx:[.15,1.6,1.6],src:0xe8f4ff,fl:0xffffff,hz:0x1a2228}]);
+/* ★ Motion series 2 (4.23): ten algorithmic, audio-reactive scenes. Stable IDs mo-*.
+   Shared rules: audio is smoothed with attack/release envelopes; beats are taken on the upward crossing of the existing kick envelope
+   (never every frame while it is high); with the music paused everything relaxes to a quiet idle; simulations use fixed sub-steps. */
+const MO={};
+function moAud(){const s={b:0,m:0,h:0,ms:0,act:0,beat:false,tap:false,pk:0,pp:0,lb:-9,t:0,dt:1/60};
+  return A=>{const dt=Math.min(.05,Math.max(0,A.dt||0)),on=(A.live||A.th)?1:0;s.act+=(on-s.act)*(1-Math.exp(-dt*(on?2.5:1.1)));
+    const ev=(v,x,at,rl)=>{const tg=x*s.act;return v+(tg-v)*(1-Math.exp(-dt/(tg>v?at:rl)))};
+    s.b=ev(s.b,A.b||0,.05,.32);s.m=ev(s.m,A.m||0,.08,.4);s.h=ev(s.h,A.h||0,.03,.22);s.ms=ev(s.ms,A.m||0,2.5,4);
+    s.beat=false;if(A.live&&A.k>.8&&s.pk<=.8&&A.t-s.lb>.16){s.beat=true;s.lb=A.t}s.pk=A.k||0;
+    s.tap=(A.p||0)>s.pp+.5;s.pp=A.p||0;s.t=A.t;s.dt=dt;return s}}
+const moAsp=()=>Math.min(1,Math.max(.46,((typeof cam!=='undefined'&&cam.aspect)||1.78)/1.78));
+const moLines=(n,X)=>{const g=new THREE.BufferGeometry(),P=new Float32Array(n*6),C=new Float32Array(n*6);g.setAttribute('position',new THREE.BufferAttribute(P,3));g.setAttribute('color',new THREE.BufferAttribute(C,3));
+  const l=new THREE.LineSegments(g,new THREE.LineBasicMaterial({vertexColors:true,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false}));l.frustumCulled=false;X.add(l);return{g,P,C,l}};
+const moPts=(n,size,X)=>{const g=new THREE.BufferGeometry(),P=new Float32Array(n*3),C=new Float32Array(n*3);g.setAttribute('position',new THREE.BufferAttribute(P,3));g.setAttribute('color',new THREE.BufferAttribute(C,3));
+  const m=new THREE.PointsMaterial({size,map:dzRadTex(),vertexColors:true,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,sizeAttenuation:true});const o=new THREE.Points(g,m);o.frustumCulled=false;X.add(o);return{g,P,C,o}};
+const moDirty=(...gs)=>gs.forEach(g=>{g.attributes.position.needsUpdate=true;if(g.attributes.color)g.attributes.color.needsUpdate=true});
+const moGlowInst=(geo,n,X)=>{const I=dzInst(geo,new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false}),n,true);X.add(I);return I};
+const moQ=new THREE.Quaternion(),moUp=new THREE.Vector3(0,1,0),moV1=new THREE.Vector3(),moV2=new THREE.Vector3(),moC1=new THREE.Color(),moC2=new THREE.Color();
+/* place an instanced unit cylinder (height 1 along y) between two points */
+function moBone(I,i,ax,ay,az,bx,by,bz,r){moV1.set(bx-ax,by-ay,bz-az);const L=moV1.length()||1e-4;moV1.multiplyScalar(1/L);moQ.setFromUnitVectors(moUp,moV1);
+  dzO.position.set((ax+bx)/2,(ay+by)/2,(az+bz)/2);dzO.quaternion.copy(moQ);dzO.scale.set(r,L,r);dzO.updateMatrix();I.setMatrixAt(i,dzO.matrix)}
+const moSil=(u,k)=>moC1.copy(colA).lerp(colB,u).lerp(dzW1,.35).multiplyScalar(k);
+
+/* 1 · RADIO TIDES — two mirrored broadcast sources; expanding rings cross horizontal strands that carry the summed interference of both sources */
+MO.radio=(p,X)=>{X.fit=false;X.sway=.45;const au=moAud(),SN=DZ_MOB?18:28,SP=DZ_MOB?150:240,SXp=4.1,RN=10,RS=DZ_MOB?72:120,XW=8.2;
+  const st=moLines(SN*(SP-1),X),rg=moLines(2*RN*RS,X);
+  const rr=new Float32Array(2*RN),ra=new Float32Array(2*RN);let rh=0,emit=0;const pr=new Float32Array(4).fill(99),pa=new Float32Array(4);let ph=0;
+  const halos=[-1,1].map(s=>{const o=dzHalo(X,1.6,s<0?0:1,.25,.9,'b',.02);o.position.x=s*SXp;return o});
+  const ringAt=(a,big)=>{for(const s of[0,1]){const i=s*RN+rh;rr[i]=.15;ra[i]=a}rh=(rh+1)%RN};
+  const YS=new Float32Array(SP),WS=new Float32Array(SP);
+  return A=>{const a=au(A),dt=a.dt,sx=moAsp();X.G.scale.setScalar(sx);
+    emit-=dt;if(emit<=0){ringAt(.28+a.b*.25);emit=1.25-a.b*.5}if(a.beat||a.tap){ringAt(1,true);let j=0;for(let i=1;i<4;i++)if(pr[i]>pr[j])j=i;pr[j]=0;pa[j]=1}
+    for(let i=0;i<4;i++){if(pr[i]<50){pr[i]+=dt*3.4;pa[i]*=Math.exp(-dt*.55)}}
+    ph+=dt*(1.6+a.m*1.2);const kw=1.9+a.m*1.5,amp=.1+a.b*.6,curv=.12+a.m*.3;let q=0;
+    for(let j=0;j<SN;j++){const u=j/(SN-1),y0=(u-.5)*3.4,sel=(j%5===2)?1:0;
+      for(let i=0;i<SP;i++){const x=(i/(SP-1)*2-1)*XW;const d1=Math.hypot(x+SXp,y0*.9),d2=Math.hypot(x-SXp,y0*.9);
+        let w=(Math.sin(d1*kw-ph)/(1+d1*.32)+Math.sin(d2*kw-ph)/(1+d2*.32))*amp;let pb=0;
+        for(let k=0;k<4;k++)if(pr[k]<50){const e1=d1-pr[k],e2=d2-pr[k];pb+=(Math.exp(-e1*e1*5)+Math.exp(-e2*e2*5))*pa[k]}
+        YS[i]=y0+w+pb*.35*Math.sign(y0||1)+Math.sin(x*.35+ph*.15)*curv*(u-.5);WS[i]=Math.abs(w)*1.6+pb}
+      for(let i=0;i<SP-1;i++){for(let e=0;e<2;e++){const ii=i+e,x=(ii/(SP-1)*2-1)*XW,ef=Math.min(1,(XW-Math.abs(x))/1.6);
+          st.P[q]=x;st.P[q+1]=YS[ii];st.P[q+2]=Math.sin(x*.5+u*3)*.4;const br=(.13+sel*a.h*.9+WS[ii]*.35)*ef*ef;moSil(Math.abs(x)/XW,br);st.C[q]=moC1.r;st.C[q+1]=moC1.g;st.C[q+2]=moC1.b;q+=3}}}
+    q=0;for(let s=0;s<2;s++)for(let r=0;r<RN;r++){const i=s*RN+r;if(rr[i]<12)rr[i]+=dt*2.3;const R=rr[i],cx=(s?1:-1)*SXp,al=ra[i]*Math.pow(Math.max(0,1-R/11),1.6)*(R<12?1:0);
+      for(let k=0;k<RS;k++)for(let e=0;e<2;e++){const an=(k+e)/RS*Math.PI*2;rg.P[q]=cx+Math.cos(an)*R;rg.P[q+1]=Math.sin(an)*R*.92;rg.P[q+2]=0;const br=al*.5;moSil(s,br);rg.C[q]=moC1.r;rg.C[q+1]=moC1.g;rg.C[q+2]=moC1.b;q+=3}}
+    moDirty(st.g,rg.g);halos.forEach(h=>h.scale.setScalar(1+a.b*.6+a.h*.2))}};
+
+/* 2 · KINETIC DANCER — 16-joint skeleton by forward kinematics; beats blend smoothly between key poses; the lower foot stays planted */
+MO.dancer=(p,X)=>{X.fit=false;X.sway=.6;const au=moAud(),R=X.rnd;
+  /* pose = [lean,twist, aL,eL, aR,eR, splL,flL,knL, splR,flR,knR, head] */
+  const POSES=[[0,0,.35,.6,.35,.6,.12,0,0,.12,0,0,0],[0,0,2.6,.2,2.6,.2,.16,0,0,.16,0,0,-.1],[.12,.2,2.9,.1,.6,1.9,.1,0,0,.14,0,0,.15],[-.06,-.15,1.3,1.4,1.3,1.4,.1,0,0,.05,1.3,1.7,0],
+    [0,0,1.5,.1,1.5,.1,.36,.5,1.0,.36,.5,1.0,0],[.22,.35,.9,1.2,2.0,.6,.14,0,0,.2,0,0,.18],[-.2,-.3,2.1,.5,.4,1.6,.2,.25,.5,.1,0,0,-.15],[0,0,.8,2.2,.8,2.2,.15,.9,1.4,.15,0,0,.1]];
+  let cur=POSES[0].slice(),from=POSES[0].slice(),to=POSES[0].slice(),bl=1,pi=0,hold=0,bounce=0,bv=0;
+  const J=16,NB=15,joints=moGlowInst(new THREE.SphereGeometry(1,16,12),J,X),bones=moGlowInst(new THREE.CylinderGeometry(1,1,1,10,1),NB,X);
+  const head=new THREE.Mesh(new THREE.TorusGeometry(.36,.045,10,48),X.glow(0,.5,.6,'h'));X.add(head);const headC=new THREE.Mesh(new THREE.CircleGeometry(.3,32),X.glow(1,.08,.15,'h'));X.add(headC);
+  const shadow=new THREE.Mesh(new THREE.PlaneGeometry(4,1),X.glow(0,.06,.2,'b'));shadow.material.map=dzRadTex();shadow.rotation.x=-Math.PI/2;X.add(shadow);
+  const P=new Float32Array(J*3);const set=(i,x,y,z)=>{P[i*3]=x;P[i*3+1]=y;P[i*3+2]=z};
+  /* 0 pelvis 1 spine 2 chest 3 neck | 4-6 left arm | 7-9 right arm | 10-12 left hip/knee/foot | 13-15 right hip/knee/foot */
+  const BN=[[0,1],[1,2],[2,3],[2,4],[4,5],[5,6],[2,7],[7,8],[8,9],[0,10],[10,11],[11,12],[0,13],[13,14],[14,15]];const GROUND=-3.1;
+  return A=>{const a=au(A),dt=a.dt;hold-=dt;
+    if((a.beat||a.tap)&&hold<=0){from=cur.slice();pi=(pi+1+((R()*2)|0))%POSES.length;to=POSES[pi].slice();bl=0;hold=.42;bv-=2.2*a.act+(a.tap?2:0)}
+    bl=Math.min(1,bl+dt/.38);const e=bl*bl*(3-2*bl);for(let i=0;i<13;i++)cur[i]=from[i]+(to[i]-from[i])*e;
+    bv+=(-bounce*90-bv*11)*dt;bounce+=bv*dt;const t=a.t,sw=Math.sin(t*2.6),sw2=Math.sin(t*2.6+1.3);
+    const lean=cur[0]+a.m*.08*sw,tw=cur[1]+a.m*.35*sw2,crouch=a.b*.42+Math.max(0,-bounce)*.6+.04*(1+Math.sin(t*1.6));
+    const aL=cur[2]+a.m*.45*sw,eL=cur[3]+a.h*.35*Math.sin(t*9),aR=cur[4]+a.m*.45*sw2,eR=cur[5]+a.h*.35*Math.sin(t*9+2),hd=cur[12]+a.h*.18*Math.sin(t*7)+a.m*.06*sw;
+    const leg=(hx,sg,spl,fl,kn,hi)=>{const cs=Math.cos(spl);set(hi,hx,0,0);const kx=hx+sg*Math.sin(spl)*1.45,ky=-Math.cos(fl)*cs*1.45,kz=Math.sin(fl)*cs*1.45;
+      set(hi+1,kx,ky,kz);set(hi+2,kx+sg*Math.sin(spl)*.3,ky-Math.cos(fl-kn)*cs*1.4,kz+Math.sin(fl-kn)*cs*1.4)};
+    set(0,0,0,0);leg(-.36,-1,cur[6],cur[7]+crouch,cur[8]+crouch*2,10);leg(.36,1,cur[9],cur[10]+crouch,cur[11]+crouch*2,13);
+    const cl=Math.cos(lean),sl=Math.sin(lean),c0=-sl*1.65,c1=cl*1.65;set(1,-sl*.8,cl*.8,0);set(2,c0,c1,0);set(3,c0-Math.sin(lean+hd*.5)*.45,c1+Math.cos(lean+hd*.5)*.45,0);
+    const shx=Math.cos(tw)*.78,shz=Math.sin(tw)*.78;set(4,c0-shx*cl,c1-.12-shx*sl,-shz);set(7,c0+shx*cl,c1-.12+shx*sl,shz);
+    const arm=(s,sg,ang,el,ei)=>{const x0=P[s*3],y0=P[s*3+1],z0=P[s*3+2],ex=x0+sg*Math.sin(ang)*1.12,ey=y0-Math.cos(ang)*1.12,ez=z0+.15*Math.sin(ang);
+      set(ei,ex,ey,ez);const a2=ang+el*(ang>1.6?-1:1);set(ei+1,ex+sg*Math.sin(a2)*1.02,ey-Math.cos(a2)*1.02,ez+.25*Math.sin(el))};
+    arm(4,-1,aL,eL,5);arm(7,1,aR,eR,8);
+    const oy=GROUND-Math.min(P[12*3+1],P[15*3+1]);for(let i=0;i<J;i++)P[i*3+1]+=oy;
+    for(let i=0;i<NB;i++){const[u,v]=BN[i];moBone(bones,i,P[u*3],P[u*3+1],P[u*3+2],P[v*3],P[v*3+1],P[v*3+2],.055);bones.setColorAt(i,moSil(i/NB,.55+a.b*.25))}
+    for(let i=0;i<J;i++){const hand=i===6||i===9,r=hand?.13+a.h*.06:(i===12||i===15)?.12:.1;dzO.position.set(P[i*3],P[i*3+1],P[i*3+2]);dzO.quaternion.identity();dzO.scale.setScalar(r);dzO.updateMatrix();joints.setMatrixAt(i,dzO.matrix);
+      joints.setColorAt(i,moC2.copy(dzW1).lerp(colA,.35).multiplyScalar(.75+(hand?a.h*.8:0)+a.b*.2))}
+    joints.instanceMatrix.needsUpdate=true;joints.instanceColor.needsUpdate=true;bones.instanceMatrix.needsUpdate=true;bones.instanceColor.needsUpdate=true;
+    const hx=P[9]-Math.sin(lean+hd)*.42,hy=P[10]+Math.cos(lean+hd)*.42;head.position.set(hx,hy,0);head.rotation.z=lean+hd;headC.position.set(hx,hy,-.01);
+    shadow.position.set(P[0]*.5,GROUND-.02,0);shadow.scale.set(1+crouch*.4,1,1)}};
+
+/* 3 · DNA RESONANCE — double helix that breathes (bass) and winds (mids); rungs light up per high bands; beats run a pulse up the strand */
+MO.dna=(p,X)=>{X.sway=.7;const au=moAud(),NP=DZ_MOB?90:140,NR=Math.floor(NP/4),NS=DZ_MOB?16:28,H=8;
+  const beads=moGlowInst(new THREE.SphereGeometry(1,10,8),NP*2,X),rungs=moGlowInst(new THREE.CylinderGeometry(1,1,1,8,1),NR,X),sig=moGlowInst(new THREE.SphereGeometry(1,10,8),NS*2,X);
+  X.box=new THREE.Box3(new THREE.Vector3(-2.2,-H/2-.2,-2.2),new THREE.Vector3(2.2,H/2+.2,2.2));X.G.rotation.z=.32;
+  const su=new Float32Array(NS*2);for(let i=0;i<NS*2;i++)su[i]=X.rnd();let rot=0,turns=2.3,pulse=9;const hb=new Float32Array(NR);for(let i=0;i<NR;i++)hb[i]=(i*.618)%1;
+  const at=(s,k,Rr,o)=>{const th=s*turns*Math.PI*2+rot+k*Math.PI;o[0]=Math.cos(th)*Rr;o[1]=(s-.5)*H;o[2]=Math.sin(th)*Rr};const pa=[0,0,0],pb=[0,0,0];
+  return A=>{const a=au(A),dt=a.dt;rot+=dt*(.25+a.m*.25);turns+=((2.3+a.m*1.1)-turns)*(1-Math.exp(-dt*1.5));if(a.beat||a.tap)pulse=0;pulse+=dt/1.3;
+    const Rr=1.05+a.b*.55+.04*Math.sin(a.t*1.2);
+    for(let i=0;i<NP;i++){const s=i/(NP-1),pp=pulse<1.2?Math.exp(-Math.pow(s-pulse,2)*90):0,r=Rr*(1+pp*.25);
+      for(let k=0;k<2;k++){at(s,k,r,pa);dzO.position.set(pa[0],pa[1],pa[2]);dzO.quaternion.identity();dzO.scale.setScalar(.07+pp*.05);dzO.updateMatrix();beads.setMatrixAt(i*2+k,dzO.matrix);
+        const dep=.55+.45*Math.sin(s*turns*Math.PI*2+rot+k*Math.PI);beads.setColorAt(i*2+k,moC1.copy(k?colB:colA).multiplyScalar((.35+pp*1.2)*dep+.08))}}
+    for(let i=0;i<NR;i++){const s=(i*4+2)/(NP-1),pp=pulse<1.2?Math.exp(-Math.pow(s-pulse,2)*90):0;at(s,0,Rr,pa);at(s,1,Rr,pb);moBone(rungs,i,pa[0],pa[1],pa[2],pb[0],pb[1],pb[2],.022+pp*.02);
+      const hv=dzBin(.45+.5*hb[i]);rungs.setColorAt(i,moC1.copy(colA).lerp(colB,.5).lerp(dzW1,.3).multiplyScalar(.12+a.h*hv*1.6+pp*1.3))}
+    for(let i=0;i<NS*2;i++){su[i]=(su[i]+dt*(.08+a.b*.12)*(i%3?1:1.6))%1;at(su[i],i&1,Rr*1.02,pa);dzO.position.set(pa[0],pa[1],pa[2]);dzO.scale.setScalar(.05);dzO.updateMatrix();sig.setMatrixAt(i,dzO.matrix);sig.setColorAt(i,moC1.copy(dzW1).multiplyScalar(.5+a.h*.8))}
+    [beads,rungs,sig].forEach(I=>{I.instanceMatrix.needsUpdate=true;I.instanceColor.needsUpdate=true})}};
+
+/* 4 · NEURAL BLOOM — a fixed graph grown once (tree + local shortcuts); impulses travel edge by edge; beats start a cascade at a hub */
+MO.neural=(p,X)=>{X.sway=.8;const au=moAud(),R=X.rnd,N=DZ_MOB?60:96,SM=DZ_MOB?64:110;const np=new Float32Array(N*3),deg=new Int32Array(N);const E=[],adj=[...Array(N)].map(()=>[]);
+  const addE=(a,b)=>{E.push([a,b]);adj[a].push(E.length-1);adj[b].push(E.length-1);deg[a]++;deg[b]++};let n=1;
+  for(let tries=0;n<N&&tries<6000;tries++){const par=Math.max(0,R()<.6?Math.floor(n-1-R()*Math.min(n,8)):Math.floor(R()*n));if(deg[par]>=4)continue;
+    const th=R()*Math.PI*2,ph=Math.acos(R()*2-1),L=.55+R()*.45;let x=np[par*3]+Math.sin(ph)*Math.cos(th)*L,y=np[par*3+1]+Math.cos(ph)*L*.8,z=np[par*3+2]+Math.sin(ph)*Math.sin(th)*L*.7;
+    if(Math.hypot(x,y,z)>3.3)continue;let ok=true;for(let j=0;j<n;j++){if(Math.hypot(x-np[j*3],y-np[j*3+1],z-np[j*3+2])<.42){ok=false;break}}if(!ok)continue;np[n*3]=x;np[n*3+1]=y;np[n*3+2]=z;addE(par,n);n++}
+  for(let i=0;i<n;i++){if(R()>.35)continue;let best=-1,bd=.95;for(let j=0;j<n;j++){if(j===i||adj[i].some(e=>E[e][0]===j||E[e][1]===j))continue;const d=Math.hypot(np[i*3]-np[j*3],np[i*3+1]-np[j*3+1],np[i*3+2]-np[j*3+2]);if(d<bd){bd=d;best=j}}if(best>=0&&deg[i]<5&&deg[best]<5)addE(i,best)}
+  const NE=E.length,EL=new Float32Array(NE);E.forEach((e,i)=>{EL[i]=Math.hypot(np[e[0]*3]-np[e[1]*3],np[e[0]*3+1]-np[e[1]*3+1],np[e[0]*3+2]-np[e[1]*3+2])});
+  const hubs=[];for(let i=0;i<n;i++)if(deg[i]>=3)hubs.push(i);if(!hubs.length)hubs.push(0);let hi=0;
+  const ln=moLines(NE,X),nodes=moGlowInst(new THREE.SphereGeometry(1,10,8),n,X),sp=moGlowInst(new THREE.SphereGeometry(1,8,6),SM,X);
+  for(let i=0;i<NE;i++){const[a,b]=E[i];ln.P.set([np[a*3],np[a*3+1],np[a*3+2],np[b*3],np[b*3+1],np[b*3+2]],i*6)}
+  
+  const sE=new Int32Array(SM).fill(-1),sD=new Int8Array(SM),sU=new Float32Array(SM),sG=new Int8Array(SM),eA=new Float32Array(NE),nF=new Float32Array(n);let idle=1;
+  const spawn=(e,from,g)=>{for(let i=0;i<SM;i++)if(sE[i]<0){sE[i]=e;sD[i]=E[e][0]===from?1:-1;sU[i]=0;sG[i]=g;return true}return false};
+  const cascade=src=>{nF[src]=1;for(const e of adj[src])spawn(e,src,0)};
+  return A=>{const a=au(A),dt=a.dt;if(a.beat||a.tap){cascade(hubs[hi++%hubs.length])}idle-=dt;if(idle<=0){idle=1.6+R()*1.2;const s=Math.floor(R()*n);if(adj[s].length)spawn(adj[s][0],s,5)}
+    for(let i=0;i<SM;i++){const e=sE[i];if(e<0)continue;sU[i]+=dt*2.4/EL[e];eA[e]=1;if(sU[i]>=1){const to=sD[i]>0?E[e][1]:E[e][0];nF[to]=Math.max(nF[to],.9);sE[i]=-1;
+        if(sG[i]<7){const pr=.18+a.m*.7;for(const e2 of adj[to])if(e2!==e&&R()<pr)spawn(e2,to,sG[i]+1)}}}
+    for(let i=0;i<NE;i++){eA[i]*=Math.exp(-dt*1.6);const br=.14+eA[i]*.9;moC1.copy(colA).lerp(colB,.35).multiplyScalar(br);ln.C.set([moC1.r,moC1.g,moC1.b,moC1.r,moC1.g,moC1.b],i*6)}
+    for(let i=0;i<n;i++){nF[i]*=Math.exp(-dt*2.2);const term=deg[i]===1;dzO.position.set(np[i*3],np[i*3+1],np[i*3+2]);dzO.quaternion.identity();dzO.scale.setScalar((term?.075:.06)+nF[i]*.05);dzO.updateMatrix();nodes.setMatrixAt(i,dzO.matrix);
+      nodes.setColorAt(i,moC1.copy(term?colB:colA).lerp(dzW1,.25).multiplyScalar(.22+nF[i]*1.1+(term?a.h*1.1:0)))}
+    for(let i=0;i<SM;i++){const e=sE[i];if(e<0){dzO.scale.setScalar(0)}else{const[aa,bb]=E[e],u=sD[i]>0?sU[i]:1-sU[i];dzO.position.set(np[aa*3]+(np[bb*3]-np[aa*3])*u,np[aa*3+1]+(np[bb*3+1]-np[aa*3+1])*u,np[aa*3+2]+(np[bb*3+2]-np[aa*3+2])*u);dzO.scale.setScalar(.07)}
+      dzO.quaternion.identity();dzO.updateMatrix();sp.setMatrixAt(i,dzO.matrix);sp.setColorAt(i,moC1.copy(dzW1).lerp(colB,.3).multiplyScalar(1.1))}
+    moDirty(ln.g);[nodes,sp].forEach(I=>{I.instanceMatrix.needsUpdate=true;I.instanceColor.needsUpdate=true});X.G.scale.setScalar(1+a.b*.14);X.G.rotation.y+=dt*.06}};
+/* 5 · CELL DIVISION — one continuous membrane (same mesh, same topology) that elongates, pinches to a thin bridge and recombines in a smooth cycle */
+MO.cell=(p,X)=>{X.fit=false;X.sway=.6;const au=moAud(),R=X.rnd;const u={uT:{value:0},uS:{value:0},uB:{value:0},uM:{value:0},uH:{value:0},cA:{value:new THREE.Color()},cB:{value:new THREE.Color()},uR:{value:[0,1,2,3].map(()=>new THREE.Vector4(0,1,0,9))}};
+  const vs='uniform float uT,uS,uB,uM;uniform vec4 uR[4];varying vec3 vN,vV;varying float vBr;\n'+DZ_NOISE+
+   'vec3 P(vec3 n,out float br){float s=uS;float x=n.x*(1.+1.05*s);float pin=1.-s*.86*exp(-x*x/(.18+.3*(1.-s)));float lobe=1.+.16*s*smoothstep(.2,.95,abs(x));br=pin;'+
+   'vec3 q=vec3(x,n.yz*pin*lobe);float sc=1.+uB*.09+sin(uT*1.3)*.012;float df=(dzn(n*2.2+vec3(0.,uT*.25,0.))-.5)*(.05+uM*.2);float rp=0.;'+
+   'for(int i=0;i<4;i++){vec4 r=uR[i];if(r.w<3.){float d=acos(clamp(dot(n,r.xyz),-1.,1.));rp+=sin(d*16.-r.w*13.)*exp(-r.w*1.6)*exp(-d*1.8)*.1*step(d,r.w*1.6+.05);}}'+
+   'return q*sc*(1.+df+rp)*1.75;}\n'+
+   'void main(){vec3 n0=normalize(position);vec3 tA=normalize(cross(n0,abs(n0.y)<.99?vec3(0.,1.,0.):vec3(1.,0.,0.)));vec3 tB=cross(n0,tA);float b0,b1,b2;vec3 p0=P(n0,b0);vec3 p1=P(normalize(n0+tA*.01),b1);vec3 p2=P(normalize(n0+tB*.01),b2);'+
+   'vec3 nn=normalize(cross(p1-p0,p2-p0));vBr=b0;vec4 mv=modelViewMatrix*vec4(p0,1.);vV=normalize(-mv.xyz);vN=normalize(normalMatrix*nn);gl_Position=projectionMatrix*mv;}';
+  const fs='uniform float uH;uniform vec3 cA,cB;varying vec3 vN,vV;varying float vBr;void main(){float f=pow(1.-abs(dot(normalize(vN),normalize(vV))),2.2);vec3 c=mix(cA,cB,f)*(f*(.5+uH*1.1)+.035);c*=mix(.12,1.,smoothstep(.16,.5,vBr));gl_FragColor=vec4(c,1.);}';
+  const m=new THREE.ShaderMaterial({uniforms:u,vertexShader:vs,fragmentShader:fs,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,side:THREE.DoubleSide});
+  const mesh=new THREE.Mesh(new THREE.SphereGeometry(1,DZ_MOB?72:128,DZ_MOB?54:96),m);mesh.frustumCulled=false;X.add(mesh);
+  const nuc=[0,1].map(i=>dzHalo(X,1.3,i,.35,.6,'b',0));let ri=0;
+  return A=>{const a=au(A);u.uT.value=a.t;const ph=(a.t*.052+.08)%1,c=.5-.5*Math.cos(ph*Math.PI*2),s1=c*c*(3-2*c);u.uS.value=s1*s1*(3-2*s1);
+    u.uB.value=a.b;u.uM.value=a.m;u.uH.value=a.h;u.cA.value.copy(colA);u.cB.value.copy(colB);
+    for(const r of u.uR.value)r.w+=a.dt;if(a.beat||a.tap){const v=u.uR.value[ri++%4];const th=R()*Math.PI*2,z=R()*2-1,q=Math.sqrt(1-z*z);v.set(q*Math.cos(th),z,q*Math.sin(th),0)}
+    const S=u.uS.value,nx=S*1.15*1.75;nuc[0].position.set(-nx,0,0);nuc[1].position.set(nx,0,0);nuc.forEach(o=>o.scale.setScalar(1+a.b*.3));X.G.rotation.y=Math.sin(a.t*.1)*.35}};
+
+/* 6 · MYCELIUM SIGNAL — bounded branching growth in a fixed ring buffer of segments; old segments fade before they are reused; pulses follow path length */
+MO.myc=(p,X)=>{X.fit=false;X.sway=.55;const au=moAud(),R=X.rnd,MAX=DZ_MOB?1100:2200,TM=DZ_MOB?28:46,RB=3.7;
+  const L=moLines(MAX,X),PL=new Float32Array(MAX).fill(-1),tips=moPts(TM,.26,X);let head=0,count=0;
+  const T={x:new Float32Array(TM),y:new Float32Array(TM),z:new Float32Array(TM),dx:new Float32Array(TM),dy:new Float32Array(TM),dz:new Float32Array(TM),pl:new Float32Array(TM),on:new Uint8Array(TM)};
+  const tip=(x,y,z,dx,dy,dz,pl)=>{for(let i=0;i<TM;i++)if(!T.on[i]){const l=Math.hypot(dx,dy,dz)||1;T.x[i]=x;T.y[i]=y;T.z[i]=z;T.dx[i]=dx/l;T.dy[i]=dy/l;T.dz[i]=dz/l;T.pl[i]=pl;T.on[i]=1;return}};
+  for(let i=0;i<7;i++){const a=i/7*Math.PI*2;tip(0,0,0,Math.cos(a),Math.sin(a),(R()-.5)*.4,0)}
+  const fr=new Float32Array(4).fill(99);let acc=0;
+  const step=a=>{let alive=0;for(let i=0;i<TM;i++){if(!T.on[i])continue;alive++;let dx=T.dx[i]+(R()-.5)*.55+T.x[i]*.03,dy=T.dy[i]+(R()-.5)*.55+T.y[i]*.03,dz=(T.dz[i]+(R()-.5)*.4)*.6;const l=Math.hypot(dx,dy,dz)||1;dx/=l;dy/=l;dz/=l;
+      const sl=.11,nx=T.x[i]+dx*sl,ny=T.y[i]+dy*sl,nz=T.z[i]+dz*sl,o=head*6;L.P[o]=T.x[i];L.P[o+1]=T.y[i];L.P[o+2]=T.z[i];L.P[o+3]=nx;L.P[o+4]=ny;L.P[o+5]=nz;PL[head]=T.pl[i]+sl;head=(head+1)%MAX;count=Math.min(MAX,count+1);
+      T.x[i]=nx;T.y[i]=ny;T.z[i]=nz;T.dx[i]=dx;T.dy[i]=dy;T.dz[i]=dz;T.pl[i]+=sl;
+      if(Math.hypot(nx,ny,nz)>RB*(.8+.2*R())||T.pl[i]>5.2)T.on[i]=0;else if(R()<.025+a.m*.09){const c=Math.cos(.75),s=Math.sin(.75)*(R()<.5?-1:1);tip(nx,ny,nz,dx*c-dy*s,dx*s+dy*c,dz,T.pl[i])}}
+    if(alive<7&&count>0){const k=(head-1-Math.floor(R()*Math.min(count,MAX)*.6)+MAX*2)%MAX,o=k*6;if(PL[k]>=0)tip(L.P[o+3],L.P[o+4],L.P[o+5],(R()-.5),(R()-.5),(R()-.5)*.3,PL[k])}};
+  for(let i=0;i<140;i++)step({m:.3});
+  return A=>{const a=au(A),dt=a.dt;acc+=dt*(9+a.b*18)*(.4+.6*a.act);let n=0;while(acc>=1&&n<8){acc-=1;n++;step(a)}if(acc>8)acc=0;
+    if(a.beat||a.tap){let j=0;for(let i=1;i<4;i++)if(fr[i]>fr[j])j=i;fr[j]=0}for(let i=0;i<4;i++)if(fr[i]<20)fr[i]+=dt*3.4;
+    for(let i=0;i<MAX;i++){const o=i*6;if(PL[i]<0){L.C.fill(0,o,o+6);continue}const ag=((head-1-i+MAX)%MAX)/MAX,fade=1-Math.min(1,Math.max(0,(ag-.7)/.3));let pb=0;for(let k=0;k<4;k++)if(fr[k]<20){const d=PL[i]-fr[k];pb+=Math.exp(-d*d*10)*Math.max(0,1-fr[k]/7)}
+      const br=(.3+pb*1.4)*fade*fade;moC1.copy(colA).lerp(colB,Math.min(1,PL[i]/4.5)).multiplyScalar(br);L.C[o]=L.C[o+3]=moC1.r;L.C[o+1]=L.C[o+4]=moC1.g;L.C[o+2]=L.C[o+5]=moC1.b}
+    for(let i=0;i<TM;i++){tips.P[i*3]=T.x[i];tips.P[i*3+1]=T.y[i];tips.P[i*3+2]=T.z[i];const b=T.on[i]?.3+a.h*2.4:0;moC2.copy(colB).lerp(dzW1,.4).multiplyScalar(b);tips.C[i*3]=moC2.r;tips.C[i*3+1]=moC2.g;tips.C[i*3+2]=moC2.b}
+    moDirty(L.g,tips.g);X.G.rotation.z+=dt*.02}};
+
+/* 7 · REACTION–DIFFUSION — a real Gray–Scott simulation (U,V fields, 9-point Laplacian, Du=1, Dv=.5, Δt=1) on the CPU, ping-pong buffers, fixed steps per second */
+MO.rd=(p,X)=>{X.fit=false;X.sway=.5;const au=moAud(),R=X.rnd,N=DZ_MOB?96:128,NN=N*N;let U=new Float32Array(NN).fill(1),V=new Float32Array(NN),U2=new Float32Array(NN),V2=new Float32Array(NN);
+  const tex=new THREE.DataTexture(new Uint8Array(NN*4),N,N,THREE.RGBAFormat);tex.magFilter=tex.minFilter=THREE.LinearFilter;tex.wrapS=tex.wrapT=THREE.RepeatWrapping;
+  const seed=(cx,cy,r,v)=>{for(let y=-r;y<=r;y++)for(let x=-r;x<=r;x++){if(x*x+y*y>r*r)continue;const i=((cy+y+N)%N)*N+((cx+x+N)%N);V[i]=Math.max(V[i],v);U[i]=Math.min(U[i],1-v)}};
+  for(let i=0;i<18;i++)seed(Math.floor(R()*N),Math.floor(R()*N),2+Math.floor(R()*3),.5);
+  let F=.033,K=.0605;
+  const sim=()=>{for(let y=0;y<N;y++){const ym=((y-1+N)%N)*N,y0=y*N,yp=((y+1)%N)*N;for(let x=0;x<N;x++){const xm=(x-1+N)%N,xp=(x+1)%N,i=y0+x;
+      const lu=-U[i]+.2*(U[ym+x]+U[yp+x]+U[y0+xm]+U[y0+xp])+.05*(U[ym+xm]+U[ym+xp]+U[yp+xm]+U[yp+xp]);const lv=-V[i]+.2*(V[ym+x]+V[yp+x]+V[y0+xm]+V[y0+xp])+.05*(V[ym+xm]+V[ym+xp]+V[yp+xm]+V[yp+xp]);
+      const u0=U[i],v0=V[i],r=u0*v0*v0;let un=u0+(lu-r+F*(1-u0)),vn=v0+(.5*lv+r-(F+K)*v0);U2[i]=un<0?0:un>1?1:un;V2[i]=vn<0?0:vn>1?1:vn}}
+    let t=U;U=U2;U2=t;t=V;V=V2;V2=t};
+  for(let i=0;i<(DZ_MOB?350:550);i++)sim();
+  const u={uTex:{value:tex},uH:{value:0},uB:{value:0},cA:{value:new THREE.Color()},cB:{value:new THREE.Color()},uPx:{value:1/N}};
+  const m=new THREE.ShaderMaterial({uniforms:u,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,
+    vertexShader:'uniform sampler2D uTex;uniform float uB;varying vec2 vU;void main(){vU=uv;float v=texture2D(uTex,uv).r;vec3 p=position;p.z+=v*(.35+uB*.35);gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.);}',
+    fragmentShader:'uniform sampler2D uTex;uniform float uH,uPx;uniform vec3 cA,cB;varying vec2 vU;void main(){float v=texture2D(uTex,vU).r;float gx=texture2D(uTex,vU+vec2(uPx,0.)).r-texture2D(uTex,vU-vec2(uPx,0.)).r;float gy=texture2D(uTex,vU+vec2(0.,uPx)).r-texture2D(uTex,vU-vec2(0.,uPx)).r;'+
+      'float e=clamp(length(vec2(gx,gy))*4.,0.,1.);float w=.18-uH*.1;float body=smoothstep(.2-w*.5,.2+w*.5,v);float d=length(vU-.5)*2.;float mask=1.-smoothstep(.78,1.,d);vec3 c=mix(cB*.35,cA,body)*(.12+body*.5)+mix(cA,vec3(1.),.4)*e*(.25+uH*1.3);gl_FragColor=vec4(c*mask,1.);}'});
+  const pl=new THREE.Mesh(new THREE.PlaneGeometry(8.4,8.4,DZ_MOB?96:128,DZ_MOB?96:128),m);pl.rotation.x=-.95;pl.position.y=-.3;X.add(pl);
+  const rim=new THREE.Mesh(new THREE.RingGeometry(3.96,4.02,128),X.glow(0,.08,.3,'b'));rim.rotation.x=-.95;rim.position.y=-.3;X.add(rim);
+  let acc=0,dist=0,tot=0;const d8=tex.image.data;
+  return A=>{const a=au(A),dt=a.dt;F+=((.0367-.0077*a.ms)-F)*.02;K+=((.0649-.0079*a.ms)-K)*.02;
+    if(a.beat)seed(Math.floor(R()*N),Math.floor(R()*N),4,.5);if(a.tap)seed(Math.floor((DZA.tx*.5+.5)*N),Math.floor((DZA.ty*.5+.5)*N),5,.5);
+    dist-=dt;if(a.b>.45&&dist<=0){seed(Math.floor(R()*N),Math.floor(R()*N),1+Math.floor(a.b*2),.3);dist=.3}
+    acc+=dt*(A.th?900:(DZ_MOB?300:420));let n=0;while(acc>=1&&n<(A.th?24:(DZ_MOB?6:9))){acc-=1;n++;sim()}if(acc>12)acc=0;
+    tot=0;for(let i=0;i<NN;i++){const v=V[i];tot+=v;d8[i*4]=v*255;d8[i*4+1]=U[i]*255;d8[i*4+3]=255}if(tot<NN*.002)for(let i=0;i<6;i++)seed(Math.floor(R()*N),Math.floor(R()*N),3,.5);tex.needsUpdate=true;
+    u.uH.value=a.h;u.uB.value=a.b;u.cA.value.copy(colA);u.cB.value.copy(colB);X.G.rotation.y=Math.sin(a.t*.08)*.25}};
+
+/* 8 · FLOCK FLOW — boids (separation, alignment, cohesion) with a uniform-grid neighbour search, a moving goal and a mids-driven curl */
+MO.flock=(p,X)=>{X.fit=false;X.sway=.6;const au=moAud(),R=X.rnd,N=DZ_MOB?260:560,C=.85,G=14,HG=G/2,NC=G*G*G;
+  const P=new Float32Array(N*3),Vv=new Float32Array(N*3),cnt=new Int32Array(NC),st=new Int32Array(NC+1),srt=new Int32Array(N),cell=new Int32Array(N);
+  for(let i=0;i<N;i++){const ang=i/N*Math.PI*6,rr=1.2+R()*1.6;P[i*3]=Math.cos(ang)*rr*1.5;P[i*3+1]=(R()-.5)*1.4;P[i*3+2]=Math.sin(ang)*rr;Vv[i*3]=R()-.5;Vv[i*3+1]=R()-.5;Vv[i*3+2]=R()-.5}
+  const pts=moPts(N,.17,X),tr=moLines(N,X);let gx=0,gy=0,gz=0,lastImp=-9;
+  const ci=v=>Math.max(0,Math.min(G-1,Math.floor(v/C+HG)));
+  const step=(h,a)=>{cnt.fill(0);for(let i=0;i<N;i++){const c=(ci(P[i*3])*G+ci(P[i*3+1]))*G+ci(P[i*3+2]);cell[i]=c;cnt[c]++}st[0]=0;for(let c=0;c<NC;c++)st[c+1]=st[c]+cnt[c];cnt.fill(0);for(let i=0;i<N;i++){const c=cell[i];srt[st[c]+cnt[c]++]=i}
+    const Rb=3.4+a.b*1.2,coh=1.2*(1-.4*a.b),curl=.6+a.m*1.6;
+    for(let i=0;i<N;i++){const x=P[i*3],y=P[i*3+1],z=P[i*3+2];let sx=0,sy=0,sz=0,ax=0,ay=0,az=0,cx=0,cy=0,cz=0,n=0;const X0=ci(x),Y0=ci(y),Z0=ci(z);
+      for(let a1=-1;a1<=1;a1++){const xx=X0+a1;if(xx<0||xx>=G)continue;for(let b1=-1;b1<=1;b1++){const yy=Y0+b1;if(yy<0||yy>=G)continue;for(let c1=-1;c1<=1;c1++){const zz=Z0+c1;if(zz<0||zz>=G)continue;const c=(xx*G+yy)*G+zz;
+        for(let k=st[c];k<st[c+1];k++){const j=srt[k];if(j===i)continue;const dx=x-P[j*3],dy=y-P[j*3+1],dz=z-P[j*3+2],d2=dx*dx+dy*dy+dz*dz;if(d2>C*C)continue;n++;ax+=Vv[j*3];ay+=Vv[j*3+1];az+=Vv[j*3+2];cx+=P[j*3];cy+=P[j*3+1];cz+=P[j*3+2];if(d2<.05){const f=1/(d2+.01);sx+=dx*f;sy+=dy*f;sz+=dz*f}}}}}
+      let fx=sx*.012,fy=sy*.012,fz=sz*.012;if(n){fx+=(ax/n-Vv[i*3])*2.2+(cx/n-x)*coh;fy+=(ay/n-Vv[i*3+1])*2.2+(cy/n-y)*coh;fz+=(az/n-Vv[i*3+2])*2.2+(cz/n-z)*coh}
+      {const rx=x-gx,rz=z-gz;fx+=(gx-x)*.9-rz*curl;fy+=(gy-y)*1.6;fz+=(gz-z)*.9+rx*curl}const r=Math.hypot(x,y,z);if(r>Rb){const k=(r-Rb)*2.5/r;fx-=x*k;fy-=y*k;fz-=z*k}
+      let vx=Vv[i*3]+fx*h,vy=Vv[i*3+1]+fy*h,vz=Vv[i*3+2]+fz*h;const sp=Math.hypot(vx,vy,vz)||1,mx=3.2+a.b*1.6,mn=1.7;const s=sp>mx?mx/sp:sp<mn?mn/sp:1;Vv[i*3]=vx*s;Vv[i*3+1]=vy*s;Vv[i*3+2]=vz*s}
+    for(let i=0;i<N*3;i++)P[i]+=Vv[i]*h};
+  return A=>{const a=au(A),dt=a.dt,t=a.t;gx=Math.sin(t*.45)*2.4;gy=Math.sin(t*.7+1)*1.2;gz=Math.cos(t*.38)*1.6;
+    if((a.beat&&a.t-lastImp>1.1)||a.tap){lastImp=a.t;let mx=0,my=0,mz=0;for(let i=0;i<N;i++){mx+=P[i*3];my+=P[i*3+1];mz+=P[i*3+2]}mx/=N;my/=N;mz/=N;for(let i=0;i<N;i++){const dx=P[i*3]-mx,dy=P[i*3+1]-my,dz=P[i*3+2]-mz,l=Math.hypot(dx,dy,dz)||1;Vv[i*3]+=dx/l*1.1;Vv[i*3+1]+=dy/l*1.1;Vv[i*3+2]+=dz/l*1.1}}
+    let rem=dt;while(rem>1e-4){const h=Math.min(.02,rem);step(h,a);rem-=h}
+    const tl=.12+a.h*.2;for(let i=0;i<N;i++){const o=i*3,hi=i%9===0,b=(hi?1+a.h*1.4:.7)*(.75+.25*a.act);moC1.copy(colA).lerp(colB,(i%23)/22).lerp(dzW1,hi?.4:.1).multiplyScalar(b);
+      pts.P[o]=P[o];pts.P[o+1]=P[o+1];pts.P[o+2]=P[o+2];pts.C[o]=moC1.r;pts.C[o+1]=moC1.g;pts.C[o+2]=moC1.b;const q=i*6;tr.P[q]=P[o];tr.P[q+1]=P[o+1];tr.P[q+2]=P[o+2];tr.P[q+3]=P[o]-Vv[o]*tl;tr.P[q+4]=P[o+1]-Vv[o+1]*tl;tr.P[q+5]=P[o+2]-Vv[o+2]*tl;
+      const tb=hi?.7:.35;tr.C[q]=moC1.r*tb;tr.C[q+1]=moC1.g*tb;tr.C[q+2]=moC1.b*tb;tr.C[q+3]=tr.C[q+4]=tr.C[q+5]=0}
+    moDirty(pts.g,tr.g)}};
+
+/* 9 · MAGNETIC PULSE — field lines of two opposite poles traced numerically (RK2) every frame in one meridian plane, then revolved around the pole axis */
+MO.mag=(p,X)=>{X.fit=false;X.sway=.6;const au=moAud(),NA=DZ_MOB?10:14,NPl=DZ_MOB?5:7,MS=150,NPK=3;const LN=NA*NPl;
+  const L=moLines(LN*(MS-1),X),pk=moPts(LN*NPK,.17,X),TX=new Float32Array(NA*MS),TR=new Float32Array(NA*MS),TN=new Int32Array(NA);
+  const poles=[0,1].map(i=>{const o=new THREE.Mesh(new THREE.SphereGeometry(.2,24,16),X.glow(i,.7,.6,'b'));X.add(o);const h=dzHalo(X,2.2,i,.25,.7,'b',0);return{o,h}});
+  let d=1.7,rot=0,tw=0;const fr=new Float32Array(3).fill(9),pu=new Float32Array(LN*NPK);for(let i=0;i<pu.length;i++)pu[i]=(i*.377)%1;
+  const fld=(x,r,o)=>{const ax=x+d,bx=x-d,ra=Math.pow(ax*ax+r*r,1.5)+1e-6,rb=Math.pow(bx*bx+r*r,1.5)+1e-6;o[0]=ax/ra-bx/rb;o[1]=r/ra-r/rb};const f1=[0,0],f2=[0,0];
+  const trace=()=>{for(let a=0;a<NA;a++){const an=(a+.5)/NA*Math.PI*.94+.03,base=a*MS;let x=-d+Math.cos(an)*.24,r=Math.sin(an)*.24,k=0;
+    for(;k<MS;k++){TX[base+k]=x;TR[base+k]=r;if(k===MS-1)break;fld(x,r,f1);let l=Math.hypot(f1[0],f1[1])||1;fld(x+f1[0]/l*.04,r+f1[1]/l*.04,f2);l=Math.hypot(f2[0],f2[1])||1;x+=f2[0]/l*.085;r+=f2[1]/l*.085;
+      if(Math.hypot(x-d,r)<.2||Math.hypot(x,r)>7.5||r<0){k++;TX[base+k]=x;TR[base+k]=Math.max(0,r);break}}TN[a]=Math.min(MS,k+1)}};
+  return A=>{const a=au(A),dt=a.dt;d+=((1.45+a.b*.9)-d)*(1-Math.exp(-dt*4));rot+=dt*(.08+a.m*.35);tw+=((a.m*.3)-tw)*(1-Math.exp(-dt*2));trace();
+    if(a.beat||a.tap){let j=0;for(let i=1;i<3;i++)if(fr[i]>fr[j])j=i;fr[j]=0}for(let i=0;i<3;i++)if(fr[i]<2)fr[i]+=dt/.9;
+    let q=0;for(let pi=0;pi<NPl;pi++){const ph0=pi/NPl*Math.PI*2+rot;for(let a0=0;a0<NA;a0++){const n=TN[a0],base=a0*MS,li=pi*NA+a0;
+      for(let k=0;k<MS-1;k++){for(let e=0;e<2;e++){const kk=Math.min(k+e,n-1),x=TX[base+kk],r=TR[base+kk],ph=ph0+x*tw;L.P[q]=x;L.P[q+1]=r*Math.cos(ph);L.P[q+2]=r*Math.sin(ph);
+          const uu=kk/Math.max(1,n-1);let w=0;for(let f=0;f<3;f++)if(fr[f]<1.4){const dd=uu-fr[f];w+=Math.exp(-dd*dd*90)}const vis=k<n-1?1:0,br=(.13+w*.9)*vis*(1-Math.min(1,Math.hypot(x,r)/7.5));
+          moC1.copy(colA).lerp(colB,uu).lerp(dzW1,.2).multiplyScalar(br);L.C[q]=moC1.r;L.C[q+1]=moC1.g;L.C[q+2]=moC1.b;q+=3}}
+      for(let j=0;j<NPK;j++){const id=li*NPK+j;pu[id]=(pu[id]+dt*(.12+a.b*.1))%1;const kk=Math.min(n-1,Math.floor(pu[id]*(n-1))),x=TX[base+kk],r=TR[base+kk],ph=ph0+x*tw,o=id*3;
+        pk.P[o]=x;pk.P[o+1]=r*Math.cos(ph);pk.P[o+2]=r*Math.sin(ph);const b=(.12+a.h*1.5)*(1-Math.min(1,Math.hypot(x,r)/7));moC2.copy(dzW1).lerp(colA,.4).multiplyScalar(b);pk.C[o]=moC2.r;pk.C[o+1]=moC2.g;pk.C[o+2]=moC2.b}}}
+    moDirty(L.g,pk.g);poles[0].o.position.x=poles[0].h.position.x=-d;poles[1].o.position.x=poles[1].h.position.x=d;poles.forEach(P=>{P.o.scale.setScalar(1+a.b*.4);P.h.scale.setScalar(1+a.b*.5)});X.G.scale.setScalar(.85*moAsp()+.15)}};
+
+/* 10 · MORPH RESONATOR — one sphere mesh displaced in the vertex shader: rounded → faceted → flower, blended continuously; a damped spring adds the beat */
+MO.morph=(p,X)=>{X.fit=false;X.sway=.9;const au=moAud(),u={uT:{value:0},uB:{value:0},uM:{value:0},uH:{value:0},uE:{value:0},uW:{value:new THREE.Vector3(1,0,0)},cA:{value:new THREE.Color()},cB:{value:new THREE.Color()}};
+  const RF='uniform float uT,uB,uM,uH,uE;uniform vec3 uW;\n'+DZ_NOISE+
+   'float facet(vec3 n){vec3 a=abs(n);return 1.08/max((a.x+a.y+a.z)*.57735,max(a.x,max(a.y,a.z))*.93);}'+
+   'float flower(vec3 n){float th=acos(clamp(n.y,-1.,1.)),ph=atan(n.z,n.x);return .8+(.3+uM*.2)*pow(abs(cos(ph*2.5)),2.)*pow(sin(th),1.3)+.1*cos(th*3.);}'+
+   'float RR(vec3 n){float r=uW.x*(1.+(dzn(n*1.6+uT*.15)-.5)*.16)+uW.y*facet(n)+uW.z*flower(n);r*=1.+uB*.15;r+=(dzn(n*6.+uT*.35)-.5)*uH*.045;'+
+   'r+=uM*.07*sin(4.*atan(n.z,n.x))*sin(acos(clamp(n.y,-1.,1.)));r+=uE*(n.x*n.y*.9+n.z*.35+.2);return r*1.85;}\n';
+  const m=dzMat('chrome',{roughness:.22,envMapIntensity:.85,color:0xc8ced8});m.onBeforeCompile=sh=>{Object.assign(sh.uniforms,u);sh.vertexShader=RF+sh.vertexShader.replace('#include <beginnormal_vertex>',
+    'vec3 n0=normalize(position);vec3 tA=normalize(cross(n0,abs(n0.y)<.99?vec3(0.,1.,0.):vec3(1.,0.,0.)));vec3 tB=cross(n0,tA);vec3 p0=n0*RR(n0);vec3 q1=normalize(n0+tA*.01);vec3 p1=q1*RR(q1);vec3 q2=normalize(n0+tB*.01);vec3 p2=q2*RR(q2);vec3 objectNormal=normalize(cross(p1-p0,p2-p0));')
+    .replace('#include <begin_vertex>','vec3 transformed=p0;')};m.customProgramCacheKey=()=>'kbMorph';
+  const geo=new THREE.IcosahedronGeometry(1,DZ_MOB?22:44),body=new THREE.Mesh(geo,m);X.add(body);
+  const cm=new THREE.ShaderMaterial({uniforms:u,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,
+    vertexShader:RF+'varying vec3 vN0;void main(){vec3 n0=normalize(position);vN0=n0;gl_Position=projectionMatrix*modelViewMatrix*vec4(n0*RR(n0)*1.006,1.);}',
+    fragmentShader:'uniform vec3 cA,cB;uniform float uH;varying vec3 vN0;void main(){float th=acos(clamp(vN0.y,-1.,1.))/3.14159;float l=abs(fract(th*14.)-.5);float a=1.-smoothstep(.0,.06,l);vec3 c=mix(cA,cB,th)*a*(.35+uH*.6);gl_FragColor=vec4(c,1.);}'});
+  const ct=new THREE.Mesh(geo,cm);X.add(ct);dzHalo(X,9,0,.02,.1,'b',-3);let e=0,ev=0;
+  return A=>{const a=au(A),dt=a.dt;if(a.beat||a.tap)ev+=2.6;ev+=(-e*70-ev*6)*dt;e+=ev*dt;
+    const ph=(a.t*.045)%3,i=Math.floor(ph),f=ph-i,x=Math.min(1,Math.max(0,(f-.55)/.45)),s=x*x*(3-2*x),w=[0,0,0];w[i]=1-s;w[(i+1)%3]=s;u.uW.value.set(w[0],w[1],w[2]);
+    u.uT.value=a.t;u.uB.value=a.b;u.uM.value=a.m;u.uH.value=a.h;u.uE.value=e*.35;u.cA.value.copy(colA);u.cB.value.copy(colB);X.G.rotation.y+=dt*.18;X.G.rotation.x=Math.sin(a.t*.13)*.25}};
+
+DZF.mo=(p,X)=>MO[p.k](p,X);
+dzReg('mo','Motion',[{id:'mo-radio',name:'Radio Tides',k:'radio'},{id:'mo-dancer',name:'Kinetic Dancer',k:'dancer'},{id:'mo-dna',name:'DNA Resonance',k:'dna'},{id:'mo-neural',name:'Neural Bloom',k:'neural'},
+  {id:'mo-cell',name:'Cell Division',k:'cell'},{id:'mo-myc',name:'Mycelium Signal',k:'myc'},{id:'mo-rd',name:'Reaction–Diffusion',k:'rd'},{id:'mo-flock',name:'Flock Flow',k:'flock'},{id:'mo-mag',name:'Magnetic Pulse',k:'mag'},{id:'mo-morph',name:'Morph Resonator',k:'morph'}]);
 /* 1 · studio monitors */
 DZF.mon=(p,X)=>{const cab=dzMat(p.mat),face=dzMat(p.face||'matte'),n=p.n||2,cols=p.cols||n,rows=Math.ceil(n/cols),W=[],T=[];
   for(let i=0;i<n;i++){const cx=i%cols,cy=(i/cols)|0,sx=cols>1?cx-(cols-1)/2:0,c=new THREE.Group();c.position.set(sx*2.55,((rows-1)/2-cy)*3.85,-Math.abs(sx)*.3);c.rotation.y=-sx*.24;X.add(c);
@@ -2327,7 +2380,7 @@ dzReg('gyr','Abstract',[{name:'Chrome Gyro',mode:'chrome'},{name:'Neon Gyro',mod
 /* ---- design switching, per-frame tick, touch motion ---- */
 const dzHold=new THREE.Group();scene.add(dzHold);
 const DZ={id:'speaker',cur:null,sx:0,sy:0,roll:0,rv:0};
-function dzDispose(o){o.traverse(n=>{if(n.geometry)n.geometry.dispose();const ms=n.material?(Array.isArray(n.material)?n.material:[n.material]):[];ms.forEach(m=>{for(const k in m){const v=m[k];if(v&&v.isTexture&&v!==dzEnvT)v.dispose()}m.dispose()})})}
+function dzDispose(o){o.traverse(n=>{if(n.geometry)n.geometry.dispose();const ms=n.material?(Array.isArray(n.material)?n.material:[n.material]):[];ms.forEach(m=>{for(const k in m){const v=m[k];if(v&&v.isTexture&&v!==dzEnvT)v.dispose()}if(m.uniforms)for(const k in m.uniforms){const v=m.uniforms[k]&&m.uniforms[k].value;if(v&&v.isTexture&&v!==dzEnvT)v.dispose()}m.dispose()})})}
 const DZ_BLK=new THREE.Color(0x020203);function dzSet(id,quiet){if(scene.background===DZ_BLK&&DZ.bg0)scene.background=DZ.bg0;const d=DESIGNS.find(x=>x.id===id)||DESIGNS[0];if(DZ.cur){dzHold.remove(DZ.cur.W);dzDispose(DZ.cur.W);DZ.cur=null}DZ.id=d.id;
   if(d.fam){try{DZ.cur=dzBuild(d);dzHold.add(DZ.cur.W)}catch(e){console.error('design',d.id,e);DZ.cur=null;DZ.id='speaker'}}
   rig.visible=DZ.id==='speaker';DZ.roll=0;DZ.rv=0;if(!quiet){S.design=DZ.id;saveS()}dzMark()}
@@ -2344,7 +2397,7 @@ function dzTap(cx,cy){const r=canvas.getBoundingClientRect();DZA.tx=(cx-r.left)/
 const DZ_TAGS=['All',...new Set(DESIGNS.map(d=>d.tag))];let dzTag='All',dzQ='';const dzShots=new Map();let dzQueue=[],dzBusy=false,dzRT=null,dzCam=null,dzIO=null;
 function dzThumb(d){if(!dzRT){dzRT=new THREE.WebGLRenderTarget(320,200);dzCam=new THREE.PerspectiveCamera(42,1.6,.1,200)}
   const sv={rv:rig.visible,hv:dzHold.visible,rp:rig.position.clone(),rr:rig.rotation.clone(),fd:scene.fog.density,A:Object.assign({},DZA)};let tmp=null;
-  try{dzHold.visible=false;Object.assign(DZA,{b:.55,m:.45,h:.4,k:.4,p:0,t:2,dt:1/30,live:false});
+  try{dzHold.visible=false;Object.assign(DZA,{b:.55,m:.45,h:.4,k:.4,p:0,t:2,dt:1/30,live:false,th:true});
     if(d.fam){tmp=dzBuild(d);scene.add(tmp.W);rig.visible=false;tmp.W.rotation.set(.1*tmp.sway,-.3*tmp.sway,0);for(let i=0;i<45;i++){DZA.t=1+i/30;dzAcc(tmp.X,DZA);tmp.up(DZA)}}
     else{rig.visible=true;rig.position.set(0,0,0);rig.rotation.set(.1,-.3,0)}
     dzCam.position.set(0,0,13.4);dzCam.lookAt(0,0,0);scene.fog.density=.026;renderer.setRenderTarget(dzRT);renderer.clear();renderer.render(scene,dzCam);
@@ -2375,7 +2428,7 @@ window.dzOpen=dzOpen;
 document.getElementById('dzBtn').addEventListener('click',()=>showPanel('dz'));
 /* test hook: renders every design's preview (used to make the contact sheet) */
 window.__dzAll=()=>DESIGNS.map(d=>({id:d.id,name:d.name,tag:d.tag,img:dzShots.get(d.id)||dzThumb(d)}));
-window.__dzSet=dzSet;window.__dzState=()=>({ty,roll:DZ.roll,p:DZA.p,id:DZ.id,sy:DZ.sy,drag:!!drag});
+window.__dzSet=dzSet;window.__dzT=()=>({DESIGNS,dzBuild,dzDispose,dzAcc,DZA,scene,renderer,rig,dzHold,live:()=>[!!DZA.live,+sb.toFixed(2),+sm.toFixed(2),+sh.toFixed(2)],play:on=>{const p=!!(audioEl&&!audioEl.paused);if(p!==on)document.getElementById('play').click()},S:()=>S});window.__dzApply=()=>{if((S.design||'speaker')!==DZ.id)dzSet(S.design||'speaker',true)};window.__dzState=()=>({ty,roll:DZ.roll,p:DZA.p,id:DZ.id,sy:DZ.sy,drag:!!drag});
 dzSet(S.design||'speaker',true);
 
 function frame(now){if(OFF&&!OFF.step)return;
