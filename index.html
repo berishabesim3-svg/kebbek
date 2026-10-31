@@ -357,6 +357,39 @@ body.bare,body.bare canvas{cursor:none}
 #tele{pointer-events:auto;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}#tele.dragging{cursor:grabbing}
 </style>
 
+<style>
+#urlImportDialog{color:var(--ink);background:#0b101a;border:1px solid var(--line);border-radius:16px;width:min(520px,calc(100vw - 28px));max-height:calc(100dvh - 32px);padding:26px;overflow:auto;box-shadow:0 24px 100px #000b;font-family:var(--body)}
+#urlImportDialog::backdrop{background:#000a;backdrop-filter:blur(8px)}
+#urlImportDialog h2{font-size:22px;margin:0 0 12px;letter-spacing:0}
+#urlImportDialog p{font-size:13px;line-height:1.6;color:#9eafc2;margin:10px 0 18px}
+#urlImportDialog label{display:block;font-size:13px;margin:16px 0 7px;color:var(--ink)}
+#urlImportDialog label span{color:var(--muted)}
+#urlImportDialog input{width:100%;min-width:0;padding:13px;border:1px solid var(--line);border-radius:9px;background:#141c28;color:var(--ink);font:16px var(--body);user-select:text;-webkit-user-select:text}
+#urlImportDialog input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+#urlImportDialog .url-note{font-size:12px;margin-top:14px}
+#urlImportStatus{min-height:22px;overflow-wrap:anywhere}
+#urlImportStatus[data-error]{color:#ffadb6}
+.url-actions{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:10px}
+#urlImportDialog button:disabled{opacity:.5;cursor:wait}
+#urlImportBtn{padding:9px 10px;font-size:12px}
+
+</style>
+<style>#onlineLibrary{border-top:1px solid var(--line);margin-top:20px;padding-top:18px}
+#onlineLibrary h3{font-size:16px;margin:0 0 12px}
+#onlineTracks{list-style:none;margin:0;padding:0}
+#onlineTracks li{display:flex;gap:8px;align-items:center;flex-wrap:wrap;border-bottom:1px solid var(--line);padding:12px 0}
+#onlineTracks li>div{flex:1;min-width:140px;overflow-wrap:anywhere}
+#onlineTracks strong,#onlineTracks small{display:block}
+#onlineTracks small{color:var(--muted);font-size:11px;margin-top:5px}
+#onlinePlayerDialog{width:min(760px,calc(100vw - 24px));max-height:calc(100dvh - 24px);overflow:auto;background:#0b101a;color:var(--ink);border:1px solid var(--line);border-radius:16px;padding:20px;font:14px var(--body)}
+#onlinePlayerDialog::backdrop{background:#000c;backdrop-filter:blur(6px)}
+.online-player-top{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:15px}
+#onlinePlayerHeading{font-size:19px;margin:6px 0;overflow-wrap:anywhere}
+#onlinePlayerProvider,#onlinePlayerDialog p{color:#a9bacb;line-height:1.6;font-size:12px}
+#onlinePlayerDialog a{color:var(--accent)}
+#onlinePlayerFrame iframe{display:block;border:0;width:100%;border-radius:10px;background:#000}
+#onlinePlayerFrame iframe.kb-youtube{height:auto!important;aspect-ratio:16/9;min-height:200px}
+</style>
 </head>
 <body>
 <canvas id="stage" aria-label="KEBBEK 3D speaker that reacts to music"></canvas>
@@ -408,6 +441,7 @@ body.bare,body.bare canvas{cursor:none}
     <button class="chip" id="demoBtn" type="button">Demo beat</button>
     <button class="chip danger" id="clear" type="button">Delete all</button>
   </div>
+  <section id="onlineLibrary" hidden><h3>Online music <span id="onlineCount">0</span></h3><ol id="onlineTracks"></ol></section>
   <ol id="tracks"></ol>
   <p class="empty" id="empty">No songs yet. Tap <b>+ Add songs</b> and pick one or more MP3s from Files. They stay here for next time.</p>
 </div>
@@ -462,6 +496,27 @@ body.bare,body.bare canvas{cursor:none}
   </div>
 </div>
 
+<dialog id="urlImportDialog" aria-labelledby="urlImportHeading" aria-describedby="urlImportHelp">
+  <form id="urlImportForm">
+    <h2 id="urlImportHeading">Add music from a link</h2>
+    <p id="urlImportHelp">Paste a YouTube, Spotify or SoundCloud link, or a direct audio URL. Online links stay in Library; direct audio files are downloaded for KEBBEK playback.</p>
+    <label for="urlImportInput">Audio URL</label>
+    <input id="urlImportInput" type="url" required placeholder="https://example.com/song.mp3" autocomplete="off" spellcheck="false">
+    <label for="urlImportTitle">Song title <span>(optional)</span></label>
+    <input id="urlImportTitle" type="text" maxlength="160" placeholder="Use the filename" autocomplete="off">
+    <p class="url-note">YouTube, Spotify and SoundCloud use their official players and need internet. Direct audio downloads support files up to 100 MB when the server allows browser access.</p>
+    <p id="urlImportStatus" role="status" aria-live="polite"></p>
+    <div class="url-actions"><button id="urlImportClose" class="btn" type="button">Cancel</button><button id="urlImportSubmit" class="btn primary" type="submit">Add to library</button></div>
+  </form>
+</dialog>
+
+<dialog id="onlinePlayerDialog" aria-labelledby="onlinePlayerHeading">
+  <div class="online-player-top"><div><small id="onlinePlayerProvider"></small><h2 id="onlinePlayerHeading">Online music</h2></div><button class="btn" type="button" id="onlinePlayerClose">Close</button></div>
+  <div id="onlinePlayerFrame"></div>
+  <p>Use the platform’s player controls. KEBBEK’s equalizer, audio-reactive visuals and recording do not process this player’s audio. Playback availability depends on the platform and your account.</p>
+  <a id="onlinePlayerLink" target="_blank" rel="noopener noreferrer">Open on platform</a>
+</dialog>
+
 <div class="rail" id="rail">
   <div class="grip" id="grip" title="Drag to move · double-tap to reset"><i></i></div>
   <div class="rz" id="rz" title="Drag to resize" aria-hidden="true"><svg viewBox="0 0 12 12"><path d="M11 3v8H3M11 7v4H7"/></svg></div>
@@ -469,6 +524,7 @@ body.bare,body.bare canvas{cursor:none}
   <div class="row">
     <input type="file" id="file" multiple accept=".mp3,.m4a,.wav,.aac,.flac,.ogg,.opus,.lrc,.srt,audio/mpeg,audio/mp4,audio/wav,audio/*">
     <label for="file" class="btn primary" tabindex="0" id="fileLbl"><span class="kb-lf">+ Add songs</span><span class="kb-ls">+ Add</span></label>
+    <button class="btn" id="urlImportBtn" type="button" aria-haspopup="dialog" aria-controls="urlImportDialog">+ URL</button>
     <span class="track" id="track">No songs · press ▶ for demo</span>
     <button class="btn ghost" id="listBtn" type="button" aria-expanded="false" aria-label="Library"><svg class="kb-li" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h10v2H4z"/></svg><span class="kb-lt">Library </span><span id="count">0</span></button>
     <button class="ic sm" id="logoBtn" type="button" aria-pressed="true" aria-label="Show or hide the logo" title="Hide logo"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M9 7.5v9M9 12l4.5-4.5M9 12l4.5 4.5M13 7.5h1.8a2.2 2.2 0 0 1 0 4.4H13h2.2a2.3 2.3 0 0 1 0 4.6H13" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
@@ -1014,14 +1070,14 @@ function libStorage(){const el=document.getElementById('libUse');if(!el)return;
   if(!persistAsked&&lib.length&&navigator.storage&&navigator.storage.persist){persistAsked=true;navigator.storage.persisted().then(p=>p||navigator.storage.persist()).catch(()=>{})}
   clearTimeout(useT);useT=setTimeout(async()=>{let t=lib.length+(lib.length===1?' song':' songs');try{if(navigator.storage&&navigator.storage.estimate){const e=await navigator.storage.estimate(),p=navigator.storage.persisted?await navigator.storage.persisted():false;
     const mb=(e.usage||0)/1048576,free=Math.max(0,(e.quota||0)-(e.usage||0))/1073741824;t+=` · ${mb<1024?Math.round(mb)+' MB':(mb/1024).toFixed(1)+' GB'} · ${free>=1?free.toFixed(0):free.toFixed(1)} GB free`+(p||IOSAPP?' · kept until you delete them':'')}}catch(err){}el.textContent=t},250)}
-function renderList(){libStorage();if(view!=='all'&&!plById(view))view='all';countEl.textContent=lib.length;
+function renderList(){libStorage();if(view!=='all'&&!plById(view))view='all';countEl.textContent=lib.length+(Number(countEl.dataset.onlineCount)||0);
   plTabs.textContent='';const tab=(label,n,v,cls)=>{const b=document.createElement('button');b.type='button';b.className='pltab'+(cls?' '+cls:'');b.setAttribute('role','tab');
     b.setAttribute('aria-selected',String(view===v));b.textContent=label;if(n!=null){const x=document.createElement('b');x.textContent=n;b.append(x)}
     b.addEventListener('click',()=>{if(v==='+'){newPlaylist();return}view=v;popFor=null;plPick.hidden=true;plNew.hidden=true;savePL();renderList()});plTabs.append(b)};
-  tab('All songs',lib.length,'all');PL.forEach(p=>tab(p.name,p.ids.filter(id=>idxOf(id)>=0).length,p.id));tab('+ New playlist',null,'+','new');
+  tab('Audio files',lib.length,'all');PL.forEach(p=>tab(p.name,p.ids.filter(id=>idxOf(id)>=0).length,p.id));tab('+ New playlist',null,'+','new');
   const pl=view==='all'?null:plById(view);plHead.hidden=!pl;document.getElementById('clear').hidden=!!pl;if(pl&&document.activeElement!==plName)plName.value=pl.name;
   const order=ctxOrder(view);
-  emptyEl.hidden=order.length>0;emptyEl.innerHTML=pl?'This playlist is empty. In <b>All songs</b>, tap <b>+</b> next to a song to add it here, or add new songs with <b>+ Add songs</b>.':'No songs yet. Tap <b>+ Add songs</b> and pick one or more MP3s from Files. They stay here for next time.';
+  emptyEl.hidden=order.length>0||(view==='all'&&Number(countEl.dataset.onlineCount)>0);emptyEl.innerHTML=pl?'This playlist is empty. In <b>All songs</b>, tap <b>+</b> next to a song to add it here, or add new songs with <b>+ Add songs</b>.':'No songs yet. Tap <b>+ Add songs</b> and pick one or more MP3s from Files. They stay here for next time.';
   tracksEl.innerHTML='';
   order.forEach((i,k)=>{const t=lib[i];const li=document.createElement('li');if(i===cur&&(playCtx===view||view==='all'))li.className='on';
     const p=document.createElement('button');p.className='pick';p.type='button';p.innerHTML='<i>'+(k+1)+'</i><span></span>';p.querySelector('span').textContent=t.name;p.addEventListener('click',()=>playIndex(i,view));
@@ -1059,6 +1115,144 @@ function addFiles(files){const all=[...files],ok=all.filter(f=>isAudio(f)&&!isLy
     if(L&&L.length){t.lyrics=normalize(L);found++}
     dbDo(st=>st.put(t));if(t===curTrack()){trackEl.textContent=t.name;lyIdx=-2;setSession();if(!$l('lyp').hidden)renderLy()}
   })).then(()=>{renderList();if(found&&LYRICS)toast(found===1?(synced(made.find(x=>x.lyrics).lyrics)?'Lyrics found inside the song':'Lyrics text found in the song · open Lyrics to sync it'):`Lyrics found in ${found} songs`)})}
+// Direct audio URL import. Uses the existing local-file playback and analysis path.
+const KB_URL_MAX=100*1024*1024;
+function kbAudioURL(value){
+  let u;try{u=new URL(value.trim())}catch(e){throw new Error('Enter a complete direct audio URL, starting with https://.')}
+  if(u.protocol!=='https:'&&u.protocol!=='http:')throw new Error('Only HTTP or HTTPS audio links are supported.');
+  if(location.protocol==='https:'&&u.protocol!=='https:')throw new Error('Use an HTTPS audio link on this secure page.');
+  if(u.username||u.password)throw new Error('Links containing a username or password are not supported.');
+  u.hash='';return u;
+}
+function kbAudioKind(bytes,type){
+  const at=(s,n=0)=>s.split('').every((c,i)=>bytes[n+i]===c.charCodeAt(0));
+  if(at('RIFF')&&at('WAVE',8))return ['wav','audio/wav'];
+  if(at('fLaC'))return ['flac','audio/flac'];
+  if(at('OggS'))return ['ogg','audio/ogg'];
+  if(at('ftyp',4))return ['m4a','audio/mp4'];
+  if(bytes[0]===0x1a&&bytes[1]===0x45&&bytes[2]===0xdf&&bytes[3]===0xa3)return ['webm','audio/webm'];
+  if(at('ID3'))return ['mp3','audio/mpeg'];
+  if(bytes[0]===255&&(bytes[1]&0xf6)===0xf0)return ['aac','audio/aac'];
+  if(bytes[0]===255&&(bytes[1]&0xe0)===0xe0)return ['mp3','audio/mpeg'];
+  return null;
+}
+async function kbDownloadAudio(url,signal,progress){
+  let r;try{r=await fetch(url.href,{mode:'cors',credentials:'omit',referrerPolicy:'no-referrer',signal})}
+  catch(e){if(signal.aborted)throw e;throw new Error('Cannot fetch this audio. The link may be unavailable, or its server may block browser downloads (CORS). Try a direct audio link or use Add songs with a downloaded file.');}
+  if(!r.ok)throw new Error('Audio server returned HTTP '+r.status+'. Check that the link is public and has not expired.');
+  const type=(r.headers.get('content-type')||'').split(';')[0].trim().toLowerCase();
+  const total=Number(r.headers.get('content-length'))||0;
+  if(total>KB_URL_MAX){if(r.body)await r.body.cancel();throw new Error('This file exceeds the 100 MB import limit.');}
+  if(/(?:text\/|html|json|xml|mpegurl|dash\+xml)/.test(type)){if(r.body)await r.body.cancel();throw new Error('This link returns a webpage or playlist, not an audio file. Use a direct MP3, WAV, M4A, FLAC, OGG, AAC or WebM audio link.');}
+  const chunks=[];let size=0;
+  if(r.body&&r.body.getReader){const reader=r.body.getReader();try{while(true){const {done,value}=await reader.read();if(done)break;size+=value.byteLength;if(size>KB_URL_MAX){await reader.cancel();throw new Error('This file exceeds the 100 MB import limit.');}chunks.push(value);progress(size,total);}}finally{reader.releaseLock();}}
+  else{const b=await r.blob();size=b.size;if(size>KB_URL_MAX)throw new Error('This file exceeds the 100 MB import limit.');chunks.push(b);}
+  if(!size)throw new Error('The audio file is empty.');
+  const raw=new Blob(chunks),head=new Uint8Array(await raw.slice(0,512).arrayBuffer());
+  const text=new TextDecoder().decode(head).trimStart();
+  if(/^(?:<!doctype|<html|<\?xml|\{|\[)/i.test(text))throw new Error('This link returns a webpage or data, not playable audio.');
+  const kind=kbAudioKind(head,type);if(!kind)throw new Error('Unrecognized audio file. Use a direct MP3, WAV, M4A, FLAC, OGG, AAC or WebM audio link.');
+  return {blob:new Blob([raw],{type:kind[1]}),ext:kind[0]};
+}
+function kbProbeAudio(blob,signal){return new Promise((resolve,reject)=>{
+  const a=new Audio(),u=URL.createObjectURL(blob);let settled=false;
+  const finish=e=>{if(settled)return;settled=true;clearTimeout(timer);signal.removeEventListener('abort',abort);a.onloadedmetadata=a.onerror=null;a.removeAttribute('src');a.load();URL.revokeObjectURL(u);e?reject(e):resolve()};
+  const abort=()=>finish(new DOMException('Cancelled','AbortError'));
+  const timer=setTimeout(()=>finish(new Error('Audio validation timed out. Try a different audio file.')),15000);
+  a.preload='metadata';a.onloadedmetadata=()=>finish(Number.isFinite(a.duration)&&a.duration>0?null:new Error('This file is not a finite playable audio track. Live streams and playlists are not supported.'));
+  a.onerror=()=>finish(new Error('Your browser cannot play this audio file. Try an MP3 or WAV version.'));
+  signal.addEventListener('abort',abort,{once:true});if(signal.aborted){abort();return}a.src=u;
+});}
+const kbUrlDialog=document.getElementById('urlImportDialog'),kbUrlForm=document.getElementById('urlImportForm'),kbUrlInput=document.getElementById('urlImportInput'),kbUrlTitle=document.getElementById('urlImportTitle'),kbUrlStatus=document.getElementById('urlImportStatus'),kbUrlSubmit=document.getElementById('urlImportSubmit'),kbUrlBtn=document.getElementById('urlImportBtn');
+let kbUrlJob=null;
+function kbCloseURL(){if(kbUrlJob)kbUrlJob.abort();kbUrlDialog.close();kbUrlBtn.focus();}
+kbUrlBtn.addEventListener('click',()=>{showPanel(null);kbUrlStatus.textContent='';kbUrlStatus.removeAttribute('data-error');kbUrlDialog.showModal();kbUrlInput.focus()});
+document.getElementById('urlImportClose').addEventListener('click',kbCloseURL);
+kbUrlDialog.addEventListener('cancel',e=>{e.preventDefault();kbCloseURL()});
+// Keep player keyboard shortcuts out of the modal (space, arrows and Enter).
+kbUrlDialog.addEventListener('keydown',e=>e.stopPropagation());
+kbUrlForm.addEventListener('submit',async e=>{
+  e.preventDefault();if(kbUrlJob)return;kbUrlStatus.removeAttribute('data-error');
+  let u;try{u=kbAudioURL(kbUrlInput.value)}catch(err){kbUrlStatus.textContent=err.message;kbUrlStatus.dataset.error='true';return}
+  const controller=new AbortController();kbUrlJob=controller;kbUrlSubmit.disabled=true;kbUrlInput.disabled=true;kbUrlTitle.disabled=true;kbUrlForm.setAttribute('aria-busy','true');
+  let timedOut=false;const timer=setTimeout(()=>{timedOut=true;controller.abort()},120000);
+  try{
+    const platform=kbPlatform(u);
+    if(platform){const added=kbSaveOnline(platform,kbUrlTitle.value);kbUrlDialog.close();kbUrlForm.reset();showPanel('list');toast(added?'Online link saved in Library · choose Listen to open its official player':'This online link is already saved in Library');return;}
+    const existing=lib.find(t=>t.sourceUrl===u.href);
+    if(existing){playIndex(lib.indexOf(existing),'all');kbUrlDialog.close();toast('Already in your library · press Play if needed');return}
+    kbUrlStatus.textContent='Downloading audio…';
+    const {blob,ext}=await kbDownloadAudio(u,controller.signal,(n,total)=>{kbUrlStatus.textContent='Downloading · '+(n/1048576).toFixed(1)+' MB'+(total?' / '+(total/1048576).toFixed(1)+' MB':'')});
+    kbUrlStatus.textContent='Checking audio…';await kbProbeAudio(blob,controller.signal);
+    if(controller.signal.aborted)throw new DOMException('Cancelled','AbortError');
+    let title=kbUrlTitle.value.trim();if(!title){try{title=decodeURIComponent(u.pathname.split('/').pop()||'')}catch(e){}title=(title||'Online audio').replace(/\.(mp3|wav|m4a|mp4|flac|ogg|opus|aac|webm)$/i,'');}
+    title=title.replace(/[\u0000-\u001f<>:"/\\|?*]/g,' ').trim().slice(0,160)||'Online audio';
+    const f=new File([blob],title+'.'+ext,{type:blob.type});addFiles([f]);
+    const t=lib.find(t=>t.blob===f);if(!t)throw new Error('Could not add the audio to your library.');t.sourceUrl=u.href;
+    let persisted=false;if(db){persisted=await new Promise(resolve=>{try{const tx=db.transaction('tracks','readwrite');tx.objectStore('tracks').put(t);tx.oncomplete=()=>resolve(true);tx.onerror=tx.onabort=()=>resolve(false)}catch(e){resolve(false)}})}
+    kbUrlDialog.close();kbUrlForm.reset();toast(persisted?'Audio added and saved · press Play if needed':'Audio added for this session · browser storage is unavailable or full');
+  }catch(err){if(kbUrlDialog.open){kbUrlStatus.textContent=timedOut?'Download timed out after 2 minutes. Try again or download the file and use Add songs.':controller.signal.aborted?'Import cancelled.':err.message||'Audio import failed.';kbUrlStatus.dataset.error='true';}}
+  finally{clearTimeout(timer);kbUrlJob=null;kbUrlSubmit.disabled=false;kbUrlInput.disabled=false;kbUrlTitle.disabled=false;kbUrlForm.removeAttribute('aria-busy');if(!kbUrlDialog.open)kbUrlBtn.focus();}
+});
+
+// Official platform embeds. These are saved links, never downloaded or converted audio.
+function kbPlatform(u){
+  const h=u.hostname.toLowerCase(),seg=u.pathname.split('/').filter(Boolean);
+  if(['youtube.com','www.youtube.com','m.youtube.com','music.youtube.com','youtube-nocookie.com','www.youtube-nocookie.com','youtu.be','www.youtu.be'].includes(h)){
+    const id=h.endsWith('youtu.be')?seg[0]:['embed','shorts','live'].includes(seg[0])?seg[1]:u.searchParams.get('v');
+    const list=u.searchParams.get('list');let embed,canonical;
+    if(id&&/^[A-Za-z0-9_-]{11}$/.test(id)){canonical='https://www.youtube.com/watch?v='+id;embed='https://www.youtube-nocookie.com/embed/'+id+'?playsinline=1';}
+    else if(list&&/^[A-Za-z0-9_-]{10,100}$/.test(list)){canonical='https://www.youtube.com/playlist?list='+list;embed='https://www.youtube-nocookie.com/embed/videoseries?list='+list;}
+    else throw new Error('Paste a YouTube video or playlist link, rather than a channel or homepage.');
+    return {provider:'YouTube',url:canonical,embed,height:420,title:'YouTube '+(id?'video':'playlist')};
+  }
+  if(['open.spotify.com','spotify.com','www.spotify.com'].includes(h)){
+    if(/^intl-[a-z-]+$/i.test(seg[0]||''))seg.shift();if(seg[0]==='embed')seg.shift();
+    const [kind,id]=seg;if(!['track','album','playlist','artist','episode','show'].includes(kind)||!/^[A-Za-z0-9]{22}$/.test(id||''))throw new Error('Paste the Spotify share link for a track, album, playlist, artist, show or episode.');
+    const canonical='https://open.spotify.com/'+kind+'/'+id;return {provider:'Spotify',url:canonical,embed:'https://open.spotify.com/embed/'+kind+'/'+id+'?utm_source=generator&theme=0',height:352,title:'Spotify '+kind};
+  }
+  if(['soundcloud.com','www.soundcloud.com','m.soundcloud.com'].includes(h)){
+    if(seg.length<2||['discover','search','you','stream','stations','upload'].includes(seg[0]))throw new Error('Paste a SoundCloud track or playlist link.');
+    const canonical='https://soundcloud.com/'+seg.map(encodeURIComponent).join('/');const token=u.searchParams.get('secret_token');const target=new URL(canonical);if(token&&/^s-[\w-]+$/.test(token))target.searchParams.set('secret_token',token);
+    return {provider:'SoundCloud',url:target.href,embed:'https://w.soundcloud.com/player/?url='+encodeURIComponent(target.href)+'&auto_play=false&hide_related=true&show_comments=false&visual=false',height:166,title:'SoundCloud '+seg[seg.length-1].replace(/-/g,' ')};
+  }
+  if(['spoti.fi','on.soundcloud.com'].includes(h))throw new Error('Open this short link first, then copy the full Spotify or SoundCloud track URL.');
+  return null;
+}
+const KB_ONLINE_KEY='kebbek-online-library-v1';let kbOnline=[];
+try{const a=JSON.parse(localStorage.getItem(KB_ONLINE_KEY)||'[]');if(Array.isArray(a))for(const item of a.slice(0,500)){try{const p=kbPlatform(kbAudioURL(String(item.url||'')));if(p&&!kbOnline.some(x=>x.url===p.url))kbOnline.push({url:p.url,title:String(item.title||p.title).slice(0,160)})}catch(e){}}}catch(e){}
+function kbSaveOnline(p,title){
+  const found=kbOnline.find(x=>x.url===p.url);if(found)return false;
+  if(kbOnline.length>=500)throw new Error('Your online library has reached 500 links. Remove a link before adding another.');
+  const next=kbOnline.concat({url:p.url,title:title.trim().slice(0,160)||p.title});
+  try{localStorage.setItem(KB_ONLINE_KEY,JSON.stringify(next))}catch(e){throw new Error('Browser storage is unavailable or full. The online link could not be saved.');}
+  kbOnline=next;kbRenderOnline();return true;
+}
+const kbOnlinePlayer=document.getElementById('onlinePlayerDialog'),kbOnlineFrame=document.getElementById('onlinePlayerFrame');
+function kbCloseOnline(){kbOnlineFrame.replaceChildren();kbOnlinePlayer.close()}
+function kbPlayOnline(item){
+  const p=kbPlatform(kbAudioURL(item.url));if(!p)return;
+  if(audioEl&&!audioEl.paused)audioEl.pause();stopDemo();setPlaying(false);
+  document.getElementById('onlinePlayerHeading').textContent=item.title;
+  document.getElementById('onlinePlayerProvider').textContent=p.provider+' · official player';
+  const link=document.getElementById('onlinePlayerLink');link.href=p.url;link.textContent='Open in '+p.provider;
+  const frame=document.createElement('iframe');frame.src=p.embed;frame.title=p.provider+' player: '+item.title;frame.allow='autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture';frame.allowFullscreen=true;frame.referrerPolicy='strict-origin-when-cross-origin';frame.style.height=p.height+'px';
+  if(p.provider==='YouTube')frame.className='kb-youtube';kbOnlineFrame.replaceChildren(frame);kbOnlinePlayer.showModal();
+}
+document.getElementById('onlinePlayerClose').addEventListener('click',kbCloseOnline);
+kbOnlinePlayer.addEventListener('cancel',e=>{e.preventDefault();kbCloseOnline()});
+kbOnlinePlayer.addEventListener('keydown',e=>e.stopPropagation());
+function kbRenderOnline(){
+  const panel=document.getElementById('onlineLibrary'),list=document.getElementById('onlineTracks');panel.hidden=!kbOnline.length;list.replaceChildren();document.getElementById('onlineCount').textContent=String(kbOnline.length);
+  countEl.dataset.onlineCount=String(kbOnline.length);countEl.textContent=String(lib.length+kbOnline.length);if(view==='all'&&!lib.length)emptyEl.hidden=!!kbOnline.length;
+  kbOnline.forEach(item=>{let p;try{p=kbPlatform(kbAudioURL(item.url))}catch(e){return}if(!p)return;
+    const row=document.createElement('li'),text=document.createElement('div'),title=document.createElement('strong'),meta=document.createElement('small'),play=document.createElement('button'),remove=document.createElement('button');
+    title.textContent=item.title;meta.textContent=p.provider+' · saved link · internet required';text.append(title,meta);play.type=remove.type='button';play.className=remove.className='chip';play.textContent='Listen';play.setAttribute('aria-label','Listen to '+item.title);play.addEventListener('click',()=>kbPlayOnline(item));remove.textContent='Remove';remove.setAttribute('aria-label','Remove '+item.title);
+    remove.addEventListener('click',()=>{const next=kbOnline.filter(x=>x!==item);try{localStorage.setItem(KB_ONLINE_KEY,JSON.stringify(next));kbOnline=next;kbRenderOnline()}catch(e){toast('Could not update browser storage.')}});row.append(text,play,remove);list.append(row);
+  });
+}
+kbRenderOnline();
+
 // ---- read tags (ID3 for MP3, atoms for M4A, Vorbis comments for FLAC/OGG)
 function decTxt(b,enc){try{if(enc===1){if(b[0]===0xFF&&b[1]===0xFE)return new TextDecoder('utf-16le').decode(b.subarray(2));if(b[0]===0xFE&&b[1]===0xFF)return new TextDecoder('utf-16be').decode(b.subarray(2));return new TextDecoder('utf-16le').decode(b)}
   if(enc===2)return new TextDecoder('utf-16be').decode(b);if(enc===3)return new TextDecoder('utf-8').decode(b);return new TextDecoder('windows-1252').decode(b)}catch(e){return''}}
@@ -1096,7 +1290,7 @@ function removeTrack(i){const t=lib[i];dbDo(st=>st.delete(t.id));lib.splice(i,1)
 function playIndex(i,ctxv){if(!lib.length)return;if(ctxv)playCtx=ctxv;cur=((i%lib.length)+lib.length)%lib.length;ensureCtx();stopDemo();
   if(!audioEl){audioEl=new Audio();audioEl.preload='auto';audioEl.setAttribute('playsinline','');audioEl.addEventListener('playing',()=>{if(ctx&&ctx.state!=='running')ctx.resume().catch(()=>{})});if(IOSWEB){['play','playing','seeked','ratechange'].forEach(e=>audioEl.addEventListener(e,()=>iosVis.sync(true)));['pause','ended','emptied'].forEach(e=>audioEl.addEventListener(e,()=>iosVis.stop()))}else{src=ctx.createMediaElementSource(audioEl);src.connect(trackGain);}
     audioEl.addEventListener('ended',()=>{if(REC){vStop();return}if(sleepEnd){sleepEnd=false;setSleep('0');setPlaying(false);return}if(S.snd.one){audioEl.currentTime=0;audioEl.play();onTrackStart();return}{const o=ctxOrder();if(!repeat&&!shuffle&&o.indexOf(cur)===o.length-1){setPlaying(false);return}}next()});
-    audioEl.addEventListener('play',()=>setPlaying(true));audioEl.addEventListener('pause',()=>setPlaying(false))}
+    audioEl.addEventListener('play',()=>{if(kbOnlinePlayer.open)kbCloseOnline();setPlaying(true)});audioEl.addEventListener('pause',()=>setPlaying(false))}
   if(audioEl._url)URL.revokeObjectURL(audioEl._url);audioEl._url=URL.createObjectURL(mimeFor(lib[cur].blob));audioEl.src=audioEl._url;audioEl._tid=lib[cur].id;if(IOSWEB){applySnd();iosVis.load(lib[cur])}
   audioEl.play().catch(()=>{});kicks.length=0;bpm=0;trackEl.textContent=lib[cur].name;renderList();setSession();wake();lyTrackChanged();onTrackStart()}
 function next(){const o=ctxOrder();if(!o.length)return;const p=o.indexOf(cur);if(shuffle&&o.length>1){let j;do j=o[Math.floor(Math.random()*o.length)];while(j===cur);playIndex(j)}else playIndex(o[(p+1)%o.length])}
