@@ -68,6 +68,11 @@ h1{font-family:var(--display);font-weight:700;font-size:clamp(18px,3.2vw,26px);l
 .dzc{position:relative;display:flex;flex-direction:column;padding:0;border:.5px solid var(--line);border-radius:10px;overflow:hidden;background:#05070b;cursor:pointer;text-align:left;color:inherit;font:inherit}
 .dzc img{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;background:radial-gradient(circle at 50% 45%,#1a2230,#05070b 70%);opacity:.0;transition:opacity .35s}
 .dzc img.on{opacity:1}.dzc:not(:has(img.on))::before{content:'';position:absolute;left:0;right:0;top:0;aspect-ratio:16/10;background:radial-gradient(circle at 50% 45%,#162030,#05070b 70%)}
+.dzw{position:relative;display:flex}.dzw>.dzc{flex:1;min-width:0}
+.dzx{position:absolute;top:6px;right:6px;z-index:2;min-width:28px;height:28px;padding:0 8px;border-radius:999px;border:.5px solid rgba(255,255,255,.25);background:rgba(4,7,12,.72);color:#cfd8e3;font:600 14px/1 var(--body);cursor:pointer;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.dzx:hover{color:#ff9aa4;border-color:#ff9aa4}.dzx.armed{background:#c8303f;border-color:#ff8a95;color:#fff;font-size:12px}
+.dzx:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+#dzRestore{margin-top:4px}
 .dzc b{display:block;font-size:12px;font-weight:600;padding:7px 9px 1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .dzc small{display:block;font-size:11px;color:var(--muted);padding:0 9px 8px}
 .dzc[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
@@ -492,7 +497,7 @@ body.bare,body.bare canvas{cursor:none}
       <label class="rng"><span>Fine</span><input type="range" id="sBloom" min="0" max="2" step="0.05"><b id="vBloom"></b></label>
     </div>
     <label class="rng"><span>Sensitivity</span><input type="range" id="sSens" min="0.5" max="2" step="0.05"><b id="vSens"></b></label>
-    <div class="legal"><a href="https://berishabesim3-svg.github.io/kebbek/privacy.html" target="_blank" rel="noopener">Privacy</a><a href="https://berishabesim3-svg.github.io/kebbek/terms.html" target="_blank" rel="noopener">Terms</a><span class="note">KEBBEK 4.24</span></div>
+    <div class="legal"><a href="https://berishabesim3-svg.github.io/kebbek/privacy.html" target="_blank" rel="noopener">Privacy</a><a href="https://berishabesim3-svg.github.io/kebbek/terms.html" target="_blank" rel="noopener">Terms</a><span class="note">KEBBEK 4.25</span></div>
   </div>
 </div>
 
@@ -613,7 +618,8 @@ body.bare,body.bare canvas{cursor:none}
   <div class="lhead"><span class="ltitle">Designs <small id="dzNow"></small></span><div class="lopts"><input type="search" id="dzSearch" placeholder="Search designs" aria-label="Search designs" autocomplete="off"></div></div>
   <div class="lopts dzTags" id="dzTags"></div>
   <div class="cfgBody"><div class="dzGrid" id="dzGrid"></div>
-  <p class="note"><span id="dzCount"></span> · every design is free. Drag to turn it (flick to spin), pinch to zoom, twist with two fingers, tap for an effect, double-tap to reset.</p></div>
+  <button class="chip" id="dzRestore" type="button" hidden></button>
+  <p class="note"><span id="dzCount"></span> · every design is free. × removes a design from this device (Restore brings it back). Drag to turn it (flick to spin), pinch to zoom, twist with two fingers, tap for an effect, double-tap to reset.</p></div>
 </div>
 <div class="list cfg" id="snd" hidden>
   <div class="lhead"><span class="ltitle">Sound</span><div class="lopts"><button class="chip on" id="qAB" type="button" aria-pressed="true">Effects: On</button><button class="chip" id="sndReset" type="button">Reset</button></div></div>
@@ -2724,7 +2730,9 @@ dzReg('kz','Premium',[{id:'kz-nyja',name:'Nyja · Knot of Light',k:'knot'},{id:'
 const dzHold=new THREE.Group();scene.add(dzHold);
 const DZ={id:'speaker',cur:null,sx:0,sy:0,roll:0,rv:0};
 function dzDispose(o){o.traverse(n=>{if(n.geometry)n.geometry.dispose();const ms=n.material?(Array.isArray(n.material)?n.material:[n.material]):[];ms.forEach(m=>{for(const k in m){const v=m[k];if(v&&v.isTexture&&v!==dzEnvT)v.dispose()}if(m.uniforms)for(const k in m.uniforms){const v=m.uniforms[k]&&m.uniforms[k].value;if(v&&v.isTexture&&v!==dzEnvT)v.dispose()}m.dispose()})})}
-const DZ_BLK=new THREE.Color(0x020203);function dzSet(id,quiet){if(scene.background===DZ_BLK&&DZ.bg0)scene.background=DZ.bg0;const d=DESIGNS.find(x=>x.id===id)||DESIGNS[0];if(DZ.cur){dzHold.remove(DZ.cur.W);dzDispose(DZ.cur.W);DZ.cur=null}DZ.id=d.id;
+const DZ_HK='kebbek-zeri-hidden';let DZ_HID=new Set();try{const h=JSON.parse(localStorage.getItem(DZ_HK)||'[]');if(Array.isArray(h))DZ_HID=new Set(h.filter(x=>typeof x==='string'&&x!=='speaker'))}catch(e){}
+const dzSaveHid=()=>{try{localStorage.setItem(DZ_HK,JSON.stringify([...DZ_HID]))}catch(e){}};
+const DZ_BLK=new THREE.Color(0x020203);function dzSet(id,quiet){if(DZ_HID.has(id))id='speaker';if(scene.background===DZ_BLK&&DZ.bg0)scene.background=DZ.bg0;const d=DESIGNS.find(x=>x.id===id)||DESIGNS[0];if(DZ.cur){dzHold.remove(DZ.cur.W);dzDispose(DZ.cur.W);DZ.cur=null}DZ.id=d.id;
   if(d.fam){try{DZ.cur=dzBuild(d);dzHold.add(DZ.cur.W)}catch(e){console.error('design',d.id,e);DZ.cur=null;DZ.id='speaker'}}
   rig.visible=DZ.id==='speaker';DZ.roll=0;DZ.rv=0;if(!quiet){S.design=DZ.id;saveS()}dzMark()}
 function dzTick(dt,t,live){
@@ -2764,16 +2772,22 @@ function dzMark(){document.querySelectorAll('#dzGrid .dzc').forEach(b=>b.setAttr
 function dzRender(){const grid=document.getElementById('dzGrid');if(!grid)return;grid.textContent='';if(dzIO)dzIO.disconnect();
   dzIO=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){dzWant(e.target.dataset.id);dzIO.unobserve(e.target)}}),{root:grid.closest('.cfgBody'),rootMargin:'120px'});
   const q=dzQ.trim().toLowerCase();let n=0;
-  for(const d of DESIGNS){if(dzTag!=='All'&&d.tag!==dzTag)continue;if(q&&!(d.name+' '+d.tag).toLowerCase().includes(q))continue;n++;
+  for(const d of DESIGNS){if(DZ_HID.has(d.id))continue;if(dzTag!=='All'&&d.tag!==dzTag)continue;if(q&&!(d.name+' '+d.tag).toLowerCase().includes(q))continue;n++;
     const b=document.createElement('button');b.type='button';b.className='dzc';b.dataset.id=d.id;b.setAttribute('aria-pressed',String(d.id===DZ.id));b.setAttribute('aria-label',d.name+' · '+d.tag);
     const im=document.createElement('img');im.alt='';im.decoding='async';const u=dzShots.get(d.id);if(u){im.src=u;im.className='on'}b.appendChild(im);
     const t=document.createElement('b');t.textContent=d.name;b.appendChild(t);const s=document.createElement('small');s.textContent=d.tag+' · Free';b.appendChild(s);
-    b.addEventListener('click',()=>{dzSet(d.id);toast(d.name)});grid.appendChild(b);if(!u)dzIO.observe(b)}
-  const c=document.getElementById('dzCount');if(c)c.textContent=n+' of '+DESIGNS.length}
+    b.addEventListener('click',()=>{dzSet(d.id);toast(d.name)});const w=document.createElement('div');w.className='dzw';w.appendChild(b);
+    if(d.id!=='speaker'){const x=document.createElement('button');x.type='button';x.className='dzx';x.textContent='×';x.setAttribute('aria-label','Delete design '+d.name);let tm=0;
+      x.addEventListener('click',e=>{e.stopPropagation();if(!x.classList.contains('armed')){x.classList.add('armed');x.textContent='Delete?';x.setAttribute('aria-label','Tap again to delete '+d.name);clearTimeout(tm);tm=setTimeout(()=>{x.classList.remove('armed');x.textContent='×';x.setAttribute('aria-label','Delete design '+d.name)},3500);return}
+        clearTimeout(tm);DZ_HID.add(d.id);dzSaveHid();if(DZ.id===d.id)dzSet('speaker');dzRender();dzMark();toast(d.name+' deleted · Restore at the bottom of Designs')});w.appendChild(x)}
+    grid.appendChild(w);if(!u)dzIO.observe(b)}
+  const c=document.getElementById('dzCount');if(c)c.textContent=n+' of '+(DESIGNS.length-DZ_HID.size);
+  const rb=document.getElementById('dzRestore');if(rb){rb.hidden=!DZ_HID.size;rb.textContent='Restore deleted designs ('+DZ_HID.size+')'}}
 function dzOpen(){const tg=document.getElementById('dzTags');if(tg&&!tg.childElementCount){DZ_TAGS.forEach(t=>{const b=document.createElement('button');b.type='button';b.className='chip';b.textContent=t;b.setAttribute('aria-pressed',String(t===dzTag));
     b.addEventListener('click',()=>{dzTag=t;tg.querySelectorAll('.chip').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));dzRender()});tg.appendChild(b)})}
   dzRender();dzMark()}
 window.dzOpen=dzOpen;
+{const rb=document.getElementById('dzRestore');if(rb)rb.addEventListener('click',()=>{const k=DZ_HID.size;DZ_HID.clear();dzSaveHid();dzRender();dzMark();toast(k+(k===1?' design':' designs')+' restored')})}
 {const sI=document.getElementById('dzSearch');if(sI)sI.addEventListener('input',()=>{dzQ=sI.value;dzRender()})}
 document.getElementById('dzBtn').addEventListener('click',()=>showPanel('dz'));
 /* test hook: renders every design's preview (used to make the contact sheet) */
