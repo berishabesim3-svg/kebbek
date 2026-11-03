@@ -498,7 +498,7 @@ body.bare,body.bare canvas{cursor:none}
       <label class="rng"><span>Fine</span><input type="range" id="sBloom" min="0" max="2" step="0.05"><b id="vBloom"></b></label>
     </div>
     <label class="rng"><span>Sensitivity</span><input type="range" id="sSens" min="0.5" max="2" step="0.05"><b id="vSens"></b></label>
-    <div class="legal"><a href="https://berishabesim3-svg.github.io/kebbek/privacy.html" target="_blank" rel="noopener">Privacy</a><a href="https://berishabesim3-svg.github.io/kebbek/terms.html" target="_blank" rel="noopener">Terms</a><span class="note">KEBBEK 4.27</span></div>
+    <div class="legal"><a href="https://berishabesim3-svg.github.io/kebbek/privacy.html" target="_blank" rel="noopener">Privacy</a><a href="https://berishabesim3-svg.github.io/kebbek/terms.html" target="_blank" rel="noopener">Terms</a><span class="note">KEBBEK 4.28</span></div>
   </div>
 </div>
 
@@ -2945,8 +2945,84 @@ KZ.soul=(p,X)=>{X.fit=false;X.sway=.8;X.nosky=true;X.black=true;const au=moAud()
     /* a flat HUD must never turn edge-on: the app's free rotation is softly limited to ±18° for this design */
     const hr=dzHold.rotation,wy=Math.atan2(Math.sin(hr.y),Math.cos(hr.y)),wx=Math.atan2(Math.sin(hr.x),Math.cos(hr.x));
     X.G.rotation.set(.32*Math.tanh(wx/.32)-hr.x,.32*Math.tanh(wy/.32)-hr.y,0);X.G.scale.setScalar(kzFit(6.05,7.3,.94,.8))}};
+/* ★ Liquid Particle Motion (4.28): the owner's "KEBBEK AI Liquid Particle Motion" clip rebuilt as a live design, computed on the GPU.
+   A cyan liquid ring of particle strands with a gold inner strand, an orange particle wave flowing beneath it, a KEBBEK wordmark made of
+   particles, rising dust and thin shock circles. Bass swells the ring and the wave, the spectrum shapes the wave, every beat sends a shock
+   circle out of the ring and a light pulse along the wave, highs make the wave sparkle. Without music it keeps a slow idle pulse.
+   Touch: a finger pulls the liquid toward it with a swirl, a tap bursts the wordmark and it flows back together,
+   press and hold (0.45 s) dissolves everything into dust and releasing lets it pour back. Pinch-zoom and double-tap reset still work. */
+KZ.liquid=(p,X)=>{X.fit=false;X.sway=.35;X.nosky=true;X.black=true;X.touch=true;const au=moAud(),tc=moTouch(),R=X.rnd;
+  const NR=DZ_MOB?9000:20000,NW=DZ_MOB?9000:20000,NL=DZ_MOB?5000:9000,ND=DZ_MOB?1400:2800,SHP=DZ_MOB?900:1600,N=NR+NW+NL+ND+4*SHP,LW=4.3,LY=-2.75,RY=1.15;
+  /* wordmark targets sampled from text drawn on a small canvas */
+  const cv=document.createElement('canvas');cv.width=512;cv.height=128;const g2=cv.getContext('2d');g2.font='800 100px system-ui,-apple-system,"Segoe UI",Arial,sans-serif';
+  g2.textAlign='center';g2.textBaseline='middle';g2.fillStyle='#fff';const tw=Math.max(1,g2.measureText('KEBBEK').width);g2.fillText('KEBBEK',256,66);
+  const im=g2.getImageData(0,0,512,128).data,cand=[];for(let y=0;y<128;y++)for(let x=0;x<512;x++)if(im[(y*512+x)*4+3]>140)cand.push(x,y);
+  const nc=Math.max(1,cand.length/2),ks=LW/tw;
+  const pos=new Float32Array(N*3),tg=new Float32Array(N*2);let k=0,q=0;const put=(u,v,role)=>{pos[k++]=u;pos[k++]=v;pos[k++]=role+R()*.9;q+=2};
+  for(let i=0;i<NR;i++)put(R(),(R()+R()+R()-1.5)/1.5,0);
+  for(let i=0;i<NW;i++)put(R(),R()*2-1,1);
+  for(let i=0;i<NL;i++){const c=(R()*nc|0)*2;tg[q]=(cand[c]-256+R()-.5)*ks;tg[q+1]=-(cand[c+1]-66+R()-.5)*ks+LY;put(R(),0,2)}
+  for(let i=0;i<ND;i++)put(R(),0,3);
+  for(let s=0;s<4;s++)for(let i=0;i<SHP;i++)put(i/SHP,s,4);
+  const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.BufferAttribute(pos,3));geo.setAttribute('tg',new THREE.BufferAttribute(tg,2));geo.boundingSphere=new THREE.Sphere(new THREE.Vector3(),40);
+  const spec=new THREE.DataTexture(new Uint8Array(256),256,1,THREE.LuminanceFormat);spec.magFilter=spec.minFilter=THREE.LinearFilter;
+  const BEAT=[-9,-9,-9,-9];
+  const u={uT:{value:0},uB:{value:0},uM:{value:0},uH:{value:0},uDis:{value:0},uExp:{value:9},uPR:{value:1},uA:{value:1},uBeat:{value:BEAT},uF:{value:new THREE.Vector3()},uSpec:{value:spec}};
+  const VS=`uniform float uT,uB,uM,uH,uDis,uExp,uPR,uA;uniform float uBeat[4];uniform vec3 uF;uniform sampler2D uSpec;attribute vec2 tg;varying vec3 vC;varying float vA;
+float h1(float n){return fract(sin(n*127.1+.31)*43758.5453);}
+vec3 r3(float s){return vec3(h1(s),h1(s+1.7),h1(s+3.1))-.5;}
+float g2(float x){return exp(-x*x);}
+void main(){float u=position.x,v=position.y,role=floor(position.z),sd=fract(position.z)/.9;vec3 P,col;float a,sz=1.25;
+ float beat=0.;for(int i=0;i<4;i++){float ag=uT-uBeat[i];if(ag>=0.&&ag<2.)beat+=exp(-ag*4.);}
+ if(role<.5){float th=u*6.2831853+uT*(.07+.06*sd);
+  float wob=.085*sin(3.*th+uT*.6)+.05*sin(4.*th-uT*.9+1.3)+.025*sin(7.*th+uT*1.7);
+  float r=1.9*(1.+wob+uB*.13+beat*.05)+v*(.27+.08*sin(th*5.+uT))+(h1(sd*91.)-.5)*.05*(1.+uH*3.);
+  P=vec3(cos(th)*r*1.04,sin(th)*r+${RY.toFixed(2)},v*.4*sin(th*2.+uT*.5)+sin(th*3.+uT*.8)*.3);
+  float core=g2(v*2.3);
+  bool gd=fract(sd*7.31)<.13;if(gd){P.xy=mix(P.xy,vec2(0.,${RY.toFixed(2)}),.09);}
+  col=gd?vec3(1.,.62,.12):mix(vec3(.02,.22,1.),vec3(.12,.85,1.),core);
+  col=mix(col,vec3(.75,1.,1.),core*core*core*.3*(.3+uB));
+  a=(.16+.6*core)*(1.+beat*.9)*(1.+.9*g2((sin(th)+1.)*1.8))*(gd?1.5:1.);}
+ else if(role<1.5){float sp=texture2D(uSpec,vec2(u,.5)).r;float env=.35+.65*smoothstep(0.,.6,u);
+  float pl=0.;for(int i=0;i<4;i++){float ag=uT-uBeat[i];if(ag>=0.&&ag<2.6)pl+=g2((u-ag*.45)/.045)*exp(-ag*1.2);}
+  float y=-.95+env*(.55+sp*.7+uB*.4)*sin(u*9.-uT*1.1+v*.9)+.25*sin(u*3.3+uT*.4)+v*(.18+.32*u)+pl*.32;
+  P=vec3((u*2.-1.)*6.2,y,cos(u*7.+v*1.4+uT*.6)*.6+v*.5);
+  col=mix(vec3(1.,.78,.12),vec3(1.,.34,.02),smoothstep(.12,.75,u));col=mix(col,vec3(.95,.1,.02),smoothstep(.72,1.,u)*.6);
+  a=(.34+pow(abs(v),6.)*1.5+sp*.6+pl*1.6)*smoothstep(0.,.08,u)*smoothstep(1.,.92,u);
+  a*=1.+uH*4.*step(.985,fract(sd*53.1+uT*.7));}
+ else if(role<2.5){float bu=uExp<4.?(1.-exp(-uExp*5.))*exp(-uExp*1.3)*3.2:0.;
+  vec3 dir=normalize(r3(sd*17.)+vec3(tg.x*.15,.25,0.));
+  P=vec3(tg,0.)+dir*bu*(.6+h1(sd*5.));P.xy+=vec2(sin(uT*2.+tg.y*9.+sd*6.),cos(uT*1.7+tg.x*5.))*.012;
+  float gx=clamp(tg.x/${LW.toFixed(2)}+.5,0.,1.);
+  col=gx<.5?mix(vec3(.3,.9,1.),vec3(1.,.82,.35),gx*2.):mix(vec3(1.,.82,.35),vec3(1.,.48,.1),gx*2.-1.);
+  a=.85*(1.+beat*.6+uB*.3)*(1.+bu*.3);sz=1.55;}
+ else if(role<3.5){vec3 r=r3(sd*31.+u*7.);
+  P=vec3(r.x*13.,mod(r.y*9.+uT*(.15+h1(sd*9.)*.35)+4.5,9.)-4.5,r.z*4.-1.);P.x+=sin(uT*.5+P.y+sd*6.)*.3;
+  col=h1(sd*13.)<.5?vec3(.3,.8,1.):vec3(1.,.6,.2);a=(.2+.5*h1(sd*2.))*(.6+.4*sin(uT*3.+sd*40.))*(1.+uH*2.);sz=1.+2.*h1(sd*4.);}
+ else{float bt=v<.5?uBeat[0]:v<1.5?uBeat[1]:v<2.5?uBeat[2]:uBeat[3];float ag=uT-bt,th=u*6.2831853,rr=.7+ag*4.;
+  P=vec3(cos(th)*rr*1.04,sin(th)*rr+${RY.toFixed(2)},-.3);col=vec3(1.,.72,.4);a=(ag>=0.&&ag<2.4)?exp(-ag*1.4)*.9:0.;sz=1.1;}
+ vec2 d=uF.xy-P.xy;float w=exp(-dot(d,d)/1.3)*uF.z;P.xy+=d*w*.45+vec2(-d.y,d.x)*w*.4;a*=1.+w;
+ P+=r3(sd*57.+role*3.3+u*11.)*uDis*vec3(8.,6.,5.)+vec3(0.,uDis*1.2,0.);a*=1.-uDis*.5;
+ vC=col;vA=a*uA;vec4 mv=modelViewMatrix*vec4(P,1.);gl_Position=projectionMatrix*mv;gl_PointSize=uPR*sz*(12.5/-mv.z);}`;
+  const FS='varying vec3 vC;varying float vA;void main(){vec2 c=gl_PointCoord-.5;float d=dot(c,c);if(d>.25)discard;gl_FragColor=vec4(vC*vA*exp(-d*12.),1.);}';
+  const mat=new THREE.ShaderMaterial({uniforms:u,vertexShader:VS,fragmentShader:FS,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending});
+  const pts=new THREE.Points(geo,mat);pts.frustumCulled=false;X.add(pts);
+  const halo=(w,h,c,x,y,op)=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:dzRadTex(),color:c,transparent:true,opacity:op,blending:THREE.AdditiveBlending,depthWrite:false}));m.position.set(x,y,-1.6);X.add(m);return m};
+  const hR=halo(6.5,6.5,0x1a5cff,0,RY,.35),hW=halo(13,3.6,0xff5a08,1.5,-1.,.22),hL=halo(7,2.2,0xffb050,0,LY,.0);
+  const ref=new THREE.Object3D();X.add(ref);
+  const raw=new Float32Array(256),sm=new Float32Array(256),sd=spec.image.data;let idle=0,dis=0,fz=0;
+  return A=>{const a=au(A),t=tc(A,ref),dt=a.dt;u.uT.value=A.t;u.uB.value=a.b;u.uM.value=a.m;u.uH.value=a.h;
+    for(let i=0;i<256;i++)raw[i]=dzBin(i/255);for(let i=0;i<256;i++){let s=0,n=0;for(let j=Math.max(0,i-8);j<=Math.min(255,i+8);j++){s+=raw[j];n++}sm[i]+=(s/n-sm[i])*.35;sd[i]=Math.min(255,sm[i]*255)}spec.needsUpdate=true;
+    idle+=dt;if(a.beat||(!A.live&&idle>1.6)){idle=0;BEAT.unshift(A.t);BEAT.pop()}
+    if(t.tap||a.tap)u.uExp.value=0;else u.uExp.value=Math.min(9,u.uExp.value+dt);
+    dis+=((A.lp?1:0)-dis)*(1-Math.exp(-dt*(A.lp?2.2:1.6)));u.uDis.value=dis*dis*(3-2*dis);
+    fz+=((t.down&&!A.lp?1:0)-fz)*(1-Math.exp(-dt*6));if(t.down)u.uF.value.set(t.x,t.y,fz);else u.uF.value.z=fz;
+    const sc=kzFit(7.6,8.2,.96,.8);/* point size follows the fitted scale so density looks the same on phone and desktop */
+    u.uPR.value=2.6*Math.min(2,renderer.getPixelRatio())*Math.max(.6,sc/1.19);u.uA.value=DZ_MOB?.9:.8;
+    const bt=BEAT[0]>-9?Math.exp(-(A.t-BEAT[0])*4):0;hR.material.opacity=.3+a.b*.35+bt*.25;hW.material.opacity=.18+a.b*.2;hL.material.opacity=.12+bt*.2+(u.uExp.value<1?(1-u.uExp.value)*.4:0);
+    X.G.scale.setScalar(sc);X.G.rotation.y=Math.sin(A.t*.13)*.14;X.G.rotation.x=Math.sin(A.t*.09)*.05}};
 DZF.kz=(p,X)=>KZ[p.k](p,X);
-dzReg('kz','Premium',[{id:'kz-nyja',name:'Nyja · Knot of Light',k:'knot'},{id:'kz-nyja-own',name:'Nyja · Your Colours',k:'knot',own:true},{id:'kz-soul',name:'Blue Soul',k:'soul'}]);
+dzReg('kz','Premium',[{id:'kz-nyja',name:'Nyja · Knot of Light',k:'knot'},{id:'kz-nyja-own',name:'Nyja · Your Colours',k:'knot',own:true},{id:'kz-soul',name:'Blue Soul',k:'soul'},{id:'kz-liquid',name:'Liquid Particle Motion',k:'liquid'}]);
 /* ---- design switching, per-frame tick, touch motion ---- */
 const dzHold=new THREE.Group();scene.add(dzHold);
 const DZ={id:'speaker',cur:null,sx:0,sy:0,roll:0,rv:0};
