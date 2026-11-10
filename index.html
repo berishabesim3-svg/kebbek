@@ -353,6 +353,8 @@ body.notele .tele{display:none}
 /* screen-recording mode: only the speaker, effects and the logo stay */
 body.bare .rail,body.bare #toast,body.bare .lmenu,body.bare .list,body.bare .tapBox{display:none!important}
 body.bare,body.bare canvas{cursor:none}
+/* clean stage (4.29): only LIVE + KEBBEK stay; double-tap outside the boxes toggles it */
+body.zen .rail,body.zen .lmenu,body.zen .list,body.zen .tapBox,body.zen #tele{display:none!important}
 #bareBtn svg{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 /* compact bar on phones: every button on one line, nothing hidden */
 #fileLbl,#listBtn{flex:none;white-space:nowrap}#fileLbl .kb-lf{display:inline;position:static}#fileLbl .kb-ls,#listBtn .kb-li{display:none}
@@ -1297,7 +1299,7 @@ function removeTrack(i){const t=lib[i];dbDo(st=>st.delete(t.id));lib.splice(i,1)
 function playIndex(i,ctxv){if(!lib.length)return;if(ctxv)playCtx=ctxv;cur=((i%lib.length)+lib.length)%lib.length;ensureCtx();stopDemo();
   if(!audioEl){audioEl=new Audio();audioEl.preload='auto';audioEl.setAttribute('playsinline','');audioEl.addEventListener('playing',()=>{if(ctx&&ctx.state!=='running')ctx.resume().catch(()=>{})});if(IOSWEB){['play','playing','seeked','ratechange'].forEach(e=>audioEl.addEventListener(e,()=>iosVis.sync(true)));['pause','ended','emptied'].forEach(e=>audioEl.addEventListener(e,()=>iosVis.stop()))}else{src=ctx.createMediaElementSource(audioEl);src.connect(trackGain);}
     audioEl.addEventListener('ended',()=>{if(REC){vStop();return}if(sleepEnd){sleepEnd=false;setSleep('0');setPlaying(false);return}if(S.snd.one){audioEl.currentTime=0;audioEl.play();onTrackStart();return}{const o=ctxOrder();if(!repeat&&!shuffle&&o.indexOf(cur)===o.length-1){setPlaying(false);return}}next()});
-    audioEl.addEventListener('play',()=>{if(kbOnlinePlayer.open)kbCloseOnline();setPlaying(true)});audioEl.addEventListener('pause',()=>setPlaying(false))}
+    audioEl.addEventListener('play',()=>{if(kbOnlinePlayer.open)kbCloseOnline();setPlaying(true);if(window.__zen)__zen.played()});audioEl.addEventListener('pause',()=>{setPlaying(false);if(window.__zen)__zen.paused()})}
   if(audioEl._url)URL.revokeObjectURL(audioEl._url);audioEl._url=URL.createObjectURL(mimeFor(lib[cur].blob));audioEl.src=audioEl._url;audioEl._tid=lib[cur].id;if(IOSWEB){applySnd();iosVis.load(lib[cur])}
   audioEl.play().catch(()=>{});kicks.length=0;bpm=0;trackEl.textContent=lib[cur].name;renderList();setSession();wake();lyTrackChanged();onTrackStart()}
 function next(){const o=ctxOrder();if(!o.length)return;const p=o.indexOf(cur);if(shuffle&&o.length>1){let j;do j=o[Math.floor(Math.random()*o.length)];while(j===cur);playIndex(j)}else playIndex(o[(p+1)%o.length])}
@@ -1465,7 +1467,17 @@ cfgBtn.addEventListener('click',()=>showPanel('cfg'));
 // screen-recording mode: hide every control; the next tap or key anywhere brings them back
 document.getElementById('bareBtn').addEventListener('click',e=>{e.stopPropagation();showPanel(null);setTimeout(()=>document.body.classList.add('bare'),60)});
 const unBare=e=>{if(!document.body.classList.contains('bare'))return;document.body.classList.remove('bare');e.stopPropagation();if(e.cancelable)e.preventDefault()};
-addEventListener('pointerdown',unBare,true);addEventListener('keydown',e=>{if(e.key!=='Shift')unBare(e)},true);
+addEventListener('pointerdown',unBare,true);
+// clean stage: the controls leave when a song starts; a double-tap outside the boxes hides or brings them back
+const zen={on:false,userShown:false,pauseT:0,last:{t:0,x:0,y:0},
+  set(v,hint){if(window.__kbNative)return;zen.on=!!v;if(v)showPanel(null);document.body.classList.toggle('zen',zen.on);
+    if(hint){let n=0;try{n=+localStorage.getItem('kebbek-zeri-zenhint')||0;localStorage.setItem('kebbek-zeri-zenhint',n+1)}catch(e){}if(n<3)toast(v?'Double-tap the stage to show the controls':'Double-tap the stage to hide the controls')}},
+  played(){clearTimeout(zen.pauseT);if(!zen.on&&!zen.userShown)zen.set(true,true)},
+  paused(){clearTimeout(zen.pauseT);zen.pauseT=setTimeout(()=>{zen.userShown=false},1500)},
+  tap(e){if(e.pointerType==='mouse'&&e.button!==0)return;const inBox=e.target.closest&&e.target.closest('.rail,.list,.tapBox,.lmenu,#status,button,a,input,select,textarea,label');const n=performance.now(),L=zen.last;
+    if(inBox||document.body.classList.contains('bare')||EXP||REC){L.t=0;return}
+    if(n-L.t<420&&Math.hypot(e.clientX-L.x,e.clientY-L.y)<44){L.t=0;const v=!zen.on;zen.userShown=!v;zen.set(v,false)}else{L.t=n;L.x=e.clientX;L.y=e.clientY}}};
+window.__zen=zen;addEventListener('pointerdown',e=>zen.tap(e),true);addEventListener('keydown',e=>{if(e.key==='Escape'&&zen.on){zen.userShown=true;zen.set(false,false)}});addEventListener('keydown',e=>{if(e.key!=='Shift')unBare(e)},true);
 function applyAll(){if(window.__dzApply)window.__dzApply();applyColors();applyName();applyFx();applyLogo();showers.forEach(f=>f())}
 applyAll();
 
@@ -1854,7 +1866,7 @@ canvas.addEventListener('pointerdown',e=>{zPtrs.set(e.pointerId,{x:e.clientX,y:e
 canvas.addEventListener('pointermove',e=>{if(zPtrs.has(e.pointerId))zPtrs.set(e.pointerId,{x:e.clientX,y:e.clientY});if(pinch&&zPtrs.size>=2){zT=rubber(pinch.z0*pdist()/pinch.d0);/* two-finger twist rolls the design */let da=pang()-pinch.a0;da=Math.atan2(Math.sin(da),Math.cos(da));DZ.roll=pinch.r0-da;const n=performance.now(),a=pang(),dd=Math.atan2(Math.sin(a-pinch.la),Math.cos(a-pinch.la));DZ.rv=-dd/Math.max(.008,(n-pinch.lt)/1000);pinch.la=a;pinch.lt=n;return}});
 const endPtr=e=>{zPtrs.delete(e.pointerId);if(pinch&&zPtrs.size<2){pinch=null;pinchEnd=Date.now();zT=Math.min(ZMAX,Math.max(ZMIN,zT));saveZ()}};
 canvas.addEventListener('pointerup',endPtr);canvas.addEventListener('pointercancel',endPtr);canvas.addEventListener('pointerleave',e=>{if(e.pointerType==='mouse')zPtrs.delete(e.pointerId)});
-canvas.addEventListener('dblclick',e=>{const r=canvas.getBoundingClientRect();if(Math.hypot(e.clientX-r.left-r.width/2,e.clientY-r.top-r.height/2)<Math.min(r.width,r.height)*.22)return;zT=1;zVel-=1.2;saveZ()});
+/* 4.29: a double-tap on the stage now toggles the clean stage; zoom resets with the 0 key */
 addEventListener('keydown',e=>{if(e.target.matches('input,textarea,select')||e.altKey||e.metaKey||e.ctrlKey)return;if(e.key==='+'||e.key==='='){zT=Math.min(ZMAX,zT*1.15);saveZ()}else if(e.key==='-'||e.key==='_'){zT=Math.max(ZMIN,zT/1.15);saveZ()}else if(e.key==='0'){zT=1;saveZ()}});
 canvas.addEventListener('pointermove',e=>{if(!drag){if(e.pointerType==='mouse')canvas.style.cursor=onSpk(e.clientX,e.clientY)?'grab':'';return}if(pinch)return;
   if(drag.touch)return;/* touch-first designs: the finger acts inside the scene instead of turning it */
